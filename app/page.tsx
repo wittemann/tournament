@@ -1,23 +1,65 @@
+'use client';
+
 import { createClient } from '@supabase/supabase-js';
 import GamesTable from './GamesTable';
+import { useEffect, useState } from 'react';
 
-export const dynamic = 'force-dynamic';
+type Game = {
+  id: number;
+  time: string;
+  class: string;
+  hometeam: string;
+  awayteam: string;
+  hall: string;
+  homescore: number;
+  awayscore: number;
+};
 
-export default async function Page() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export default function Page() {
+  const [games, setGames] = useState<Game[]>([]);
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
+  useEffect(() => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables');
+      return;
+    }
 
-  const { data, error } = await supabase.from('games').select().order('id');
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  if (error) {
-    console.error('Supabase error:', error);
-  }
+    // Initial fetch
+    const fetchGames = async () => {
+      const { data, error } = await supabase.from('games').select().order('id');
+      if (error) {
+        console.error('Supabase error:', error);
+      } else if (data) {
+        setGames(data);
+      }
+    };
 
-  return <GamesTable games={data || []} />;
+    fetchGames();
+
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel('games-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'games' },
+        async () => {
+          const { data } = await supabase.from('games').select().order('id');
+          if (data) {
+            setGames(data);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  return <GamesTable games={games} />;
 }
