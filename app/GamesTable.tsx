@@ -155,7 +155,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
 
       {/* No results message */}
       {filteredGames.length === 0 && (
-        <div className="alert alert-info">
+        <div className="alert alert-info alert-soft">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -243,7 +243,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
 
       {/* Desktop table layout */}
       <div className="hidden lg:block overflow-x-auto">
-        <table className="table">
+        <table className="table table-zebra">
           <thead>
             <tr>
               <th>#</th>
