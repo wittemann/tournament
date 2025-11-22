@@ -248,10 +248,10 @@ export default function GamesTable({ games }: { games: Game[] }) {
             <tr>
               <th>#</th>
               <th>Zeit</th>
+              <th>Halle</th>
               <th>Klasse</th>
               <th>Home</th>
               <th>Away</th>
-              <th>Halle</th>
               <th>Score</th>
             </tr>
           </thead>
@@ -260,10 +260,11 @@ export default function GamesTable({ games }: { games: Game[] }) {
               <tr key={game.id}>
                 <td>{game.id}</td>
                 <td>{game.time} Uhr</td>
+                <td>{game.hall}</td>
                 <td>
                   <span
                     className={`badge badge-outline ${
-                      game.class === 'schüler' ? 'bg-blue-50' : 'bg-green-50'
+                      game.class === 'Schüler' ? 'bg-green-100' : 'bg-amber-100'
                     }`}
                   >
                     {game.class}
@@ -271,7 +272,6 @@ export default function GamesTable({ games }: { games: Game[] }) {
                 </td>
                 <td>{game.hometeam}</td>
                 <td>{game.awayteam}</td>
-                <td>{game.hall}</td>
                 <td>
                   {game.homescore != undefined
                     ? `${game.homescore}:${game.awayscore}`
