@@ -13,16 +13,11 @@ export default async function Page() {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const { data, error } = await supabase.from('games').select();
+  const { data, error } = await supabase.from('games').select().order('id');
 
   if (error) {
     console.error('Supabase error:', error);
   }
 
-  return (
-    <>
-      <h1>Spielplan</h1>
-      <GamesTable games={data || []} />
-    </>
-  );
+  return <GamesTable games={data || []} />;
 }
