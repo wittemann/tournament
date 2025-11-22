@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import GamesTable from './GamesTable';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
