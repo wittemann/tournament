@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 
 type Game = {
   id: number;
+  time: string;
   class: string;
   hometeam: string;
   awayteam: string;
@@ -87,6 +88,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
         <thead>
           <tr>
             <th>#</th>
+            <th>Zeit</th>
             <th>Klasse</th>
             <th>Home</th>
             <th>Away</th>
@@ -98,6 +100,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
           {filteredGames.map((game) => (
             <tr key={game.id}>
               <td>{game.id}</td>
+              <td>{game.time} Uhr</td>
               <td>{game.class}</td>
               <td>{game.hometeam}</td>
               <td>{game.awayteam}</td>
