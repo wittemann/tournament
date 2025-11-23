@@ -213,27 +213,34 @@ export default function GamesTable({ games }: { games: Game[] }) {
               )}
               <div className="card bg-base-200 shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="badge badge-sm">#{game.id}</span>
-                  <span className="text-sm opacity-70">{game.time} Uhr</span>
+                  <div className="flex gap-2 items-center">
+                    <span className="badge badge-sm">#{game.id}</span>
+                    <span
+                      className={`badge badge-outline badge-sm ${
+                        game.class === 'Schüler'
+                          ? 'bg-green-100'
+                          : 'bg-amber-100'
+                      }`}
+                    >
+                      {game.class}
+                    </span>
+                  </div>
+                  <span className="text-base">
+                    {game.time} Uhr | Halle {game.hall}
+                  </span>
                 </div>
-                <div
-                  className={`badge badge-outline mb-3 ${
-                    game.class === 'Schüler' ? 'bg-green-100' : 'bg-amber-100'
-                  }`}
-                >
-                  {game.class}
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold">{game.hometeam}</span>
+                <div className="grid grid-cols-3 items-center gap-2 mb-2">
+                  <span className="font-semibold text-right">
+                    {game.hometeam}
+                  </span>
                   {game.homescore !== undefined && (
-                    <span className="text-lg font-bold">
+                    <span className="text-lg font-bold text-center">
                       {game.homescore}:{game.awayscore}
                     </span>
                   )}
-                  <span className="font-semibold">{game.awayteam}</span>
-                </div>
-                <div className="text-sm opacity-70 text-center">
-                  Halle: {game.hall}
+                  <span className="font-semibold text-left">
+                    {game.awayteam}
+                  </span>
                 </div>
               </div>
             </div>
@@ -246,10 +253,8 @@ export default function GamesTable({ games }: { games: Game[] }) {
         <table className="table table-zebra">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Zeit</th>
-              <th>Halle</th>
-              <th>Klasse</th>
+              <th># / Klasse</th>
+              <th>Zeit / Halle</th>
               <th>Home</th>
               <th>Away</th>
               <th>Score</th>
@@ -258,17 +263,22 @@ export default function GamesTable({ games }: { games: Game[] }) {
           <tbody>
             {filteredGames.map((game) => (
               <tr key={game.id}>
-                <td>{game.id}</td>
-                <td>{game.time} Uhr</td>
-                <td>{game.hall}</td>
                 <td>
-                  <span
-                    className={`badge badge-outline ${
-                      game.class === 'Schüler' ? 'bg-green-100' : 'bg-amber-100'
-                    }`}
-                  >
-                    {game.class}
-                  </span>
+                  <div className="flex gap-2 items-center">
+                    <span>#{game.id}</span>
+                    <span
+                      className={`badge badge-outline badge-sm ${
+                        game.class === 'Schüler'
+                          ? 'bg-green-100'
+                          : 'bg-amber-100'
+                      }`}
+                    >
+                      {game.class}
+                    </span>
+                  </div>
+                </td>
+                <td className="text-base">
+                  {game.time} Uhr | Halle {game.hall}
                 </td>
                 <td>{game.hometeam}</td>
                 <td>{game.awayteam}</td>
