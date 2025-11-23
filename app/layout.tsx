@@ -24,7 +24,12 @@ export default function RootLayout({
         <div className="max-w-[800px] mx-auto bg-white">
           <div className="bg-green-700 text-white p-6 text-center">
             <div className="flex items-center gap-5 justify-center gap-3">
-              <img src="/logo.png" alt="Logo" className="h-12" />
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-12"
+                fetchPriority="high"
+              />
               <h1 className="text-2xl font-bold">Xmas-Cup</h1>
             </div>
           </div>
@@ -47,7 +52,27 @@ export default function RootLayout({
               }`}
               href="/standings"
             >
-              Tabellen
+              Tabelle
+            </Link>
+            <Link
+              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+                pathname === '/sell'
+                  ? 'bg-green-50 text-green-700 border-b-2 border-green-700'
+                  : 'text-gray-600 hover:text-green-700 hover:bg-gray-50'
+              }`}
+              href="/sell"
+            >
+              Verkauf
+            </Link>
+            <Link
+              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+                pathname === '/faq'
+                  ? 'bg-green-50 text-green-700 border-b-2 border-green-700'
+                  : 'text-gray-600 hover:text-green-700 hover:bg-gray-50'
+              }`}
+              href="/faq"
+            >
+              Info
             </Link>
           </div>
           <div className="px-6 py-2 bg-white">{children}</div>
