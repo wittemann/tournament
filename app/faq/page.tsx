@@ -81,6 +81,14 @@ export default function Page() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
+      <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+        <p className="text-gray-700">
+          Willkommen beim Bretten Kangaroos Xmas-Cup! Hier findest du alle
+          wichtigen Informationen rund um das Turnier. Klicke auf eine Frage, um
+          die Antwort zu sehen.
+        </p>
+      </div>
+
       <div className="space-y-4">
         {faqs.map((faq) => (
           <div key={faq.id}>
