@@ -75,7 +75,7 @@ export default function RootLayout({
               Info
             </Link>
           </div>
-          <div className="px-6 py-2 bg-white">{children}</div>
+          <div className="px-4 py-4 bg-white">{children}</div>
         </div>
       </body>
     </html>
