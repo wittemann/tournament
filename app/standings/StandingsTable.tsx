@@ -39,9 +39,9 @@ export default function StandingsTable({
                 <td
                   className={
                     standing.diff > 0
-                      ? 'text-green-600 font-semibold'
+                      ? 'text-green-600 dark:text-green-400 font-semibold'
                       : standing.diff < 0
-                      ? 'text-red-600 font-semibold'
+                      ? 'text-red-600 dark:text-red-400 font-semibold'
                       : ''
                   }
                 >

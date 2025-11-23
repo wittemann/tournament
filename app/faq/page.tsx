@@ -81,8 +81,8 @@ export default function Page() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-        <p className="text-gray-700">
+      <div className="mb-6 p-4 bg-green-50 dark:bg-green-900 rounded-lg border border-green-200 dark:border-green-700">
+        <p className="text-gray-700 dark:text-gray-200">
           Willkommen beim Bretten Kangaroos Xmas-Cup! Hier findest du alle
           wichtigen Informationen rund um das Turnier. Klicke auf eine Frage, um
           die Antwort zu sehen.
@@ -94,7 +94,7 @@ export default function Page() {
           <div key={faq.id}>
             <button
               onClick={() => toggleQuestion(faq.id)}
-              className="w-full py-2 text-left flex justify-between items-center hover:text-gray-600 transition-colors"
+              className="w-full py-2 text-left flex justify-between items-center hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               <span className="font-semibold pr-4">{faq.question}</span>
               <svg
@@ -116,7 +116,7 @@ export default function Page() {
 
             {openId === faq.id && (
               <div
-                className="py-2 text-gray-700"
+                className="py-2 text-gray-700 dark:text-gray-300"
                 dangerouslySetInnerHTML={{
                   __html: sanitizeHtml(faq.answer),
                 }}
@@ -127,7 +127,9 @@ export default function Page() {
       </div>
 
       {faqs.length === 0 && (
-        <p className="text-gray-500">Keine FAQs verfügbar.</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          Keine FAQs verfügbar.
+        </p>
       )}
     </div>
   );

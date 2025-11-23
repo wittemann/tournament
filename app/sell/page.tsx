@@ -82,31 +82,42 @@ export default function Page() {
         <div key={category} className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">{category}</h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
+            <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-4 py-2 border-b text-left">Artikel</th>
-                  <th className="px-4 py-2 border-b text-right">Preis</th>
+                <tr className="bg-gray-100 dark:bg-gray-700">
+                  <th className="px-4 py-2 border-b dark:border-gray-600 text-left">
+                    Artikel
+                  </th>
+                  <th className="px-4 py-2 border-b dark:border-gray-600 text-right">
+                    Preis
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {itemsByCategory[category].map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     <td
-                      className={`px-4 py-2 border-b ${
-                        item.soldOut ? 'line-through text-gray-400' : ''
+                      className={`px-4 py-2 border-b dark:border-gray-600 ${
+                        item.soldOut
+                          ? 'line-through text-gray-400 dark:text-gray-500'
+                          : ''
                       }`}
                     >
                       {item.item}
                       {item.soldOut && (
-                        <span className="ml-2 inline-block px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded">
+                        <span className="ml-2 inline-block px-2 py-1 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900 rounded">
                           Ausverkauft
                         </span>
                       )}
                     </td>
                     <td
-                      className={`px-4 py-2 border-b text-right ${
-                        item.soldOut ? 'line-through text-gray-400' : ''
+                      className={`px-4 py-2 border-b dark:border-gray-600 text-right ${
+                        item.soldOut
+                          ? 'line-through text-gray-400 dark:text-gray-500'
+                          : ''
                       }`}
                     >
                       {formatPrice(item.price)}
@@ -120,7 +131,9 @@ export default function Page() {
       ))}
 
       {categories.length === 0 && (
-        <p className="text-gray-500">Keine Artikel verfügbar.</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          Keine Artikel verfügbar.
+        </p>
       )}
     </div>
   );

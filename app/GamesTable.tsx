@@ -214,12 +214,14 @@ export default function GamesTable({ games }: { games: Game[] }) {
               <div className="card bg-base-200 shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 items-center">
-                    <span className="badge badge-sm">#{game.id}</span>
+                    <span className="badge badge-sm">
+                      #{game.id}
+                    </span>
                     <span
                       className={`badge badge-outline badge-sm ${
                         game.class === 'Schüler'
-                          ? 'bg-green-100'
-                          : 'bg-amber-100'
+                          ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
                       }`}
                     >
                       {game.class}
@@ -269,8 +271,8 @@ export default function GamesTable({ games }: { games: Game[] }) {
                     <span
                       className={`badge badge-outline badge-sm ${
                         game.class === 'Schüler'
-                          ? 'bg-green-100'
-                          : 'bg-amber-100'
+                          ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
                       }`}
                     >
                       {game.class}
