@@ -27,7 +27,10 @@ export default function Page() {
 
     // Initial fetch
     const fetchFaqs = async () => {
-      const { data, error } = await supabase.from('faq').select().order('id');
+      const { data, error } = await supabase
+        .from('faq')
+        .select()
+        .order('question');
       if (error) {
         console.error('Supabase error:', error);
       } else if (data) {

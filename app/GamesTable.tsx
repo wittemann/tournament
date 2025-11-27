@@ -1,19 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-
-type Game = {
-  id: number;
-  time: string;
-  class: string;
-  hometeam?: string;
-  awayteam?: string;
-  location: string;
-  homescore?: number;
-  awayscore?: number;
-  scorer?: string;
-  eventname?: string;
-};
+import { Game } from './types';
 
 export default function GamesTable({ games }: { games: Game[] }) {
   const [selectedTeam, setSelectedTeam] = useState<string>(() => {

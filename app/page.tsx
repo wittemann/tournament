@@ -3,17 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import GamesTable from './GamesTable';
 import { useEffect, useState } from 'react';
-
-type Game = {
-  id: number;
-  time: string;
-  class: string;
-  hometeam: string;
-  awayteam: string;
-  hall: string;
-  homescore: number;
-  awayscore: number;
-};
+import { Game } from './types';
 
 export default function Page() {
   const [games, setGames] = useState<Game[]>([]);
