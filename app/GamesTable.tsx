@@ -6,11 +6,13 @@ type Game = {
   id: number;
   time: string;
   class: string;
-  hometeam: string;
-  awayteam: string;
-  hall: string;
-  homescore: number;
-  awayscore: number;
+  hometeam?: string;
+  awayteam?: string;
+  location: string;
+  homescore?: number;
+  awayscore?: number;
+  scorer?: string;
+  eventname?: string;
 };
 
 export default function GamesTable({ games }: { games: Game[] }) {
@@ -50,8 +52,9 @@ export default function GamesTable({ games }: { games: Game[] }) {
   const teams = useMemo(() => {
     const teamSet = new Set<string>();
     games.forEach((game) => {
-      teamSet.add(game.hometeam);
-      teamSet.add(game.awayteam);
+      if (game.hometeam) teamSet.add(game.hometeam);
+      if (game.awayteam) teamSet.add(game.awayteam);
+      if (game.scorer) teamSet.add(game.scorer);
     });
     return Array.from(teamSet).sort();
   }, [games]);
@@ -60,7 +63,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
   const halls = useMemo(() => {
     const hallSet = new Set<string>();
     games.forEach((game) => {
-      hallSet.add(game.hall);
+      hallSet.add(game.location);
     });
     return Array.from(hallSet).sort();
   }, [games]);
@@ -80,8 +83,10 @@ export default function GamesTable({ games }: { games: Game[] }) {
       const teamMatch =
         selectedTeam === 'all' ||
         game.hometeam === selectedTeam ||
-        game.awayteam === selectedTeam;
-      const hallMatch = selectedHall === 'all' || game.hall === selectedHall;
+        game.awayteam === selectedTeam ||
+        game.scorer === selectedTeam;
+      const hallMatch =
+        selectedHall === 'all' || game.location === selectedHall;
       const classMatch =
         selectedClass === 'all' || game.class === selectedClass;
       return teamMatch && hallMatch && classMatch;
@@ -134,7 +139,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
 
       <div>
         <fieldset className="fieldset w-full">
-          <legend className="fieldset-legend">Halle</legend>
+          <legend className="fieldset-legend">Ort</legend>
 
           <select
             id="hall-filter"
@@ -214,9 +219,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
               <div className="card bg-base-200 shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 items-center">
-                    <span className="badge badge-sm">
-                      #{game.id}
-                    </span>
+                    <span className="badge badge-sm">#{game.id}</span>
                     <span
                       className={`badge badge-outline badge-sm ${
                         game.class === 'Schüler'
@@ -228,22 +231,35 @@ export default function GamesTable({ games }: { games: Game[] }) {
                     </span>
                   </div>
                   <span className="text-base">
-                    {game.time} Uhr | Halle {game.hall}
+                    {game.time} Uhr | {game.location}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 items-center gap-2 mb-2">
-                  <span className="font-semibold text-right">
-                    {game.hometeam}
-                  </span>
-                  {game.homescore !== undefined && (
-                    <span className="text-lg font-bold text-center">
-                      {game.homescore}:{game.awayscore}
-                    </span>
-                  )}
-                  <span className="font-semibold text-left">
-                    {game.awayteam}
-                  </span>
-                </div>
+                {game.eventname ? (
+                  <div className="text-center font-semibold text-lg py-2">
+                    {game.eventname}
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-3 items-center gap-2 mb-2">
+                      <span className="font-semibold text-right">
+                        {game.hometeam}
+                      </span>
+                      {game.homescore !== undefined && (
+                        <span className="text-lg font-bold text-center">
+                          {game.homescore}:{game.awayscore}
+                        </span>
+                      )}
+                      <span className="font-semibold text-left">
+                        {game.awayteam}
+                      </span>
+                    </div>
+                    {game.scorer && (
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Scorer: {game.scorer}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           );
@@ -256,10 +272,11 @@ export default function GamesTable({ games }: { games: Game[] }) {
           <thead>
             <tr>
               <th># / Klasse</th>
-              <th>Zeit / Halle</th>
+              <th>Zeit / Ort</th>
               <th>Home</th>
               <th>Away</th>
               <th>Score</th>
+              <th>Scorer</th>
             </tr>
           </thead>
           <tbody>
@@ -280,15 +297,24 @@ export default function GamesTable({ games }: { games: Game[] }) {
                   </div>
                 </td>
                 <td className="text-base">
-                  {game.time} Uhr | Halle {game.hall}
+                  {game.time} Uhr | {game.location}
                 </td>
-                <td>{game.hometeam}</td>
-                <td>{game.awayteam}</td>
-                <td>
-                  {game.homescore != undefined
-                    ? `${game.homescore}:${game.awayscore}`
-                    : ''}
-                </td>
+                {game.eventname ? (
+                  <td colSpan={4} className="font-semibold text-center">
+                    {game.eventname}
+                  </td>
+                ) : (
+                  <>
+                    <td>{game.hometeam}</td>
+                    <td>{game.awayteam}</td>
+                    <td>
+                      {game.homescore != undefined
+                        ? `${game.homescore}:${game.awayscore}`
+                        : ''}
+                    </td>
+                    <td>{game.scorer}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

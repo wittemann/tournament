@@ -6,7 +6,7 @@ import StandingsTable from './StandingsTable';
 
 type Standing = {
   id: number;
-  position: number;
+  position: string;
   team: string;
   wins: number;
   losses: number;

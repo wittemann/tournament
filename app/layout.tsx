@@ -14,10 +14,10 @@ export default function RootLayout({
   return (
     <html lang="de">
       <head>
-        <title>Bretten Kangaroos Xmas-Cup</title>
+        <title>Bretten Kangaroos Xmas-Ball</title>
         <meta
           name="description"
-          content="Spielplan für den Bretten Kangaroos Xmas-Cup"
+          content="Spielplan für den Bretten Kangaroos Xmas-Ball"
         />
       </head>
       <body className="bg-gray-100 dark:bg-gray-900 min-h-screen">
@@ -30,7 +30,7 @@ export default function RootLayout({
                 className="h-12"
                 fetchPriority="high"
               />
-              <h1 className="text-2xl font-bold">Xmas-Cup</h1>
+              <h1 className="text-2xl font-bold">Xmas-Ball</h1>
             </div>
           </div>
           <div className="flex border-b dark:border-gray-700">
