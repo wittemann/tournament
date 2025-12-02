@@ -21,7 +21,11 @@ export default function Page() {
 
     // Initial fetch
     const fetchGames = async () => {
-      const { data, error } = await supabase.from('games').select().order('id');
+      const { data, error } = await supabase
+        .from('games')
+        .select()
+        .order('time')
+        .order('location');
       if (error) {
         console.error('Supabase error:', error);
       } else if (data) {
@@ -38,7 +42,11 @@ export default function Page() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'games' },
         async () => {
-          const { data } = await supabase.from('games').select().order('id');
+          const { data } = await supabase
+            .from('games')
+            .select()
+            .order('time')
+            .order('location');
           if (data) {
             setGames(data);
           }
