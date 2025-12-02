@@ -219,7 +219,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
                     </span>
                   </div>
                   <span className="text-base">
-                    {game.time} Uhr | {game.location}
+                    {game.time.slice(0, 5)} Uhr | {game.location}
                   </span>
                 </div>
                 {game.eventname ? (
@@ -285,7 +285,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
                   </div>
                 </td>
                 <td className="text-base">
-                  {game.time} Uhr | {game.location}
+                  {game.time.slice(0, 5)} Uhr | {game.location}
                 </td>
                 {game.eventname ? (
                   <td colSpan={4} className="font-semibold text-center">
