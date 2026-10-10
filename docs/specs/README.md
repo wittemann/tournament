@@ -1,6 +1,6 @@
 # Feature Specs
 
-What a feature should do, written before it's built. The *why* behind larger technical choices goes in an [ADR](../adr/README.md).
+What a feature should do, written before it's built. The *why* behind larger technical choices goes in an [ADR](../adr/README.md). How it should look is in the [design](../design/README.md).
 
 | Spec | Feature | Status |
 |------|---------|--------|

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Verkauf</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B5E34}a:hover{color:#0F3D21}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1500px; box-sizing: border-box; background: #EEF2EC; font-family: 'Barlow', system-ui, sans-serif; color: #142019; display: flex; flex-direction: column">
+
+  <header style="margin: 12px 12px 0; border-radius: 20px; background: {{green}}; color: #FFFFFF; padding: 10px 14px 10px 12px; display: flex; align-items: center; gap: 10px">
+    <img src="/_blob/3e73ecb6740d16fd9a154cbb00cc66c8" alt="Bretten Kangaroos" style="height: 40px; width: auto">
+    <div style="display: flex; flex-direction: column; gap: 0">
+      <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: 0.5px; text-transform: uppercase">Xmas-Ball</div>
+      <div style="font-size: 12px; font-weight: 600; opacity: 0.8">Bretten Kangaroos</div>
+    </div>
+    <div style="margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; background: rgba(255,255,255,0.16); padding: 4px 12px; border-radius: 999px">14:18</div>
+  </header>
+
+  <nav aria-label="Hauptnavigation" style="padding: 10px 12px 0; display: flex; gap: 2px">
+    <a href="Main.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Spielplan</a>
+    <a href="Tabelle.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Tabelle</a>
+    <a href="Finalrunde.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Finalrunde</a>
+    <a href="Verkauf.dc.html" aria-current="page" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; background: #142019; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Verkauf</a>
+    <a href="Info.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Info</a>
+  </nav>
+
+  <section id="essen" aria-labelledby="essen-h" style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <h2 id="essen-h" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #56645A">Essen</h2>
+    <ul style="margin: 0; padding: 0; list-style: none; background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px"><span style="flex: 1; font-size: 16px; font-weight: 500">Fleischkäsebrötchen</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">3,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Käselaugenstangen</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Kuchen</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Bretzel</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Süßigkeiten / Chips / Erdnüsse</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Corny Riegel</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5; background: #F5F7F4"><span style="flex: 1; font-size: 16px; font-weight: 500; color: #56645A">Pommes</span><span style="font-size: 12px; font-weight: 700; color: #8E1F18; background: #F6DEDC; padding: 3px 8px; border-radius: 6px">Ausverkauft</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #8A968D; text-decoration: line-through">3,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5; background: #F5F7F4"><span style="flex: 1; font-size: 16px; font-weight: 500; color: #56645A">Hot Dog</span><span style="font-size: 12px; font-weight: 700; color: #8E1F18; background: #F6DEDC; padding: 3px 8px; border-radius: 6px">Ausverkauft</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #8A968D; text-decoration: line-through">2,50 €</span></li>
+    </ul>
+  </section>
+
+  <section id="getraenke" aria-labelledby="getraenke-h" style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <h2 id="getraenke-h" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #56645A">Getränke</h2>
+    <ul style="margin: 0; padding: 0; list-style: none; background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px"><span style="flex: 1; font-size: 16px; font-weight: 500">Glühwein</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Bier</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">3,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Natur Radler</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">3,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Cola · Fanta · Mezzo Mix</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Mineralwasser Medium</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Kaffee</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Schokodrink</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5; background: #F5F7F4"><span style="flex: 1; font-size: 16px; font-weight: 500; color: #56645A">Kinderpunsch</span><span style="font-size: 12px; font-weight: 700; color: #8E1F18; background: #F6DEDC; padding: 3px 8px; border-radius: 6px">Ausverkauft</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #8A968D; text-decoration: line-through">1,50 €</span></li>
+    </ul>
+  </section>
+
+  <section id="merch" aria-labelledby="merch-h" style="padding: 20px 16px 28px; display: flex; flex-direction: column; gap: 10px">
+    <h2 id="merch-h" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #56645A">Merchandise</h2>
+    <ul style="margin: 0; padding: 0; list-style: none; background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px"><span style="flex: 1; font-size: 16px; font-weight: 500">Kids Play Box <span style="color: #56645A">(6-teilig + Sticker)</span></span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">5,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Sticker <span style="color: #56645A">(10 Stück, freie Auswahl)</span></span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">2,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Bleistift und Notizblock</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Silikon-Armband</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,50 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Kleiner Baseball</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Schlüsselanhänger</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,00 €</span></li>
+      <li style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid #E6ECE5"><span style="flex: 1; font-size: 16px; font-weight: 500">Schnapp-Armband</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">1,00 €</span></li>
+    </ul>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"green":{"editor":"color","default":"#1B5E34","options":["#1B5E34","#15803D","#0F3D21"]},"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { green: this.props.green ?? '#1B5E34' };
+  }
+}
+</script>
+</body>
+</html>

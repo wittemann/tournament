@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Spielplan – Mein Team</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B5E34}a:hover{color:#0F3D21}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1640px; box-sizing: border-box; background: #EEF2EC; font-family: 'Barlow', system-ui, sans-serif; color: #142019; display: flex; flex-direction: column">
+
+  <header style="margin: 12px 12px 0; border-radius: 20px; background: {{green}}; color: #FFFFFF; padding: 10px 14px 10px 12px; display: flex; align-items: center; gap: 10px">
+    <img src="/_blob/3e73ecb6740d16fd9a154cbb00cc66c8" alt="Bretten Kangaroos" style="height: 40px; width: auto">
+    <div style="display: flex; flex-direction: column; gap: 0">
+      <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: 0.5px; text-transform: uppercase">Xmas-Ball</div>
+      <div style="font-size: 12px; font-weight: 600; opacity: 0.8">Bretten Kangaroos</div>
+    </div>
+    <div style="margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; background: rgba(255,255,255,0.16); padding: 4px 12px; border-radius: 999px">14:18</div>
+  </header>
+
+  <nav aria-label="Hauptnavigation" style="padding: 10px 12px 0; display: flex; gap: 2px">
+    <a href="Main.dc.html" aria-current="page" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; background: #142019; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Spielplan</a>
+    <a href="Tabelle.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Tabelle</a>
+    <a href="Finalrunde.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Finalrunde</a>
+    <a href="Verkauf.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Verkauf</a>
+    <a href="Info.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Info</a>
+  </nav>
+
+  <section style="padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 12px">
+    <label for="team" style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Mein Team</span>
+      <select id="team" style="height: 48px; border-radius: 12px; border: 1.5px solid #B9C6BB; background: #FFFFFF; padding: 0 14px; font-family: inherit; font-size: 17px; font-weight: 600; color: #142019">
+        <option>Alle Teams</option>
+        <option selected="selected">Bretten 2</option>
+        <option>Mannheim</option>
+        <option>Nagold</option>
+      </select>
+    </label>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <span id="Main-class-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Klasse</span>
+      <div role="tablist" aria-labelledby="Main-class-label" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Schüler</button>
+        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
+        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <span id="Main-hall-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Halle</span>
+      <div role="tablist" aria-labelledby="Main-hall-label" style="flex: 1; display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="tab" aria-selected="true" aria-label="Alle Hallen" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Halle 1" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">1</button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Halle 2" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">2</button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Halle 3" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">3</button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Halle 4" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">4</button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Halle 5" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">5</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Nächstes Spiel" style="margin: 8px 16px 0; border-radius: 18px; background: {{green}}; color: #FFFFFF; overflow: hidden">
+    <div style="padding: 16px 18px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85">Nächstes Spiel</div>
+        <div style="font-size: 13px; font-weight: 700; background: #FFFFFF; color: {{green}}; padding: 4px 10px; border-radius: 999px">in 12 Min.</div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 52px; line-height: 1">14:30</div>
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 28px; line-height: 1">Halle 3</div>
+      </div>
+      <div style="font-size: 18px; font-weight: 500">Bretten 2 <span style="opacity: 0.75">gegen</span> <strong style="font-weight: 700">Mannheim</strong></div>
+    </div>
+    <div style="background: #FFF1D6; color: #5C3800; padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 15px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"></rect><path d="M9 4h6v3H9z"></path><path d="M9 12h6M9 16h4"></path></svg>
+      <span><strong style="font-weight: 700">Scorer-Dienst</strong> danach: 15:30 Uhr · Halle 3</span>
+    </div>
+  </section>
+
+  <section aria-label="Spiele von Bretten 2" style="padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between">
+      <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.4px">Alle Spiele · Bretten 2</h2>
+      <span style="font-size: 14px; color: #56645A">1 S · 1 N</span>
+    </div>
+
+    <article style="background: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1; color: #56645A">10:30</div>
+        <div style="font-size: 13px; color: #56645A">Halle 2</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700"><span>Bretten 2</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px">18</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; color: #56645A"><span>Remchingen</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px">12</span></div>
+      </div>
+      <div style="width: 26px; height: 26px; border-radius: 8px; background: #DDEFE2; color: #1B5E34; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center">S</div>
+    </article>
+
+    <article style="background: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1; color: #56645A">13:00</div>
+        <div style="font-size: 13px; color: #56645A">Halle 2</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; font-size: 16px; color: #56645A"><span>Bretten 2</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px">14</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700"><span>Darmstadt 2</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px">22</span></div>
+      </div>
+      <div style="width: 26px; height: 26px; border-radius: 8px; background: #F6DEDC; color: #8E1F18; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center">N</div>
+    </article>
+
+    <article style="background: transparent; border: 1.5px dashed #D9A441; border-radius: 14px; padding: 10px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1; color: #56645A">14:00</div>
+        <div style="font-size: 13px; color: #56645A">Halle 2</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #7A4A00">Scorer-Dienst</div>
+        <div style="font-size: 15px; color: #56645A">Darmstadt 2 – Mannheim · 13:26</div>
+      </div>
+    </article>
+
+    <div role="separator" aria-label="Jetzt, 14:18 Uhr" style="display: flex; align-items: center; gap: 8px; margin: 6px 0">
+      <div style="width: 10px; height: 10px; border-radius: 999px; background: #B3261E"></div>
+      <div style="flex: 1; height: 2px; background: #B3261E"></div>
+      <span style="font-size: 13px; font-weight: 700; color: #B3261E">Jetzt · 14:18</span>
+    </div>
+
+    <article style="background: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; gap: 14px; align-items: center; box-shadow: 0 0 0 2px {{green}}">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1">14:30</div>
+        <div style="font-size: 13px; font-weight: 600">Halle 3</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #8A968D">–</span></div>
+      </div>
+    </article>
+
+    <article style="background: transparent; border: 1.5px dashed #D9A441; border-radius: 14px; padding: 10px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1">15:30</div>
+        <div style="font-size: 13px; color: #56645A">Halle 3</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #7A4A00">Scorer-Dienst</div>
+        <div style="font-size: 15px">Nagold – Mannheim</div>
+      </div>
+    </article>
+
+    <article style="background: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1">16:00</div>
+        <div style="font-size: 13px; color: #56645A">Halle 1</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Nagold</span><span style="color: #8A968D">–</span></div>
+      </div>
+    </article>
+
+    <article style="background: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1">17:30</div>
+        <div style="font-size: 13px; color: #56645A">Halle 2</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #56645A">Platz 9/10</div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe A</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe B</span><span style="color: #8A968D">–</span></div>
+      </div>
+    </article>
+
+    <article style="background: #142019; color: #FFFFFF; border-radius: 14px; padding: 14px; display: flex; gap: 14px; align-items: center">
+      <div style="width: 58px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1">19:30</div>
+        <div style="font-size: 13px; opacity: 0.8">Essensraum</div>
+      </div>
+      <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.4px">Siegerehrung</div>
+    </article>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"green":{"editor":"color","default":"#1B5E34","options":["#1B5E34","#15803D","#0F3D21"]},"$preview":{"width":390,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { green: this.props.green ?? '#1B5E34' };
+  }
+}
+</script>
+</body>
+</html>

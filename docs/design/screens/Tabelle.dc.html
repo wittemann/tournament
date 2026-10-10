@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Tabelle</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B5E34}a:hover{color:#0F3D21}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1300px; box-sizing: border-box; background: #EEF2EC; font-family: 'Barlow', system-ui, sans-serif; color: #142019; display: flex; flex-direction: column">
+
+  <header style="margin: 12px 12px 0; border-radius: 20px; background: {{green}}; color: #FFFFFF; padding: 10px 14px 10px 12px; display: flex; align-items: center; gap: 10px">
+    <img src="/_blob/3e73ecb6740d16fd9a154cbb00cc66c8" alt="Bretten Kangaroos" style="height: 40px; width: auto">
+    <div style="display: flex; flex-direction: column; gap: 0">
+      <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: 0.5px; text-transform: uppercase">Xmas-Ball</div>
+      <div style="font-size: 12px; font-weight: 600; opacity: 0.8">Bretten Kangaroos</div>
+    </div>
+    <div style="margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; background: rgba(255,255,255,0.16); padding: 4px 12px; border-radius: 999px">14:18</div>
+  </header>
+
+  <nav aria-label="Hauptnavigation" style="padding: 10px 12px 0; display: flex; gap: 2px">
+    <a href="Main.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Spielplan</a>
+    <a href="Tabelle.dc.html" aria-current="page" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; background: #142019; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Tabelle</a>
+    <a href="Finalrunde.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Finalrunde</a>
+    <a href="Verkauf.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Verkauf</a>
+    <a href="Info.dc.html" style="flex: 1 1 auto; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-radius: 999px; color: #3E4B42; font-size: 14px; font-weight: 600; text-decoration: none">Info</a>
+  </nav>
+
+  <div style="padding: 16px 16px 4px">
+    <div role="tablist" aria-label="Klasse" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+      <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Schüler</button>
+      <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
+      <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
+    </div>
+  </div>
+
+  <section style="padding: 16px; display: flex; flex-direction: column; gap: 20px">
+
+    <div style="background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 14px 16px 8px">
+        <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; text-transform: uppercase">Gruppe A</h2>
+        <span style="font-size: 13px; color: #56645A">8 von 10 Spielen</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 16px">
+        <thead>
+          <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: #56645A">
+            <th scope="col" style="text-align: left; padding: 6px 0 6px 16px; width: 28px; font-weight: 700">#</th>
+            <th scope="col" style="text-align: left; padding: 6px 8px; font-weight: 700">Team</th>
+            <th scope="col" style="text-align: right; padding: 6px 8px; font-weight: 700">S–N</th>
+            <th scope="col" style="text-align: right; padding: 6px 16px 6px 8px; font-weight: 700">Diff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">1</td>
+            <td style="padding: 12px 8px; font-weight: 600">Mannheim</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">4–0</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+71</td>
+          </tr>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">2</td>
+            <td style="padding: 12px 8px; font-weight: 600">Nagold</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">3–1</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+28</td>
+          </tr>
+          <tr style="border-top: 2px dashed #B9C6BB">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">3</td>
+            <td style="padding: 12px 8px; font-weight: 600">Remchingen</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–2</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+9</td>
+          </tr>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">4</td>
+            <td style="padding: 12px 8px; font-weight: 600">Darmstadt 2</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">1–3</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #A12A21; font-variant-numeric: tabular-nums">−33</td>
+          </tr>
+          <tr style="border-top: 1px solid #E6ECE5; background: #FFF1D6">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; box-shadow: inset 4px 0 0 {{green}}">5</td>
+            <td style="padding: 12px 8px; font-weight: 700">Bretten 2 <span style="font-size: 12px; font-weight: 700; color: #5C3800; background: #FFDFA3; padding: 2px 6px; border-radius: 6px; margin-left: 4px">Mein Team</span></td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">0–3</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #A12A21; font-variant-numeric: tabular-nums">−46</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A; display: flex; align-items: center; gap: 8px">
+        <span style="width: 18px; height: 0; border-top: 2px dashed #B9C6BB"></span>
+        Platz 1–2 im Halbfinale
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 14px 16px 8px">
+        <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; text-transform: uppercase">Gruppe B</h2>
+        <span style="font-size: 13px; color: #56645A; display: flex; align-items: center; gap: 6px"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B5E34" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>abgeschlossen</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 16px">
+        <thead>
+          <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: #56645A">
+            <th scope="col" style="text-align: left; padding: 6px 0 6px 16px; width: 28px; font-weight: 700">#</th>
+            <th scope="col" style="text-align: left; padding: 6px 8px; font-weight: 700">Team</th>
+            <th scope="col" style="text-align: right; padding: 6px 8px; font-weight: 700">S–N</th>
+            <th scope="col" style="text-align: right; padding: 6px 16px 6px 8px; font-weight: 700">Diff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">1</td>
+            <td style="padding: 12px 8px; font-weight: 600">Herrenberg</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–1</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+15</td>
+          </tr>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">2</td>
+            <td style="padding: 12px 8px; font-weight: 600">Heidelberg</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–1</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+11</td>
+          </tr>
+          <tr style="border-top: 2px dashed #B9C6BB">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">3</td>
+            <td style="padding: 12px 8px; font-weight: 600">Bretten 1</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–1</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+7</td>
+          </tr>
+          <tr style="border-top: 1px solid #E6ECE5">
+            <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">4</td>
+            <td style="padding: 12px 8px; font-weight: 600">Stuttgart 2</td>
+            <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">0–3</td>
+            <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #A12A21; font-variant-numeric: tabular-nums">−33</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A">Gleiche Bilanz: Differenz entscheidet, dann direkter Vergleich.</div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"green":{"editor":"color","default":"#1B5E34","options":["#1B5E34","#15803D","#0F3D21"]},"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { green: this.props.green ?? '#1B5E34' };
+  }
+}
+</script>
+</body>
+</html>
