@@ -1,6 +1,6 @@
 # ADR-0006: Standings are computed from game results
 
-**Status:** Accepted (the direction). The ranking rules are still open, see below.
+**Status:** Accepted
 **Date:** 2026-10-10
 **Deciders:** Martin Wittemann
 
@@ -39,7 +39,7 @@ Playoff and placement games may reference group results instead of team names (e
 
 ## What the 2025 data shows
 
-These rules were inferred by recomputing the 2025 games (`supabase/seed.sql`) and comparing them with the hand-entered standings. They match in both classes, but they are **inferred, not confirmed**.
+These rules were inferred by recomputing the 2025 games (`supabase/seed.sql`) and comparing them with the hand-entered standings. They match in both classes. The rules below were confirmed on 2026-10-10.
 
 **Format.** Groups play a round robin (Schüler: A with 5 teams, B and C with 4; T-Ball: A with 4, B with 3). Then every team plays placement games, and the overall ranking comes from those games, not from the group tables.
 
@@ -60,11 +60,21 @@ Schüler (13 teams) used all of these. T-Ball (7 teams) used the semifinals plus
 - Overall wins, losses and difference counted all games (group and placement), though T-Ball didn't track the overall difference.
 - `scorer` is the team (or club) assigned to keep score for that game. It is not part of the result.
 
-## Open Questions
+## Ranking rules (confirmed 2026-10-10)
 
-To confirm before `lib/standings.ts` is written:
+**Group table**, per group. Only group games count.
 
-1. Are the inferred rules above correct? In particular: seeding across groups by group place → win rate → difference, and the placement structure for other team counts.
-2. Tie-breakers after run difference (head-to-head, runs scored, coin toss)?
-3. Can a game end in a tie (e.g. a time limit)? If so, how does it count?
-4. How many teams per class in 2026, and how many groups?
+1. **Win rate:** wins ÷ games played, where a tie counts as half a win. Win rate rather than plain wins, so that a team with an unplayed game isn't ranked lower while the group is still running.
+2. **Run difference:** runs for minus runs against.
+3. **Head-to-head:** the record in the games among the teams that are still level. This also covers three-way ties.
+4. **Runs scored** in group games, if still level (e.g. they tied each other, or beat each other in a circle).
+
+The table shows wins, losses, ties and run difference.
+
+**Seeding for placement games.** Rank all teams of a class across groups by group place, then win rate, then run difference. This gives Seed 1…n.
+
+**Placement games** are written into the schedule with placeholders instead of team names, e.g. `Seed 1` vs `Seed 4`, or `Sieger #41` vs `Verlierer #42`. The app resolves them as soon as the referenced groups or games are finished. The structure (semifinals, pairs, round robin) is therefore decided per edition when writing the schedule, and the app doesn't need to know the number of teams.
+
+**Ties.** Group games can end tied. Placement games always have a winner, so the admin entry / validation rejects equal scores there.
+
+**Overall ranking** comes from the placement games: the winner of each final or pair takes the better place. A mini round robin (e.g. the last three) is ranked with the same rules as a group table.
