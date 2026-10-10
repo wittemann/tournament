@@ -1,0 +1,177 @@
+[
+  {
+    "id": 4,
+    "category": "Getränke",
+    "item": "Mineralwasser Medium",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 5,
+    "category": "Getränke",
+    "item": "Cola",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 6,
+    "category": "Getränke",
+    "item": "Fanta",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 7,
+    "category": "Getränke",
+    "item": "Mezzo Mix",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 8,
+    "category": "Getränke",
+    "item": "Bier",
+    "price": 3,
+    "soldOut": false
+  },
+  {
+    "id": 9,
+    "category": "Getränke",
+    "item": "Natur Radler",
+    "price": 3,
+    "soldOut": false
+  },
+  {
+    "id": 10,
+    "category": "Getränke",
+    "item": "Kaffee",
+    "price": 1.5,
+    "soldOut": false
+  },
+  {
+    "id": 11,
+    "category": "Getränke",
+    "item": "Glühwein",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 12,
+    "category": "Getränke",
+    "item": "Kinderpunsch",
+    "price": 1.5,
+    "soldOut": true
+  },
+  {
+    "id": 13,
+    "category": "Essen",
+    "item": "Hot Dog",
+    "price": 2.5,
+    "soldOut": true
+  },
+  {
+    "id": 14,
+    "category": "Essen",
+    "item": "Pommes",
+    "price": 3,
+    "soldOut": true
+  },
+  {
+    "id": 15,
+    "category": "Essen",
+    "item": "Bretzel",
+    "price": 1.5,
+    "soldOut": false
+  },
+  {
+    "id": 16,
+    "category": "Essen",
+    "item": "Käselaugenstangen",
+    "price": 2.5,
+    "soldOut": false
+  },
+  {
+    "id": 17,
+    "category": "Essen",
+    "item": "Kuchen",
+    "price": 2,
+    "soldOut": false
+  },
+  {
+    "id": 18,
+    "category": "Essen",
+    "item": "Süßigkeiten / Chips / Erdnüsse ",
+    "price": 1.5,
+    "soldOut": false
+  },
+  {
+    "id": 19,
+    "category": "Essen",
+    "item": "Fleischkäsebrötchen",
+    "price": 3.5,
+    "soldOut": false
+  },
+  {
+    "id": 20,
+    "category": "Essen",
+    "item": "Corny Riegel",
+    "price": 1,
+    "soldOut": false
+  },
+  {
+    "id": 21,
+    "category": "Getränke",
+    "item": "Schokodrink",
+    "price": 1,
+    "soldOut": false
+  },
+  {
+    "id": 22,
+    "category": "Merchandise",
+    "item": "Kleiner Baseball",
+    "price": 1,
+    "soldOut": false
+  },
+  {
+    "id": 23,
+    "category": "Merchandise",
+    "item": "Schlüsselanhänger",
+    "price": 1,
+    "soldOut": false
+  },
+  {
+    "id": 25,
+    "category": "Merchandise",
+    "item": "Bleistift und Notizblock",
+    "price": 1.5,
+    "soldOut": false
+  },
+  {
+    "id": 26,
+    "category": "Merchandise",
+    "item": "Schnapp-Armband",
+    "price": 1,
+    "soldOut": false
+  },
+  {
+    "id": 27,
+    "category": "Merchandise",
+    "item": "Kids Play Box (6-teilig + Sticker)",
+    "price": 5,
+    "soldOut": false
+  },
+  {
+    "id": 28,
+    "category": "Merchandise",
+    "item": "Silikon-Armband",
+    "price": 1.5,
+    "soldOut": false
+  },
+  {
+    "id": 29,
+    "category": "Merchandise",
+    "item": "Sticker (10 Stück, freie Auswahl)",
+    "price": 2,
+    "soldOut": false
+  }
+]

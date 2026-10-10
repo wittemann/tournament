@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "question": "Wann ist die Veranstaltung zu Ende?",
+    "answer": "ca. 19:15 Uhr"
+  },
+  {
+    "id": 2,
+    "question": "Gibt es Pokale und Medallien?",
+    "answer": "Jeder Spieler bekommt eine Medaille und für die ersten 4 Mannschaften gibt es auch einen Pokal."
+  },
+  {
+    "id": 3,
+    "question": "Wie sind die Regeln?",
+    "answer": "Her findest du die Regeln: <a href=\"https://bretten-kangaroos.net/wp-content/uploads/2025/12/Regeln-X-Mas-Ball-2025.pdf\">Regeln.pdf</a>"
+  },
+  {
+    "id": 5,
+    "question": "Wo findet das Turnier statt?",
+    "answer": "In der Sporthall \"im Grüner\" in Bretten. Hier findest du die Anfahrtsbeschreibung: <a href=\"https://bretten-kangaroos.net/wp-content/uploads/2025/12/Anfahrt_Parken.pdf\">Anfahrt.pdf</a>"
+  },
+  {
+    "id": 6,
+    "question": "Wo ist die Turnierleitung zu finden?",
+    "answer": "Im Aufsichtsraum von Halle 1 (Untergeschoss)."
+  }
+]
