@@ -19,6 +19,7 @@ All data in the mockups is illustrative (2025 team names, invented scores and ti
 | Finalrunde with quarterfinals | `FinalrundeVF.dc.html` | Variant for 8 teams; works up to 8, more would need one tab per round |
 | Verkauf | `Verkauf.dc.html` | One card per category, sold-out items at the bottom |
 | Info | `Info.dc.html` | Quick facts and PDF links on top, FAQ as an accordion |
+| "Mein Team" card states | `MeinTeamZustaende.dc.html` | Below the Spielplan on the canvas: game running, scorer duty first, before the first game, all games played |
 
 ## Look
 
@@ -66,11 +67,14 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 - "Finalrunde" gets its own tab (answers open question 2 of the [bracket spec](../specs/playoff-bracket.md)).
 - The `#id` game number is no longer shown (see `games.number` in the [TODO](../TODO.md)).
 - Verkauf has no category jump buttons: three short sections are quicker to scroll.
+- No mini round robin for the last places in the Finalrunde: the organizers would rather not play one again ([bracket spec](../specs/playoff-bracket.md), open question 1).
+- "Mein Team" card states: a running game gets a red outline and a red "läuft" pill, with the next game as a line below. When scorer duty comes before the next game, the amber scorer block moves to the top with its own "in X Min.". Before the first game the card says "Erstes Spiel" and shows no countdown. When everything is played, the card turns white with record, difference, final place and a link to the Tabelle (instead of the spec's 🎉 emoji).
 - The Info page pulls "Ende" and "Turnierleitung" out of the FAQ into tiles, and the rules and directions answers get a real link instead of HTML inside the answer.
 
 ## Not designed yet
 
 - Dark mode (the current app supports it).
 - Desktop / `lg` layout.
-- Loading and empty states.
+- Loading, empty and "Keine Verbindung" states (decide later).
+- Before and after the tournament: Spielplan, Tabelle and Finalrunde before the first result and after the final (decide later).
 - Admin page for entering results ([ADR-0007](../adr/0007-admin-results-entry.md)).
