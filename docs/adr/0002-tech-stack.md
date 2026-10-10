@@ -19,7 +19,7 @@ The app is used on one day a year by parents, players and helpers, almost all on
 ### Option A: Next.js + Supabase (chosen)
 
 **Pros:** Both have free tiers that easily cover one event day. Supabase's table editor works as a basic admin interface without building one. Realtime updates need no server code. Familiar to the maintainer.
-**Cons:** Free Supabase projects pause when idle and must be restored before each event (and data did not survive the last restore). Next.js is more framework than a mostly client-side app strictly needs.
+**Cons:** Free Supabase projects pause when idle and must be restored before each event. A restore takes several minutes, and the database can look empty before it has fully finished. Next.js is more framework than a mostly client-side app strictly needs.
 
 ### Option B: Static site + spreadsheet (e.g. Google Sheets as data source)
 

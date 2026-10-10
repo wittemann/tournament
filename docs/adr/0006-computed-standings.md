@@ -33,15 +33,38 @@ Playoff and placement games may reference group results instead of team names (e
 
 ## Consequences
 
-- `app/standings` reads `games` instead of `standings`. The `standings` table is not recreated.
+- `app/standings` reads `games` instead of `standings`. The `standings` table is dropped in a later migration (its 2025 contents stay in `supabase/seed.sql` as test reference).
 - The `games` schema needs a group field and a way to reference placeholders like "winner of game 12" or "A1". This is defined in the schema migration.
 - Correcting a wrong score fixes the standings and later matchups automatically.
 
+## What the 2025 data shows
+
+These rules were inferred by recomputing the 2025 games (`supabase/seed.sql`) and comparing them with the hand-entered standings. They match in both classes, but they are **inferred, not confirmed**.
+
+**Format.** Groups play a round robin (Schüler: A with 5 teams, B and C with 4; T-Ball: A with 4, B with 3). Then every team plays placement games, and the overall ranking comes from those games, not from the group tables.
+
+**Group ranking.** Wins, then run difference (runs for minus runs against). With games 41 and 62 counted as placement games, all hand-entered group tables match the results. The one exception is a typo: B1 Herrenberg was entered as +14, the results give +15. Every tie in 2025 was decided by run difference. Head-to-head was never needed (the only three-way tie, Schüler group B, was circular).
+
+**Seeding.** Rank all teams across groups by group place, then win rate, then run difference, giving seeds 1…n. Win rate is used because the groups had different sizes; plain wins would have given the same order in 2025. Then:
+
+| Seeds | Games | Decides |
+|-------|-------|---------|
+| 1–4 | Semifinals 1 v 4 and 2 v 3, then a final and a 3rd-place game | places 1–4 |
+| 5–6, 7–8, 9–10 | One game per pair | places 5–10 (winner gets the better place) |
+| last 3 | Mini round robin | the last 3 places (by wins, then run difference) |
+
+Schüler (13 teams) used all of these. T-Ball (7 teams) used the semifinals plus a round robin for places 5–7. For example, the Schüler semifinal Mannheim (seed 1) v Nagold (seed 4) was a rematch from group A, which is consistent with seeding across groups rather than a fixed A1–B2 crossover.
+
+**Other findings.**
+- No game ended tied.
+- Overall wins, losses and difference counted all games (group and placement), though T-Ball didn't track the overall difference.
+- `scorer` is the team (or club) assigned to keep score for that game. It is not part of the result.
+
 ## Open Questions
 
-These must be answered before `lib/standings.ts` is written:
+To confirm before `lib/standings.ts` is written:
 
-1. **Format:** group stage and then playoffs or placement games? How is the overall ranking decided: by placement games or by combining the groups?
-2. **Ranking order within a group:** wins, then run difference? Which tie-breakers follow (head-to-head, runs scored, coin toss)?
-3. **Seeding:** which references do playoff games use (group positions like `A1`, winners or losers of earlier games)?
-4. **Ties and unfinished games:** can a game end in a tie? How is a group with unplayed games shown?
+1. Are the inferred rules above correct? In particular: seeding across groups by group place → win rate → difference, and the placement structure for other team counts.
+2. Tie-breakers after run difference (head-to-head, runs scored, coin toss)?
+3. Can a game end in a tie (e.g. a time limit)? If so, how does it count?
+4. How many teams per class in 2026, and how many groups?

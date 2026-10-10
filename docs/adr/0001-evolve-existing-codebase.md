@@ -8,7 +8,7 @@
 
 The first version was built in November 2025 for one tournament weekend. For the 2026 edition it needs new features, mainly computed standings ([ADR-0006](0006-computed-standings.md)) and possibly an admin page ([ADR-0007](0007-admin-results-entry.md)). A full rewrite from scratch was considered.
 
-The existing app is small, about 700 lines across four pages. Its problems were repeated data-loading code, a few display bugs and a missing schema, not its architecture or stack. The Supabase database came back empty after the project was restored, so the data layer has to be rebuilt either way ([ADR-0005](0005-schema-as-migrations.md)).
+The existing app is small, about 700 lines across four pages. Its problems were repeated data-loading code, a few display bugs and a schema that only existed in the Supabase dashboard ([ADR-0005](0005-schema-as-migrations.md)), not its architecture or stack.
 
 ## Decision
 

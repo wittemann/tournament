@@ -6,12 +6,13 @@
 
 ## Context
 
-In the first version, the tables (`games`, `standings`, `items`, `faq`) were created by hand in the Supabase dashboard and never written down. When the paused project was restored on 2026-10-10, the database was empty: no tables, policies or data. The schema had to be reconstructed from the app code.
+In the first version, the tables (`games`, `standings`, `items`, `faq`), three enum types (`class`, `location`, `team`), the RLS policies and the Realtime setup were all created by hand in the Supabase dashboard and never written down. The only copy was the live project, which pauses when idle. If that project is lost, so is the knowledge of how to rebuild it.
 
 ## Decision
 
 - All schema, RLS policies and Realtime publication settings are defined as SQL migrations in `supabase/migrations/` (Supabase CLI format, `YYYYMMDDHHMMSS_name.sql`).
-- Example data for development lives in `supabase/seed.sql`.
+- The first migration, `20251120000000_initial_schema.sql`, is an exact export of the live schema as of 2026-10-10. It is not edited afterwards.
+- `supabase/seed.sql` holds the 2025 tournament data for local development, and as the reference case for computed standings ([ADR-0006](0006-computed-standings.md)).
 - Schema changes go through a new migration, never through the dashboard alone.
 
 ## Options Considered
@@ -24,10 +25,11 @@ In the first version, the tables (`games`, `standings`, `items`, `faq`) were cre
 ### Option B: Keep editing in the dashboard, export occasionally
 
 **Pros:** No tooling.
-**Cons:** Exactly what led to losing the schema.
+**Cons:** The schema only exists in a project that pauses when idle. There's no review and no history.
 
 ## Consequences
 
-- Before each event: restore the project, apply migrations, load that year's games and items.
+- The live project's migration history is still empty, because the baseline was created by hand there. Before the first new migration is applied remotely, mark the baseline as applied (`supabase migration repair --status applied 20251120000000`) so it isn't run a second time.
+- Before each event: restore the project, apply pending migrations, load that year's games and items.
 - Generate TypeScript types from the schema (`supabase gen types`) instead of writing them by hand in `app/types.ts`.
-- Tournament data itself (games, items) is not in git. Keep an export of each year's data outside Supabase as a backup.
+- Each year's live tournament data is exported at the end of the event (as was done for 2025 into `seed.sql`).
