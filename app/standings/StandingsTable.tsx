@@ -1,12 +1,4 @@
-type Standing = {
-  id: number;
-  position: string;
-  team: string;
-  wins: number;
-  losses: number;
-  diff: number;
-  class: string;
-};
+import { Standing } from '../types';
 
 function SingleTable({
   standings,
@@ -34,7 +26,7 @@ function SingleTable({
               // Extract numeric position (remove letter prefix if present)
               const displayPosition = standing.position.replace(
                 /^[A-Za-z]/,
-                ''
+                '',
               );
               return (
                 <tr key={standing.id}>
@@ -47,8 +39,8 @@ function SingleTable({
                       standing.diff > 0
                         ? 'text-green-600 dark:text-green-400 font-semibold'
                         : standing.diff < 0
-                        ? 'text-red-600 dark:text-red-400 font-semibold'
-                        : ''
+                          ? 'text-red-600 dark:text-red-400 font-semibold'
+                          : ''
                     }
                   >
                     {standing.diff > 0 ? '+' : ''}
@@ -73,11 +65,11 @@ export default function StandingsTable({
 }) {
   // Separate standings into groups and overall
   const overallStandings = standings.filter(
-    (s) => /^\d/.test(s.position) // Position starts with a digit
+    (s) => /^\d/.test(s.position), // Position starts with a digit
   );
 
   const groupedStandings = standings.filter(
-    (s) => /^[A-Za-z]/.test(s.position) // Position starts with a letter
+    (s) => /^[A-Za-z]/.test(s.position), // Position starts with a letter
   );
 
   // Group by the letter prefix

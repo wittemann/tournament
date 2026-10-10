@@ -1,8 +1,8 @@
 'use client';
 
-import { createClient } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
+import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type FAQ = {
   id: number;
@@ -11,53 +11,8 @@ type FAQ = {
 };
 
 export default function Page() {
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const faqs = useRealtimeTable<FAQ>('faq', [{ column: 'question' }]);
   const [openId, setOpenId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase environment variables');
-      return;
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Initial fetch
-    const fetchFaqs = async () => {
-      const { data, error } = await supabase
-        .from('faq')
-        .select()
-        .order('question');
-      if (error) {
-        console.error('Supabase error:', error);
-      } else if (data) {
-        setFaqs(data);
-      }
-    };
-
-    fetchFaqs();
-
-    // Subscribe to real-time changes
-    const channel = supabase
-      .channel('faq-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'faq' },
-        async () => {
-          // Re-fetch when changes occur
-          await fetchFaqs();
-        }
-      )
-      .subscribe();
-
-    // Cleanup subscription on unmount
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
 
   const toggleQuestion = (id: number) => {
     setOpenId(openId === id ? null : id);

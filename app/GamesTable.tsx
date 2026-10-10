@@ -1,40 +1,24 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Game } from './types';
+import { usePersistedState } from '@/lib/usePersistedState';
+import { useNow } from '@/lib/useNow';
 
 export default function GamesTable({ games }: { games: Game[] }) {
-  const [selectedTeam, setSelectedTeam] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedTeam') || 'all';
-    }
-    return 'all';
-  });
-  const [selectedHall, setSelectedHall] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedHall') || 'all';
-    }
-    return 'all';
-  });
-  const [selectedClass, setSelectedClass] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedClass') || 'all';
-    }
-    return 'all';
-  });
-
-  // Save filters to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('selectedTeam', selectedTeam);
-  }, [selectedTeam]);
-
-  useEffect(() => {
-    localStorage.setItem('selectedHall', selectedHall);
-  }, [selectedHall]);
-
-  useEffect(() => {
-    localStorage.setItem('selectedClass', selectedClass);
-  }, [selectedClass]);
+  const [selectedTeam, setSelectedTeam] = usePersistedState(
+    'selectedTeam',
+    'all',
+  );
+  const [selectedHall, setSelectedHall] = usePersistedState(
+    'selectedHall',
+    'all',
+  );
+  const [selectedClass, setSelectedClass] = usePersistedState(
+    'selectedClass',
+    'all',
+  );
+  const now = useNow();
 
   // Get unique teams from all games
   const teams = useMemo(() => {
@@ -80,6 +64,24 @@ export default function GamesTable({ games }: { games: Game[] }) {
       return teamMatch && hallMatch && classMatch;
     });
   }, [games, selectedTeam, selectedHall, selectedClass]);
+
+  // Index of the first upcoming game, if there are earlier games before it.
+  // The "now" line is drawn right above it.
+  const nowIndex = useMemo(() => {
+    if (!now) return -1;
+    const i = filteredGames.findIndex((game) => game.time.slice(0, 5) >= now);
+    return i > 0 ? i : -1;
+  }, [filteredGames, now]);
+
+  const nowLine = (
+    <div className="flex items-center gap-2 my-4">
+      <div className="flex-1 h-0.5 bg-red-600"></div>
+      <span className="text-red-600 font-semibold text-sm whitespace-nowrap">
+        {now} Uhr
+      </span>
+      <div className="flex-1 h-0.5 bg-red-600"></div>
+    </div>
+  );
 
   return (
     <>
@@ -173,37 +175,9 @@ export default function GamesTable({ games }: { games: Game[] }) {
       {/* Mobile card layout */}
       <div className="block lg:hidden space-y-3">
         {filteredGames.map((game, index) => {
-          const currentTime = new Date();
-          const currentTimeStr = `${String(currentTime.getHours()).padStart(
-            2,
-            '0'
-          )}:${String(currentTime.getMinutes()).padStart(2, '0')}`;
-
-          // Check if we need to show the current time divider
-          const showTimeDivider = (() => {
-            if (index === 0) return false;
-
-            const prevGame = filteredGames[index - 1];
-            const prevGameTime = prevGame.time;
-            const currentGameTime = game.time;
-
-            // Compare times as strings (HH:MM format works for string comparison)
-            return (
-              prevGameTime < currentTimeStr && currentGameTime >= currentTimeStr
-            );
-          })();
-
           return (
             <div key={game.id}>
-              {showTimeDivider && (
-                <div className="flex items-center gap-2 my-4">
-                  <div className="flex-1 h-0.5 bg-red-600"></div>
-                  <span className="text-red-600 font-semibold text-sm whitespace-nowrap">
-                    {currentTimeStr} Uhr
-                  </span>
-                  <div className="flex-1 h-0.5 bg-red-600"></div>
-                </div>
-              )}
+              {index === nowIndex && nowLine}
               <div className="card bg-base-200 shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 items-center">
@@ -232,7 +206,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
                       <span className="font-semibold text-right">
                         {game.hometeam}
                       </span>
-                      {game.homescore !== undefined && (
+                      {game.homescore != null && (
                         <span className="text-lg font-bold text-center">
                           {game.homescore}:{game.awayscore}
                         </span>
@@ -268,42 +242,51 @@ export default function GamesTable({ games }: { games: Game[] }) {
             </tr>
           </thead>
           <tbody>
-            {filteredGames.map((game) => (
-              <tr key={game.id}>
-                <td>
-                  <div className="flex gap-2 items-center">
-                    <span>#{game.id}</span>
-                    <span
-                      className={`badge badge-outline badge-sm ${
-                        game.class === 'Schüler'
-                          ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
-                          : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
-                      }`}
-                    >
-                      {game.class}
-                    </span>
-                  </div>
-                </td>
-                <td className="text-base">
-                  {game.time.slice(0, 5)} Uhr | {game.location}
-                </td>
-                {game.eventname ? (
-                  <td colSpan={4} className="font-semibold text-center">
-                    {game.eventname}
-                  </td>
-                ) : (
-                  <>
-                    <td>{game.hometeam}</td>
-                    <td>{game.awayteam}</td>
-                    <td>
-                      {game.homescore != undefined
-                        ? `${game.homescore}:${game.awayscore}`
-                        : ''}
+            {filteredGames.map((game, index) => (
+              <Fragment key={game.id}>
+                {index === nowIndex && (
+                  <tr>
+                    <td colSpan={6} className="p-0">
+                      {nowLine}
                     </td>
-                    <td>{game.scorer}</td>
-                  </>
+                  </tr>
                 )}
-              </tr>
+                <tr>
+                  <td>
+                    <div className="flex gap-2 items-center">
+                      <span>#{game.id}</span>
+                      <span
+                        className={`badge badge-outline badge-sm ${
+                          game.class === 'Schüler'
+                            ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
+                            : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
+                        }`}
+                      >
+                        {game.class}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="text-base">
+                    {game.time.slice(0, 5)} Uhr | {game.location}
+                  </td>
+                  {game.eventname ? (
+                    <td colSpan={4} className="font-semibold text-center">
+                      {game.eventname}
+                    </td>
+                  ) : (
+                    <>
+                      <td>{game.hometeam}</td>
+                      <td>{game.awayteam}</td>
+                      <td>
+                        {game.homescore != null
+                          ? `${game.homescore}:${game.awayscore}`
+                          : ''}
+                      </td>
+                      <td>{game.scorer}</td>
+                    </>
+                  )}
+                </tr>
+              </Fragment>
             ))}
           </tbody>
         </table>

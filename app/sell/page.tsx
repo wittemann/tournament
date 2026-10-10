@@ -1,7 +1,6 @@
 'use client';
 
-import { createClient } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react';
+import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type Item = {
   id: number;
@@ -12,62 +11,22 @@ type Item = {
 };
 
 export default function Page() {
-  const [items, setItems] = useState<Item[]>([]);
-
-  useEffect(() => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase environment variables');
-      return;
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Initial fetch
-    const fetchItems = async () => {
-      const { data, error } = await supabase
-        .from('items')
-        .select()
-        .order('category')
-        .order('id');
-      if (error) {
-        console.error('Supabase error:', error);
-      } else if (data) {
-        setItems(data);
-      }
-    };
-
-    fetchItems();
-
-    // Subscribe to real-time changes
-    const channel = supabase
-      .channel('items-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'items' },
-        async () => {
-          // Re-fetch when changes occur
-          await fetchItems();
-        }
-      )
-      .subscribe();
-
-    // Cleanup subscription on unmount
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  const items = useRealtimeTable<Item>('items', [
+    { column: 'category' },
+    { column: 'id' },
+  ]);
 
   // Group items by category
-  const itemsByCategory = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, Item[]>);
+  const itemsByCategory = items.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, Item[]>,
+  );
 
   const categories = Object.keys(itemsByCategory).sort();
 

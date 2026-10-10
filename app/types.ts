@@ -5,8 +5,18 @@ export type Game = {
   hometeam?: string;
   awayteam?: string;
   location: string;
-  homescore?: number;
-  awayscore?: number;
+  homescore?: number | null;
+  awayscore?: number | null;
   scorer?: string;
   eventname?: string;
+};
+
+export type Standing = {
+  id: number;
+  position: string;
+  team: string;
+  wins: number;
+  losses: number;
+  diff: number;
+  class: string;
 };
