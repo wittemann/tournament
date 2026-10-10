@@ -22,6 +22,8 @@ Every item goes through these steps:
 
 **Parallel only when it's clearly safe:** disjoint files, separate worktrees, no shared migration, lockfile, theme or shared component. In doubt, sequential. Commits always happen one at a time in the main session.
 
+**Progress bar:** the main session reports to the savvy-progress panel. When a section starts, it calls `progress` with the section as `title`, its items as `tasks` (tier: `haiku` → `light`, `sonnet` → `medium`, `opus` → `heavy`), `total` and phase `delegate`. It calls it again on every phase switch (`review`, back to `delegate`), with `done` raised each time an item is committed, and with `finished: true` when the section is pushed. Each task title must match the Agent `description` used for that item word for word. Build and review sub-agents are told in their brief to call `step` right after reading it (`total` = their plan in 3–8 steps, `done: 0`) and again after each step. If the tools aren't available, skip this; it only draws the bar.
+
 **Resuming:** the ticks here and [review-later](review-later.md) are the state. After an interruption, continue with the first unticked item that isn't **(owner)**.
 
 ## 1. Housekeeping (do first)
