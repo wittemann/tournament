@@ -50,7 +50,7 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 ## 5. Smaller UI and consistency fixes
 
 - [ ] FAQ accordion: add `aria-expanded`/`aria-controls` to the question buttons. Open external links (`a[href^=http]`) in a new tab with `rel="noopener"`.
-- [ ] Check every page at phone width in light and dark mode.
+- [ ] Check every page at phone width (light mode only, see section 6).
 
 ## 6. Redesign
 
@@ -58,8 +58,8 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 **Open decisions (settle before or while building)**
 
-- [ ] **Dark mode:** the current app supports it, but the design only has a light version. Either design dark tokens in the canvas, or drop dark mode for 2026 (one daisyUI theme, `color-scheme: light`).
-- [ ] **Desktop / `lg`:** not designed. Simplest option: keep the phone column, centred at about 480 px wide, on every screen size. That also removes the separate desktop table in `GamesTable`.
+- [x] **Dark mode:** dropped for 2026 (decided 2026-10-10). One light daisyUI theme with `color-scheme: light`, so phones in dark mode don't get dark native controls on a light page. Remove the `dark:` classes.
+- [x] **Desktop / `lg`:** no separate layout (decided 2026-10-10). Keep the phone column, centred at about 480 px wide, on every screen size. That also removes the separate desktop table in `GamesTable`.
 - [ ] **Info tiles** ("Ende", "Turnierleitung"): hard-code them for 2026, or take them from the data (e.g. flagged FAQ rows). Decide together with the optional `faq.link_*` columns in section 2.
 - [ ] **Verkauf:** keep one row per item, or merge items with the same price ("Cola · Fanta · Mezzo Mix") as in the design. Merging needs either a data change or grouping in code.
 - [ ] **Higher-res kangaroo:** [`public/kangaroo.png`](../public/kangaroo.png) is cut from the logo and only 90 px wide, so it looks soft on phones. Ask the club for a larger original or an SVG.

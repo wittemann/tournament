@@ -86,4 +86,4 @@ All of ADR-0006's open questions, plus:
 - [ ] `lib/bracket.ts`: `resolveRef`, `buildBracket`, with tests against the 2025 data
 - [ ] `Bracket` component (stacked on mobile, horizontal on `lg`)
 - [ ] Placement list and mini round-robin table
-- [ ] Nav entry, check light and dark mode on a phone
+- [ ] Nav entry, check on a phone (light mode only)

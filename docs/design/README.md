@@ -65,6 +65,8 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 ## Decisions made in the design
 
 - "Finalrunde" gets its own tab (answers open question 2 of the [bracket spec](../specs/playoff-bracket.md)).
+- Light mode only: no dark mode for 2026 (one bright hall, one day; `color-scheme: light`).
+- No desktop layout: the phone column is centred at about 480 px on larger screens.
 - The `#id` game number is no longer shown (see `games.number` in the [TODO](../TODO.md)).
 - Verkauf has no category jump buttons: three short sections are quicker to scroll.
 - No mini round robin for the last places in the Finalrunde: the organizers would rather not play one again ([bracket spec](../specs/playoff-bracket.md), open question 1).
@@ -73,8 +75,6 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 
 ## Not designed yet
 
-- Dark mode (the current app supports it).
-- Desktop / `lg` layout.
 - Loading, empty and "Keine Verbindung" states (decide later).
 - Before and after the tournament: Spielplan, Tabelle and Finalrunde before the first result and after the final (decide later).
 - Admin page for entering results ([ADR-0007](../adr/0007-admin-results-entry.md)).

@@ -65,5 +65,5 @@ When a team is selected in the team filter, show a card above the game list that
 - [ ] Pure function `getTeamOutlook(games, team, now)` in `lib/teamOutlook.ts` → `{ current?, next?, scorerDuty?, done }`
 - [ ] Unit tests: normal case, running game, scorer matched by club name, no more games, before the first game, events ignored
 - [ ] `NextGameCard` component, rendered in `GamesTable` when `selectedTeam !== 'all'`
-- [ ] Check on phone width, light and dark mode
+- [ ] Check on phone width (light mode only, see the [design](../design/README.md))
 - [ ] Optional: tap → scroll to the game
