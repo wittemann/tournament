@@ -25,6 +25,7 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 - [ ] Drop the duplicate unique index `games_id_key` (the same as the primary key; flagged by the Supabase performance check).
 - [ ] `items.price` is `real` (floating point). Switch it to `numeric(6,2)` for money.
 - [ ] Optional: `faq.sort` column, so FAQs aren't just sorted alphabetically by question.
+- [ ] Optional: `faq.link_url` / `faq.link_label`, so an answer can carry one proper link button as in the [design](design/README.md) instead of HTML in the text. If all links move there, the answers become plain text and DOMPurify ([ADR-0008](adr/0008-faq-sanitized-html.md)) can go.
 - [ ] Optional: disable the unused GraphQL extension (`pg_graphql`). The Supabase security check flags that all tables are visible over GraphQL. The data is public anyway, so this is just cleanup.
 - [ ] Generate `app/types.ts` from the schema (`supabase gen types`) instead of maintaining it by hand ([ADR-0005](adr/0005-schema-as-migrations.md)).
 
@@ -43,24 +44,93 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 - [ ] **Stale data after the phone sleeps.** A phone in a pocket loses the realtime connection, and nothing reloads when it wakes up. Refetch on `visibilitychange` / reconnect in `useRealtimeTable`. This is the most likely cause of "the app shows an old score" on the day.
 - [ ] **Errors are invisible.** Fetch errors only go to `console.error`, and a missing env var throws inside an effect. Show a small "Keine Verbindung" banner instead.
 - [ ] The team filter lists scorer-only names like "Bretten" (a club, not a team). Build the team list from teams that actually play (or from the `teams` table) ([next-game-card spec](specs/next-game-card.md)).
-- [ ] The class badge colour (`'Schüler'` → green, else amber) is duplicated in the mobile and desktop views. Extract it into one place, and give Jugend its own colour (right now it would get T-Ball's amber).
+- [ ] The class badge colour (`'Schüler'` → green, else amber) is duplicated in the mobile and desktop views. Extract it into one place, and give Jugend its own colour (right now it would get T-Ball's amber). Covered by the `ClassTag` item in section 6.
 - [ ] Two components subscribing to the same table on one page would both use the channel name `games-changes`. Make channel names unique per hook instance before the bracket and next-game card add more subscribers.
 
 ## 5. Smaller UI and consistency fixes
 
 - [ ] FAQ accordion: add `aria-expanded`/`aria-controls` to the question buttons. Open external links (`a[href^=http]`) in a new tab with `rel="noopener"`.
-- [ ] The sales page uses hand-styled Tailwind tables, while the other pages use daisyUI `table`. Make it consistent.
-- [ ] Remove the leftover `<div>` wrappers around the filter fieldsets in `GamesTable`.
 - [ ] Check every page at phone width in light and dark mode.
 
-## 6. Content for 2026 (data, not code)
+## 6. Redesign
+
+Everything needed to build the [design](design/README.md) (canvas, colours, components, decisions). Build the foundation first, since every page uses it. Each page can then be switched over on its own. Where an item depends on another section, it says so.
+
+**Open decisions (settle before or while building)**
+
+- [ ] **Dark mode:** the current app supports it, but the design only has a light version. Either design dark tokens in the canvas, or drop dark mode for 2026 (one daisyUI theme, `color-scheme: light`).
+- [ ] **Desktop / `lg`:** not designed. Simplest option: keep the phone column, centred at about 480 px wide, on every screen size. That also removes the separate desktop table in `GamesTable`.
+- [ ] **Info tiles** ("Ende", "Turnierleitung"): hard-code them for 2026, or take them from the data (e.g. flagged FAQ rows). Decide together with the optional `faq.link_*` columns in section 2.
+- [ ] **Verkauf:** keep one row per item, or merge items with the same price ("Cola · Fanta · Mezzo Mix") as in the design. Merging needs either a data change or grouping in code.
+- [ ] **Higher-res kangaroo:** [`public/kangaroo.png`](../public/kangaroo.png) is cut from the logo and only 90 px wide, so it looks soft on phones. Ask the club for a larger original or an SVG.
+
+**Foundation**
+
+- [ ] daisyUI theme `xmasball` with the colours from [docs/design](design/README.md#colours): `primary` = green, `base-100` = white, `base-200` = ground, `base-content` = ink, plus CSS variables for the extra tokens (`live`, `scorer-*`, `win-*`, `loss-*`, class colours, `track`, `line`). Use the theme tokens everywhere; no more hard-coded `green-700` / `gray-*` classes in `layout.tsx` and `Nav.tsx`.
+- [ ] Fonts: Barlow (400–700) and Barlow Condensed (600/700) via `next/font/google`, exposed as CSS variables / Tailwind font families (`font-sans`, `font-display`).
+- [ ] Header: rounded green card with the kangaroo, "XMAS-BALL", "Bretten Kangaroos" and the current time as a pill (from `useNow`). Replaces the full-width green bar and `logo.png` in `layout.tsx`.
+- [ ] Main navigation: five pill tabs (Spielplan, Tabelle, Finalrunde, Verkauf, Info), each as wide as its text, current page as a dark pill with `aria-current="page"`. No horizontal scrolling. Check that it still fits at 360 px (and decide what happens at 320 px, e.g. smaller text).
+- [ ] Page background `ground`, content on white cards with the radii from the design (header 20, cards 16, game cards 14, controls 12).
+
+**Shared components**
+
+- [ ] `SegmentedControl`: grey track, white selected option, ≥ 40 px high, optional uppercase label in front (fixed width so several rows line up). Options come from the data. Proper semantics: a radio group, not a fake tab list, since it filters.
+- [ ] `ClassTag` with one colour map per class (Schüler green, T-Ball orange, Jugend blue; classes taken from the data, unknown classes get a neutral tag).
+- [ ] `GameCard` with all states from the design: upcoming (score "–"), running (red outline, "läuft"), played (muted, winner bold), the selected team's next game (green outline), placement game with label ("Platz 9/10") and placeholders ("5. Gruppe A", "Sieger HF 2", needs section 3). No `#id`. Optional "Scorer: …" line in the all-teams view.
+- [ ] Definition of "läuft": started, no result yet, at most 30 minutes ago. Same constant as in the [next-game-card spec](specs/next-game-card.md), shared in `lib/`.
+- [ ] `EventCard` for rows with `eventname` (Siegerehrung, Mittagspause): dark card, condensed uppercase title.
+- [ ] "Jetzt" line in the new style (red dot, line, "Jetzt · 14:18"). Shown in both Spielplan views.
+- [ ] Loading, empty and error states in the new style (not designed yet, decide later; keep them simple: a muted card with one line). Builds on the loading/error items in section 4.
+- [ ] Before/after the tournament: how Spielplan, Tabelle and Finalrunde look before the first result and after the final (not designed yet, decide later).
+
+**Spielplan**
+
+- [ ] "Mein Team" select as the main control (48 px, placeholder "Team wählen – nächstes Spiel sehen"). Same persisted `selectedTeam` as now.
+- [ ] Class and hall filters as two `SegmentedControl` rows ("Klasse": Alle · Schüler · T-Ball · Jugend, "Halle": Alle · 1 · 2 · 3 · 4 · 5), replacing the three selects. Hall labels are shortened ("Halle 3" → "3", full name as `aria-label`); Essensraum is left out because only events happen there. Selections stay persisted.
+- [ ] **All teams view** (no team selected): games grouped by time slot. Each slot heading shows its status ("beendet", "läuft", "in 12 Min."); each card shows hall and class tag.
+- [ ] **Team view**: the ["Mein Team" card](specs/next-game-card.md) in the design's style (green card, big time and hall, "in 12 Min." pill, amber scorer strip), then all of the team's games incl. scorer duties as dashed amber cards, with the team's record ("1 S · 1 N", needs section 3) in the heading. Supersedes the card's "Design notes" in the spec.
+- [ ] All four card states from the design board (`MeinTeamZustaende`): game running, scorer duty first, before the first game, all games played (record, difference, place, link to the Tabelle; needs section 3 for record and place).
+
+**Tabelle**
+
+- [ ] Class `SegmentedControl` instead of stacked class sections. Classes from the data (also needed for Jugend, section 3).
+- [ ] One card per group: "#", Team, "S–N" (W–L–T once ties exist, section 3), "Diff" (green / red). Status in the card heading: "8 von 10 Spielen" or "abgeschlossen".
+- [ ] Highlight the selected team's row (amber, "Mein Team" tag), using the same persisted `selectedTeam`.
+- [ ] Dashed cut-off line under the last place that reaches the semifinals, derived from the placement structure (ADR-0006), plus the tiebreak note under each group, worded to match ADR-0006.
+
+**Finalrunde** (needs section 3 and the [bracket spec](specs/playoff-bracket.md))
+
+- [ ] Own route `/finalrunde` with its nav tab. This answers open question 2 of the bracket spec.
+- [ ] Class `SegmentedControl`.
+- [ ] Bracket as in the design: two columns, one per half; semifinals joined to the final with CSS borders; final as a dark card with the trophy; "Spiel um Platz 3"; placement games as a list; own team highlighted; "Endstand" once the final is played.
+- [ ] Quarterfinal variant (8 teams): each column groups its two quarterfinals above its semifinal; seeds shown as "A1", "B4"; "Platz 5–8" block for the quarterfinal losers. More than 8 teams would need one tab per round (out of scope unless the 2026 schedule needs it).
+
+**Verkauf**
+
+- [ ] One card per category (Essen, Getränke, Merchandise), item name left, price right in the condensed font ("3,50 €"). No category jump buttons.
+- [ ] Sold-out items sorted to the bottom of their card: greyed out, red "Ausverkauft" tag, price crossed out. Still live via realtime.
+
+**Info**
+
+- [ ] Quick-fact tiles ("Ende", "Turnierleitung") and two green link buttons (Regeln PDF, Anfahrt PDF), depending on the decision above.
+- [ ] FAQ as an accordion in one white card, chevron rotates when open, link answers show a proper link. Includes the accessibility item in section 5.
+
+**Finish**
+
+- [ ] Check every page at 360–430 px phone width; touch targets ≥ 40 px; text contrast ≥ 4.5:1 (the class tags and muted greys are close to the limit, so measure them).
+- [ ] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use).
+- [ ] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth.
+
+## 7. Content for 2026 (data, not code)
 
 - [ ] FAQ: links point to the 2025 PDFs (`…/2025/12/Regeln-X-Mas-Ball-2025.pdf`, `Anfahrt_Parken.pdf`). Update them for 2026.
 - [ ] FAQ typos: "Her findest du" → "Hier", "Sporthall" → "Sporthalle", "Medallien" → "Medaillen".
 - [ ] Item names: remove the trailing space in "Süßigkeiten / Chips / Erdnüsse ". Reset the sold-out flags.
 - [ ] Load the 2026 teams, groups and schedule (with placeholders for placement games).
 
-## 7. Features (see specs)
+## 8. Features (see specs)
+
+The "Mein Team" card and the bracket are built in the redesign's style (section 6).
 
 - [ ] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above.
 - [ ] [Playoff bracket](specs/playoff-bracket.md): needs section 3.
