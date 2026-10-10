@@ -16,6 +16,8 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 ## 2. Database (one migration)
 
 - [ ] **Teams as data, not free text.** `games.hometeam`/`awayteam`/`scorer` are free text today. One typo ("Stuttgart1") would silently create a new team in the standings. Add a `teams` table (name, class, group) and reference it from `games`, or at least use a check/enum. This replaces the `team` enum, which needs a migration every year.
+- [ ] **New age class "Jugend"** (third class next to Schüler and T-Ball). `games.class` is the `class` enum, so inserting a Jugend game fails until the value is added: `alter type public.class add value 'Jugend';`. The app parts are listed in sections 3 and 4.
+- [ ] **More halls.** `games.location` is the `location` enum (`Halle 1`–`3`, `Essensraum`), so add the new halls to it. Use `add value 'Halle 4' before 'Essensraum'`, because the schedule is sorted by `location` in enum order. The app builds the hall filter from the data, so no code changes are needed.
 - [ ] Add to `games`: `stage` (`group` | `placement`), `label` (e.g. "Halbfinale 1"), `home_ref`/`away_ref` for placeholders (`seed:1`, `winner:41`, `loser:42`) ([ADR-0006](adr/0006-computed-standings.md), [playoff-bracket spec](specs/playoff-bracket.md)).
 - [ ] **Game number separate from the database id.** The schedule shows `#{game.id}` (49, 32, 50, …), which looks random, and placeholders like "Sieger #41" must reference something stable. Add `games.number`.
 - [ ] Constraint: placement games can't end in a tie (equal scores rejected) ([ADR-0006](adr/0006-computed-standings.md)).
@@ -32,7 +34,7 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 - [ ] Tests replaying the 2025 data: must reproduce the hand-entered group tables (except the Herrenberg typo: +15, not +14) and the 2025 final ranking.
 - [ ] Tests for the cases 2025 didn't have: tied games, a three-way tie, an unfinished group.
 - [ ] Switch `/standings` from the `standings` table to the computed tables, and show ties (W–L–T).
-- [ ] Remove the hardcoded classes `'Schüler'`/`'T-Ball'` in `app/standings/page.tsx`. Derive the classes from the data.
+- [ ] Remove the hardcoded classes `'Schüler'`/`'T-Ball'` in `app/standings/page.tsx`. Derive the classes from the data. Until then, Jugend standings would not show up at all.
 - [ ] Show the resolved team names for placement games in the schedule ("Seed 1 → Mannheim").
 
 ## 4. Schedule page fixes
@@ -41,7 +43,7 @@ Already done on `rework`: shared Supabase client and `useRealtimeTable` hook, se
 - [ ] **Stale data after the phone sleeps.** A phone in a pocket loses the realtime connection, and nothing reloads when it wakes up. Refetch on `visibilitychange` / reconnect in `useRealtimeTable`. This is the most likely cause of "the app shows an old score" on the day.
 - [ ] **Errors are invisible.** Fetch errors only go to `console.error`, and a missing env var throws inside an effect. Show a small "Keine Verbindung" banner instead.
 - [ ] The team filter lists scorer-only names like "Bretten" (a club, not a team). Build the team list from teams that actually play (or from the `teams` table) ([next-game-card spec](specs/next-game-card.md)).
-- [ ] The class badge colour (`'Schüler'` → green, else amber) is duplicated in the mobile and desktop views. Extract it into one place.
+- [ ] The class badge colour (`'Schüler'` → green, else amber) is duplicated in the mobile and desktop views. Extract it into one place, and give Jugend its own colour (right now it would get T-Ball's amber).
 - [ ] Two components subscribing to the same table on one page would both use the channel name `games-changes`. Make channel names unique per hook instance before the bracket and next-game card add more subscribers.
 
 ## 5. Smaller UI and consistency fixes
