@@ -5,9 +5,11 @@ import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
 import EventCard from './EventCard';
 import GameCard from './GameCard';
+import NowLine from './NowLine';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
+import { toMinutes } from '@/lib/gameStatus';
 import { playingTeamNames, type GameSides } from '@/lib/schedule';
 
 export default function GamesTable({
@@ -92,19 +94,11 @@ export default function GamesTable({
   // The "now" line is drawn right above it.
   const nowIndex = useMemo(() => {
     if (!now) return -1;
-    const i = filteredGames.findIndex((game) => game.time.slice(0, 5) >= now);
+    const i = filteredGames.findIndex(
+      (game) => toMinutes(game.time) > toMinutes(now),
+    );
     return i > 0 ? i : -1;
   }, [filteredGames, now]);
-
-  const nowLine = (
-    <div className="flex items-center gap-2 my-4">
-      <div className="flex-1 h-0.5 bg-red-600"></div>
-      <span className="text-red-600 font-semibold text-sm whitespace-nowrap">
-        {now} Uhr
-      </span>
-      <div className="flex-1 h-0.5 bg-red-600"></div>
-    </div>
-  );
 
   return (
     <>
@@ -202,7 +196,7 @@ export default function GamesTable({
         {filteredGames.map((game, index) => {
           return (
             <div key={game.id}>
-              {index === nowIndex && nowLine}
+              {index === nowIndex && now && <NowLine now={now} />}
               {game.eventname ? (
                 <EventCard game={game} />
               ) : (
