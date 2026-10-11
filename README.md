@@ -28,6 +28,8 @@ Set them in `.env.local` locally and in the Vercel project settings for deploys.
 | ------------------------------- | -------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase dashboard → Project Settings → API → Project URL                              |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Project Settings → API → anon / publishable key (safe for public) |
+| `NEXT_PUBLIC_SENTRY_DSN`        | Sentry → project tournament → Settings → Client Keys (DSN); empty disables Sentry      |
+| `SENTRY_AUTH_TOKEN` (optional)  | Sentry auth token, build-time only, for source map upload; never commit                |
 
 The key is public by design. Row Level Security only allows reads with it ([ADR-0004](docs/adr/0004-client-side-realtime-reads.md)).
 

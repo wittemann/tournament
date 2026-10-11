@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { getSupabase } from './supabase';
 
 type Order = { column: string; ascending?: boolean };
@@ -14,6 +15,8 @@ export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
     const supabase = getSupabase();
     const orderBy: Order[] = JSON.parse(orderKey);
     let cancelled = false;
+    // A failing channel retries and errors again; report once until it recovers.
+    let reported = false;
 
     const fetchRows = async () => {
       let query = supabase.from(table).select();
@@ -23,6 +26,12 @@ export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
       const { data, error } = await query;
       if (error) {
         console.error(`Supabase error (${table}):`, error);
+        Sentry.captureException(
+          new Error(`Supabase fetch failed (${table}): ${error.message}`, {
+            cause: error,
+          }),
+          { tags: { table, source: 'fetch' } },
+        );
       } else if (data && !cancelled) {
         setRows(data as T[]);
       }
@@ -37,7 +46,22 @@ export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
         { event: '*', schema: 'public', table },
         fetchRows,
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          reported = false;
+        } else if (
+          (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') &&
+          !reported &&
+          !cancelled
+        ) {
+          reported = true;
+          console.error(`Realtime ${status} (${table}):`, err);
+          Sentry.captureException(
+            err ?? new Error(`Realtime channel ${status} (${table})`),
+            { tags: { table, source: 'realtime', status } },
+          );
+        }
+      });
 
     return () => {
       cancelled = true;

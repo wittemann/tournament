@@ -19,6 +19,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 ## Skipped items
 
 - TypeScript 7 not taken (stays on 5.9): `npm run lint` crashes with "typescript-eslint does not support TS 7.0" (pulled in by `eslint-config-next` 16.4.0). Revisit when typescript-eslint supports TS 7.
+- Sentry: the Vercel env var could not be set from here. Owner: add `NEXT_PUBLIC_SENTRY_DSN` to Vercel (Production + Preview); optionally `SENTRY_AUTH_TOKEN` for source map upload (build uploads are skipped without it). IPs are kept out by `dataCollection.userInfo: false` (plus a `beforeSend` backstop); additionally enable "Prevent Storing of IP Addresses" in the Sentry project (Settings → Security & Privacy) and set a rate limit / spike protection on the project as a quota backstop. If ad blockers swallow events, `tunnelRoute` in `withSentryConfig` is an option (left off).
 
 ## Deferred review findings
 
