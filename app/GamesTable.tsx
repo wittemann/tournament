@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import Spinner from './Spinner';
+import StatusCard from './StatusCard';
 import ConnectionBanner from './ConnectionBanner';
 import EventCard from './EventCard';
 import GameCard from './GameCard';
@@ -169,26 +170,7 @@ export default function GamesTable({
       {/* No results message */}
       {loading && <Spinner />}
       {!loading && !error && filteredGames.length === 0 && (
-        <div className="alert alert-info alert-soft">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="stroke-current shrink-0 w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          <span>
-            Keine Spiele gefunden.
-            <br />
-            Bitte passen Sie die Filter an.
-          </span>
-        </div>
+        <StatusCard>Keine Spiele gefunden. Passe die Filter an.</StatusCard>
       )}
 
       {/* Game cards */}

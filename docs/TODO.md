@@ -106,7 +106,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 - [x] Definition of "läuft": started, no result yet, at most 30 minutes ago. Same constant as in the [next-game-card spec](specs/next-game-card.md), shared in `lib/`. · `haiku`
 - [x] `EventCard` for rows with `eventname` (Siegerehrung, Mittagspause): dark card, condensed uppercase title. · `haiku`
 - [x] "Jetzt" line in the new style (red dot, line, "Jetzt · 14:18"). Shown in both Spielplan views. · `sonnet`
-- [ ] Loading, empty and error states in the new style (not designed yet, decide later; keep them simple: a muted card with one line). Builds on the loading/error items in section 4. · `sonnet`
+- [x] Loading, empty and error states in the new style (not designed yet, decide later; keep them simple: a muted card with one line). Builds on the loading/error items in section 4. · `sonnet`
 - [ ] Before/after the tournament: how Spielplan, Tabelle and Finalrunde look before the first result and after the final (not designed yet, decide later). · main thread decides, then `sonnet`
 
 **Spielplan**

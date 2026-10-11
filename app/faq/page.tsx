@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Spinner from '../Spinner';
+import StatusCard from '../StatusCard';
 import ConnectionBanner from '../ConnectionBanner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { sanitizeFaq } from '@/lib/sanitizeFaq';
@@ -82,7 +83,7 @@ export default function Page() {
       {loading && <Spinner />}
 
       {!loading && !error && faqs.length === 0 && (
-        <p className="text-gray-500">Keine FAQs verfügbar.</p>
+        <StatusCard>Keine FAQs verfügbar.</StatusCard>
       )}
     </div>
   );

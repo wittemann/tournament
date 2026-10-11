@@ -1,6 +1,7 @@
 'use client';
 
 import Spinner from '../Spinner';
+import StatusCard from '../StatusCard';
 import ConnectionBanner from '../ConnectionBanner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
@@ -89,7 +90,7 @@ export default function Page() {
       {loading && <Spinner />}
 
       {!loading && !error && categories.length === 0 && (
-        <p className="text-gray-500">Keine Artikel verfügbar.</p>
+        <StatusCard>Keine Artikel verfügbar.</StatusCard>
       )}
     </div>
   );
