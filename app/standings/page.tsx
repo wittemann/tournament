@@ -9,6 +9,7 @@ import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { Constants } from '@/lib/database.types';
+import { cutOff } from '@/lib/cutOff';
 import {
   groupTables,
   placementRanking,
@@ -25,11 +26,15 @@ function useStandingsByClass(games: Game[], teams: Team[]) {
       ...teams.map((t) => t.class),
       ...games.map((g) => g.class),
     ]);
-    return CLASS_ORDER.filter((cls) => present.has(cls)).map((cls) => ({
-      cls,
-      tables: groupTables(games, teams, cls),
-      ranking: placementRanking(standingsContext(games, teams, cls)),
-    }));
+    return CLASS_ORDER.filter((cls) => present.has(cls)).map((cls) => {
+      const ctx = standingsContext(games, teams, cls);
+      return {
+        cls,
+        tables: groupTables(games, teams, cls),
+        ranking: placementRanking(ctx),
+        cutOff: cutOff(ctx),
+      };
+    });
   }, [games, teams]);
 }
 
@@ -72,6 +77,7 @@ export default function Page() {
           <StandingsTable
             tables={active.tables}
             ranking={active.ranking}
+            cutOff={active.cutOff}
             selectedTeam={selectedTeam}
           />
         )}

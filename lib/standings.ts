@@ -417,7 +417,7 @@ export interface PlacementEntry {
  * group:G:n → after all n-1 places, winner of a game → its better slot,
  * loser → its worse slot. A semifinal 1 v 4 gives winner 1 / loser 4.
  */
-function slotKey(
+export function slotKey(
   ref: string,
   ctx: StandingsContext,
   visiting: Set<number>,

@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { cutOffLegend, type CutOff } from '@/lib/cutOff';
 import {
   formatDiff,
   groupStatusLabel,
@@ -20,13 +21,21 @@ function MeinTeamTag() {
   );
 }
 
+// Order of the group ranking, worded after ADR-0006.
+const TIEBREAK_NOTE =
+  'Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs.';
+
 function GroupTableView({
   table,
   selectedTeam,
+  cutOff,
 }: {
   table: GroupTable;
   selectedTeam: string;
+  cutOff: CutOff | null;
 }) {
+  const cutAfter = cutOff?.afterPlace[table.group];
+  const legend = cutOffLegend(cutOff, table.group);
   const { withTies, labels: records } = recordLabels(table.rows);
   const headingId = useId();
   const status = groupStatusLabel(table);
@@ -89,7 +98,14 @@ function GroupTableView({
           {table.rows.map((row: TableRow, i) => {
             const mine = row.team === selectedTeam;
             return (
-              <tr key={row.team} className="border-t border-line">
+              <tr
+                key={row.team}
+                className={`border-t ${
+                  cutAfter !== undefined && row.place === cutAfter + 1
+                    ? 'border-t-2 border-dashed border-faint'
+                    : 'border-line'
+                }`}
+              >
                 <td
                   className={`py-3 pl-4 font-display text-lg font-bold ${mine ? `${MINE_BG} ${MINE_STRIP}` : ''}`}
                 >
@@ -123,6 +139,18 @@ function GroupTableView({
           })}
         </tbody>
       </table>
+      <div className="space-y-1 px-4 pt-2.5 pb-3.5 text-[13px] text-muted">
+        {legend && (
+          <p className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="w-[18px] shrink-0 border-t-2 border-dashed border-faint"
+            />
+            {legend}
+          </p>
+        )}
+        <p>{TIEBREAK_NOTE}</p>
+      </div>
     </div>
   );
 }
@@ -171,10 +199,12 @@ function RankingView({
 export default function StandingsTable({
   tables,
   ranking,
+  cutOff,
   selectedTeam,
 }: {
   tables: GroupTable[];
   ranking: PlacementEntry[];
+  cutOff: CutOff | null;
   /** Persisted "Mein Team" name; "all" or a team not in the tables marks nothing. */
   selectedTeam: string;
 }) {
@@ -189,6 +219,7 @@ export default function StandingsTable({
               key={table.group}
               table={table}
               selectedTeam={selectedTeam}
+              cutOff={cutOff}
             />
           ))}
         </div>
