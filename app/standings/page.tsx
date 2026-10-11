@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import StandingsTable from './StandingsTable';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
+import { Constants } from '@/lib/database.types';
 import {
   groupTables,
   placementRanking,
@@ -11,34 +12,37 @@ import {
   type GameClass,
 } from '@/lib/standings';
 
-function useClassStandings(games: Game[], teams: Team[], cls: GameClass) {
+// Stable display order: the enum order of the schema, not alphabetical.
+const CLASS_ORDER: readonly GameClass[] = Constants.public.Enums.class;
+
+function useStandingsByClass(games: Game[], teams: Team[]) {
   return useMemo(() => {
-    const tables = groupTables(games, teams, cls);
-    const ranking = placementRanking(standingsContext(games, teams, cls));
-    return { tables, ranking };
-  }, [games, teams, cls]);
+    const present = new Set<GameClass>([
+      ...teams.map((t) => t.class),
+      ...games.map((g) => g.class),
+    ]);
+    return CLASS_ORDER.filter((cls) => present.has(cls)).map((cls) => ({
+      cls,
+      tables: groupTables(games, teams, cls),
+      ranking: placementRanking(standingsContext(games, teams, cls)),
+    }));
+  }, [games, teams]);
 }
 
 export default function Page() {
   const games = useRealtimeTable<Game>('games', [{ column: 'time' }]);
   const teams = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
 
-  const schueler = useClassStandings(games, teams, 'Schüler');
-  const tball = useClassStandings(games, teams, 'T-Ball');
+  const standings = useStandingsByClass(games, teams);
 
   return (
     <div className="space-y-8">
-      <StandingsTable
-        tables={schueler.tables}
-        ranking={schueler.ranking}
-        title="Schüler"
-      />
-      <div className="divider"></div>
-      <StandingsTable
-        tables={tball.tables}
-        ranking={tball.ranking}
-        title="T-Ball"
-      />
+      {standings.map(({ cls, tables, ranking }, i) => (
+        <Fragment key={cls}>
+          {i > 0 && <div className="divider"></div>}
+          <StandingsTable tables={tables} ranking={ranking} title={cls} />
+        </Fragment>
+      ))}
     </div>
   );
 }

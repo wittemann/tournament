@@ -61,7 +61,7 @@ Every item goes through these steps:
 - [x] Tests replaying the 2025 data: must reproduce the hand-entered group tables (except the Herrenberg typo: +15, not +14) and the 2025 final ranking. · `opus`
 - [ ] Tests for the cases 2025 didn't have: tied games, a three-way tie, an unfinished group. · `sonnet`
 - [x] Switch `/standings` from the `standings` table to the computed tables, and show ties (W–L–T). · `sonnet`
-- [ ] Remove the hardcoded classes `'Schüler'`/`'T-Ball'` in `app/standings/page.tsx`. Derive the classes from the data. Until then, Jugend standings would not show up at all. · `sonnet`
+- [x] Remove the hardcoded classes `'Schüler'`/`'T-Ball'` in `app/standings/page.tsx`. Derive the classes from the data. Until then, Jugend standings would not show up at all. · `sonnet`
 - [ ] Show the resolved team names for placement games in the schedule ("Seed 1 → Mannheim"). · `opus`
 
 ## 4. Schedule page fixes

@@ -35,4 +35,5 @@ Nice-to-haves from the reviews, and findings left after the review cap. Security
 
 - The schedule sorts by `location` as text now, so "Essensraum" sorts before "Halle 1" at the same time. Order by `halls.sort` when the schedule is rebuilt.
 - `app/sell` and `app/faq` still declare local `Item`/`FAQ` types; switch them to the generated aliases in `app/types.ts` when those pages are rebuilt. A typed client (`createClient<Database>`) would remove the `as T[]` cast in `useRealtimeTable`.
+- `/standings` orders classes by the generated enum (`Constants`); a class added to the enum without regenerating `lib/database.types.ts` would be dropped silently. Regenerate types after every enum change (or append unknown classes at the end).
 - The schedule still shows `#{game.id}`, not `games.number` (section 6 drops the `#id`).
