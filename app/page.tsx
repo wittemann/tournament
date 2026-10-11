@@ -1,14 +1,18 @@
 'use client';
 
+import { useMemo } from 'react';
 import GamesTable from './GamesTable';
-import { Game } from './types';
+import { Game, Team } from './types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
+import { gameSides } from '@/lib/schedule';
 
 export default function Page() {
   const games = useRealtimeTable<Game>('games', [
     { column: 'time' },
     { column: 'location' },
   ]);
+  const teams = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
+  const sides = useMemo(() => gameSides(games, teams), [games, teams]);
 
-  return <GamesTable games={games} />;
+  return <GamesTable games={games} sides={sides} />;
 }

@@ -4,8 +4,32 @@ import { Fragment, useMemo } from 'react';
 import { Game } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
+import type { GameSides, Side } from '@/lib/schedule';
 
-export default function GamesTable({ games }: { games: Game[] }) {
+/** A team name, or for placement games the resolved name plus its placeholder. */
+function SideName({ side }: { side: Side | undefined }) {
+  if (!side) return null;
+  if (!side.ref) return <>{side.team}</>;
+  if (!side.team)
+    return <span className="text-gray-600 font-normal">{side.ref}</span>;
+  return (
+    <>
+      <span className="block">{side.team}</span>
+      <span className="block text-xs font-normal text-gray-600">
+        {side.ref}
+      </span>
+    </>
+  );
+}
+
+export default function GamesTable({
+  games,
+  sides,
+}: {
+  games: Game[];
+  /** Resolved sides per game id (see lib/schedule.ts gameSides). */
+  sides: Map<number, GameSides>;
+}) {
   const [selectedTeam, setSelectedTeam] = usePersistedState(
     'selectedTeam',
     'all',
@@ -52,10 +76,13 @@ export default function GamesTable({ games }: { games: Game[] }) {
   // Filter games based on selected team, hall, and class
   const filteredGames = useMemo(() => {
     return games.filter((game) => {
+      const side = sides.get(game.id);
       const teamMatch =
         selectedTeam === 'all' ||
         game.hometeam === selectedTeam ||
         game.awayteam === selectedTeam ||
+        side?.home.team === selectedTeam ||
+        side?.away.team === selectedTeam ||
         game.scorer === selectedTeam;
       const hallMatch =
         selectedHall === 'all' || game.location === selectedHall;
@@ -63,7 +90,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
         selectedClass === 'all' || game.class === selectedClass;
       return teamMatch && hallMatch && classMatch;
     });
-  }, [games, selectedTeam, selectedHall, selectedClass]);
+  }, [games, sides, selectedTeam, selectedHall, selectedClass]);
 
   // Index of the first upcoming game, if there are earlier games before it.
   // The "now" line is drawn right above it.
@@ -181,7 +208,9 @@ export default function GamesTable({ games }: { games: Game[] }) {
               <div className="card bg-base-200 shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 items-center">
-                    <span className="badge badge-sm">#{game.id}</span>
+                    {game.number != null && (
+                      <span className="badge badge-sm">#{game.number}</span>
+                    )}
                     <span
                       className={`badge badge-outline badge-sm ${
                         game.class === 'Schüler'
@@ -202,9 +231,14 @@ export default function GamesTable({ games }: { games: Game[] }) {
                   </div>
                 ) : (
                   <>
+                    {game.label && (
+                      <div className="text-center text-sm text-gray-600 mb-1">
+                        {game.label}
+                      </div>
+                    )}
                     <div className="grid grid-cols-3 items-center gap-2 mb-2">
                       <span className="font-semibold text-right">
-                        {game.hometeam}
+                        <SideName side={sides.get(game.id)?.home} />
                       </span>
                       {game.homescore != null && (
                         <span className="text-lg font-bold text-center">
@@ -212,7 +246,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
                         </span>
                       )}
                       <span className="font-semibold text-left">
-                        {game.awayteam}
+                        <SideName side={sides.get(game.id)?.away} />
                       </span>
                     </div>
                     {game.scorer && (
@@ -254,7 +288,7 @@ export default function GamesTable({ games }: { games: Game[] }) {
                 <tr>
                   <td>
                     <div className="flex gap-2 items-center">
-                      <span>#{game.id}</span>
+                      {game.number != null && <span>#{game.number}</span>}
                       <span
                         className={`badge badge-outline badge-sm ${
                           game.class === 'Schüler'
@@ -264,6 +298,11 @@ export default function GamesTable({ games }: { games: Game[] }) {
                       >
                         {game.class}
                       </span>
+                      {game.label && (
+                        <span className="text-sm text-gray-600">
+                          {game.label}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="text-base">
@@ -275,8 +314,12 @@ export default function GamesTable({ games }: { games: Game[] }) {
                     </td>
                   ) : (
                     <>
-                      <td>{game.hometeam}</td>
-                      <td>{game.awayteam}</td>
+                      <td>
+                        <SideName side={sides.get(game.id)?.home} />
+                      </td>
+                      <td>
+                        <SideName side={sides.get(game.id)?.away} />
+                      </td>
                       <td>
                         {game.homescore != null
                           ? `${game.homescore}:${game.awayscore}`
