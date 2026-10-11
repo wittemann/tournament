@@ -1,54 +1,79 @@
-import { Standing } from '../types';
+import type { GroupTable, PlacementEntry, TableRow } from '@/lib/standings';
 
-function SingleTable({
-  standings,
-  subtitle,
-}: {
-  standings: Standing[];
-  subtitle?: string;
-}) {
+function GroupTableView({ table }: { table: GroupTable }) {
   return (
     <div>
-      {subtitle && <h3 className="text-lg font-semibold mb-2">{subtitle}</h3>}
+      <h3 className="text-lg font-semibold mb-2">Gruppe {table.group}</h3>
       <div className="overflow-x-auto">
-        <table className="table table-zebra">
+        <table className="table table-zebra table-sm">
           <thead>
             <tr>
-              <th>Pos</th>
-              <th>Team</th>
-              <th>W</th>
-              <th>L</th>
-              <th>Diff</th>
+              <th scope="col" className="px-1 text-center">
+                Pos
+              </th>
+              <th scope="col">Team</th>
+              <th scope="col" className="px-1 text-center">
+                <abbr title="Siege">S</abbr>
+              </th>
+              <th scope="col" className="px-1 text-center">
+                <abbr title="Niederlagen">N</abbr>
+              </th>
+              <th scope="col" className="px-1 text-center">
+                <abbr title="Unentschieden">U</abbr>
+              </th>
+              <th scope="col" className="px-1 text-center">
+                <abbr title="Differenz">Diff</abbr>
+              </th>
             </tr>
           </thead>
           <tbody>
-            {standings.map((standing) => {
-              // Extract numeric position (remove letter prefix if present)
-              const displayPosition = standing.position.replace(
-                /^[A-Za-z]/,
-                '',
-              );
-              return (
-                <tr key={standing.id}>
-                  <td>{displayPosition}</td>
-                  <td className="font-semibold">{standing.team}</td>
-                  <td>{standing.wins}</td>
-                  <td>{standing.losses}</td>
-                  <td
-                    className={
-                      standing.diff > 0
-                        ? 'text-green-600 dark:text-green-400 font-semibold'
-                        : standing.diff < 0
-                          ? 'text-red-600 dark:text-red-400 font-semibold'
-                          : ''
-                    }
-                  >
-                    {standing.diff > 0 ? '+' : ''}
-                    {standing.diff}
-                  </td>
-                </tr>
-              );
-            })}
+            {table.rows.map((row: TableRow) => (
+              <tr key={row.team}>
+                <td className="px-1 text-center tabular-nums">{row.place}</td>
+                <td className="font-semibold">{row.team}</td>
+                <td className="px-1 text-center tabular-nums">{row.wins}</td>
+                <td className="px-1 text-center tabular-nums">{row.losses}</td>
+                <td className="px-1 text-center tabular-nums">{row.ties}</td>
+                <td
+                  className={`px-1 text-center tabular-nums ${
+                    row.diff > 0
+                      ? 'text-green-600 dark:text-green-400 font-semibold'
+                      : row.diff < 0
+                        ? 'text-red-600 dark:text-red-400 font-semibold'
+                        : ''
+                  }`}
+                >
+                  {row.diff > 0 ? '+' : ''}
+                  {row.diff}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function RankingView({ entries }: { entries: PlacementEntry[] }) {
+  return (
+    <div>
+      <h3 className="text-lg font-semibold mb-2">Endstand</h3>
+      <div className="overflow-x-auto">
+        <table className="table table-zebra table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Platz</th>
+              <th scope="col">Team</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.place}>
+                <td>{entry.place}</td>
+                <td className="font-semibold">{entry.team}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -57,61 +82,29 @@ function SingleTable({
 }
 
 export default function StandingsTable({
-  standings,
+  tables,
+  ranking,
   title,
 }: {
-  standings: Standing[];
+  tables: GroupTable[];
+  ranking: PlacementEntry[];
   title: string;
 }) {
-  // Separate standings into groups and overall
-  const overallStandings = standings.filter(
-    (s) => /^\d/.test(s.position), // Position starts with a digit
-  );
-
-  const groupedStandings = standings.filter(
-    (s) => /^[A-Za-z]/.test(s.position), // Position starts with a letter
-  );
-
-  // Group by the letter prefix
-  const groups: Record<string, Standing[]> = {};
-  groupedStandings.forEach((standing) => {
-    const match = standing.position.match(/^([A-Za-z])/);
-    if (match) {
-      const group = match[1].toUpperCase();
-      if (!groups[group]) {
-        groups[group] = [];
-      }
-      groups[group].push(standing);
-    }
-  });
-
-  // Sort groups alphabetically
-  const sortedGroupKeys = Object.keys(groups).sort();
+  const decided = ranking.filter((e) => e.team !== null);
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
-      {/* Group tables */}
-      {sortedGroupKeys.length > 0 && (
+      {tables.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {sortedGroupKeys.map((groupKey) => (
-            <SingleTable
-              key={groupKey}
-              standings={groups[groupKey]}
-              subtitle={`Gruppe ${groupKey}`}
-            />
+          {tables.map((table) => (
+            <GroupTableView key={table.group} table={table} />
           ))}
         </div>
       )}
 
-      {/* Overall table */}
-      {overallStandings.length > 0 && (
-        <SingleTable
-          standings={overallStandings}
-          subtitle={sortedGroupKeys.length > 0 ? 'Overall' : undefined}
-        />
-      )}
+      {decided.length > 0 && <RankingView entries={decided} />}
     </div>
   );
 }
