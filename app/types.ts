@@ -5,4 +5,3 @@ export type Team = Tables<'teams'>;
 export type Hall = Tables<'halls'>;
 export type Item = Tables<'items'>;
 export type Faq = Tables<'faq'>;
-export type Standing = Tables<'standings'>;

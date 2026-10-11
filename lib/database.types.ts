@@ -167,36 +167,6 @@ export type Database = {
         }
         Relationships: []
       }
-      standings: {
-        Row: {
-          class: Database["public"]["Enums"]["class"]
-          diff: number
-          id: number
-          losses: number
-          position: string
-          team: Database["public"]["Enums"]["team"]
-          wins: number
-        }
-        Insert: {
-          class: Database["public"]["Enums"]["class"]
-          diff?: number
-          id?: number
-          losses?: number
-          position?: string
-          team: Database["public"]["Enums"]["team"]
-          wins?: number
-        }
-        Update: {
-          class?: Database["public"]["Enums"]["class"]
-          diff?: number
-          id?: number
-          losses?: number
-          position?: string
-          team?: Database["public"]["Enums"]["team"]
-          wins?: number
-        }
-        Relationships: []
-      }
       teams: {
         Row: {
           class: Database["public"]["Enums"]["class"]
@@ -224,21 +194,6 @@ export type Database = {
     }
     Enums: {
       class: "Schüler" | "T-Ball" | "Jugend"
-      team:
-        | "Karlsruhe"
-        | "Darmstadt 1"
-        | "Darmstadt 2"
-        | "Remchingen"
-        | "Bretten"
-        | "Bretten 1"
-        | "Bretten 2"
-        | "Stuttgart 1"
-        | "Stuttgart 2"
-        | "Nagold"
-        | "Mannheim"
-        | "Schriesheim"
-        | "Herrenberg"
-        | "Heidelberg"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -367,22 +322,6 @@ export const Constants = {
   public: {
     Enums: {
       class: ["Schüler", "T-Ball", "Jugend"],
-      team: [
-        "Karlsruhe",
-        "Darmstadt 1",
-        "Darmstadt 2",
-        "Remchingen",
-        "Bretten",
-        "Bretten 1",
-        "Bretten 2",
-        "Stuttgart 1",
-        "Stuttgart 2",
-        "Nagold",
-        "Mannheim",
-        "Schriesheim",
-        "Herrenberg",
-        "Heidelberg",
-      ],
     },
   },
 } as const

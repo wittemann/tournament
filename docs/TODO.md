@@ -47,7 +47,7 @@ Every item goes through these steps:
 - [x] Add to `games`: `stage` (`group` | `placement`), `label` (e.g. "Halbfinale 1"), `home_ref`/`away_ref` for placeholders (`seed:1`, `winner:41`, `loser:42`). Resolved teams are computed in the app only, never written back; `hometeam`/`awayteam` stay empty on placement games (decided 2026-10-11) ([ADR-0006](adr/0006-computed-standings.md), [playoff-bracket spec](specs/playoff-bracket.md)). · `opus`
 - [x] **Game number separate from the database id.** The schedule shows `#{game.id}` (49, 32, 50, …), which looks random, and placeholders like "Sieger #41" must reference something stable. Add `games.number`. · `sonnet`
 - [x] Constraint: placement games can't end in a tie (equal scores rejected) ([ADR-0006](adr/0006-computed-standings.md)). · `sonnet`
-- [ ] Drop the `standings` table once the computed standings are live. Its 2025 contents stay in `supabase/seed.sql`. · `haiku`
+- [x] Drop the `standings` table once the computed standings are live. Its 2025 contents stay in `supabase/seed.sql`. · `haiku`
 - [x] Drop the duplicate unique index `games_id_key` (the same as the primary key; flagged by the Supabase performance check). · `haiku`
 - [x] `items.price` is `real` (floating point). Switch it to `numeric(6,2)` for money. · `sonnet`
 - [x] Optional: `faq.sort` column, so FAQs aren't just sorted alphabetically by question. · `haiku`
