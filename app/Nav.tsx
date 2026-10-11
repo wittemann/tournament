@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 const links = [
   { href: '/', label: 'Spielplan' },
   { href: '/standings', label: 'Tabelle' },
+  { href: '/finalrunde', label: 'Finalrunde' },
   { href: '/sell', label: 'Verkauf' },
   { href: '/faq', label: 'Info' },
 ];

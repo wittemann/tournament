@@ -51,7 +51,7 @@ The bracket is built purely from these fields: semifinal → final edges come fr
 
 ## Behaviour
 
-- New route `/bracket` ("Finalrunde" in the nav), with one section per class like `/standings`. Alternatively, a tab on `/standings`; decide when building.
+- Own route `/finalrunde` ("Finalrunde" in the nav), one class at a time behind a class switch like `/standings`.
 - **Before the group stage is finished:** show the structure with placeholders ("Platz 1 Gruppe A / Seed 1", "Sieger HF 1") plus time and hall, so people can already see when the final is.
 - **Live:** seeds fill in as soon as the group stage of that class is complete (all group games have results). Winners move forward once a result is entered. Realtime comes for free via `useRealtimeTable('games')`.
 - Each game box shows the seed number, team names, score (if played), otherwise time + hall. The winner is bold.
@@ -77,7 +77,7 @@ Put it in pure, unit-tested functions next to the standings code:
 All of ADR-0006's open questions, plus:
 
 1. Does the 2026 placement structure stay the same (semifinals + pairs + mini round robin)? *Partly answered (2026-10-10): the organizers would rather not have a mini round robin again, so the [design](../design/README.md) leaves it out. If an odd team count forces one anyway, it would reuse the Tabelle group card.*
-2. Own page `/bracket` or a tab within `/standings`?
+2. Own page `/bracket` or a tab within `/standings`? *Answered (2026-10-11): own route `/finalrunde` with its own nav tab, per [TODO section 6](../TODO.md).*
 3. Should the resolved team name be written back to `hometeam`/`awayteam` (e.g. by the admin page), or only computed in the client? *Answered (2026-10-11): computed in the client only. `hometeam`/`awayteam` stay empty on placement games, so a corrected group score updates the bracket automatically.*
 
 ## Tasks
