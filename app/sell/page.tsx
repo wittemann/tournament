@@ -1,97 +1,65 @@
 'use client';
 
+import { useMemo } from 'react';
 import Spinner from '../Spinner';
 import StatusCard from '../StatusCard';
 import ConnectionBanner from '../ConnectionBanner';
+import { Item } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
-
-type Item = {
-  id: number;
-  category: string;
-  item: string;
-  price: number;
-  soldOut: boolean;
-};
+import { formatPrice, menuSections } from '@/lib/menu';
 
 export default function Page() {
   const {
     rows: items,
     loading,
     error,
-  } = useRealtimeTable<Item>('items', [
-    { column: 'category' },
-    { column: 'id' },
-  ]);
+  } = useRealtimeTable<Item>('items', [{ column: 'id' }]);
 
-  // Group items by category
-  const itemsByCategory = items.reduce(
-    (acc, item) => {
-      if (!acc[item.category]) {
-        acc[item.category] = [];
-      }
-      acc[item.category].push(item);
-      return acc;
-    },
-    {} as Record<string, Item[]>,
-  );
+  const sections = useMemo(() => menuSections(items), [items]);
 
-  const categories = Object.keys(itemsByCategory).sort();
-
-  // Format price to always show 2 decimals
-  const formatPrice = (price: number) => {
-    return price.toFixed(2).replace('.', ',') + '€';
-  };
+  if (loading) return <Spinner />;
 
   return (
-    <div className="container mx-auto p-4">
+    <>
       <ConnectionBanner show={error} />
-
-      {categories.map((category) => (
-        <div key={category} className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">{category}</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-4 py-2 border-b text-left">Artikel</th>
-                  <th className="px-4 py-2 border-b text-right">Preis</th>
-                </tr>
-              </thead>
-              <tbody>
-                {itemsByCategory[category].map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td
-                      className={`px-4 py-2 border-b ${
-                        item.soldOut ? 'line-through text-gray-400' : ''
-                      }`}
-                    >
-                      {item.item}
-                      {item.soldOut && (
-                        <span className="ml-2 inline-block px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded">
-                          Ausverkauft
-                        </span>
-                      )}
-                    </td>
-                    <td
-                      className={`px-4 py-2 border-b text-right ${
-                        item.soldOut ? 'line-through text-gray-400' : ''
-                      }`}
-                    >
-                      {formatPrice(item.price)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
-
-      {loading && <Spinner />}
-
-      {!loading && !error && categories.length === 0 && (
+      {!error && sections.length === 0 && (
         <StatusCard>Keine Artikel verfügbar.</StatusCard>
       )}
-    </div>
+      <div className="space-y-5">
+        {sections.map(({ category, items }) => (
+          <section key={category} className="space-y-2.5">
+            <h2 className="font-display text-[22px] leading-tight font-bold text-muted uppercase">
+              {category}
+            </h2>
+            <ul className="overflow-hidden rounded-card bg-base-100">
+              {items.map((item) => (
+                <li
+                  key={item.id}
+                  className={`flex items-center gap-2.5 border-t border-line px-4 py-3 first:border-t-0 ${
+                    item.soldOut ? 'bg-base-200' : ''
+                  }`}
+                >
+                  <span
+                    className={`flex-1 text-base font-medium ${item.soldOut ? 'text-muted' : ''}`}
+                  >
+                    {item.item.trim()}
+                  </span>
+                  {item.soldOut && (
+                    <span className="rounded-md bg-loss-bg px-2 py-0.5 text-xs font-bold text-loss-ink">
+                      Ausverkauft
+                    </span>
+                  )}
+                  <span
+                    className={`font-display text-xl font-bold ${item.soldOut ? 'text-muted line-through' : ''}`}
+                  >
+                    {formatPrice(item.price)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </>
   );
 }

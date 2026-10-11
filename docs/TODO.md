@@ -133,8 +133,8 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 **Verkauf**
 
-- [ ] One card per category (Essen, Getränke, Merchandise), item name left, price right in the condensed font ("3,50 €"). No category jump buttons. · `sonnet`
-- [ ] Sold-out items sorted to the bottom of their card: greyed out, red "Ausverkauft" tag, price crossed out. Still live via realtime. · `sonnet`
+- [x] One card per category (Essen, Getränke, Merchandise), item name left, price right in the condensed font ("3,50 €"). No category jump buttons. · `sonnet`
+- [x] Sold-out items sorted to the bottom of their card: greyed out, red "Ausverkauft" tag, price crossed out. Still live via realtime. · `sonnet`
 
 **Info**
 
