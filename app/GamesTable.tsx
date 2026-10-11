@@ -1,13 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Spinner from './Spinner';
 import StatusCard from './StatusCard';
 import ConnectionBanner from './ConnectionBanner';
 import EventCard from './EventCard';
 import GameCard from './GameCard';
 import SegmentedControl from './SegmentedControl';
+import MeinTeamCard from './MeinTeamCard';
 import NowLine from './NowLine';
+import ScorerCard from './ScorerCard';
 import SlotHeading from './SlotHeading';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
@@ -16,6 +18,12 @@ import { toMinutes } from '@/lib/gameStatus';
 import { classOptions, hallOptions } from '@/lib/filterOptions';
 import { playingTeamNames, type GameSides } from '@/lib/schedule';
 import { groupBySlot, slotStatus } from '@/lib/slots';
+import {
+  formatRecord,
+  getTeamOutlook,
+  teamRecord,
+  teamSchedule,
+} from '@/lib/teamOutlook';
 
 export default function GamesTable({
   games,
@@ -69,36 +77,65 @@ export default function GamesTable({
     ? selectedHall
     : 'all';
 
-  // Filter games based on selected team, hall, and class
-  const filteredGames = useMemo(() => {
-    return games.filter((game) => {
-      const side = sides.get(game.id);
-      const teamMatch =
-        activeTeam === 'all' ||
-        game.hometeam === activeTeam ||
-        game.awayteam === activeTeam ||
-        side?.home.team === activeTeam ||
-        side?.away.team === activeTeam ||
-        game.scorer === activeTeam;
-      // Events (Siegerehrung) happen outside the game halls; keep them visible.
-      const hallMatch =
-        activeHall === 'all' ||
+  // Class and hall filters. Events (Siegerehrung) happen outside the game
+  // halls; keep them visible.
+  const matchesFilters = useCallback(
+    (game: Game) =>
+      (activeHall === 'all' ||
         !!game.eventname ||
-        game.location === activeHall;
-      const classMatch = activeClass === 'all' || game.class === activeClass;
-      return teamMatch && hallMatch && classMatch;
-    });
-  }, [games, sides, activeTeam, activeHall, activeClass]);
+        game.location === activeHall) &&
+      (activeClass === 'all' || game.class === activeClass),
+    [activeHall, activeClass],
+  );
+  const filteredGames = useMemo(
+    () => games.filter(matchesFilters),
+    [games, matchesFilters],
+  );
 
-  // Index of the first upcoming game, if there are earlier games before it.
+  // Team view: the team's games, scorer duties and events, under the class
+  // and hall filters. The "Mein Team" card ignores the filters.
+  const teamEntries = useMemo(
+    () =>
+      activeTeam === 'all'
+        ? []
+        : teamSchedule(games, sides, activeTeam).filter((e) =>
+            matchesFilters(e.game),
+          ),
+    [games, sides, activeTeam, matchesFilters],
+  );
+  const outlook = useMemo(
+    () =>
+      activeTeam !== 'all' && now
+        ? getTeamOutlook(games, sides, activeTeam, now)
+        : null,
+    [games, sides, activeTeam, now],
+  );
+  const record = useMemo(
+    () =>
+      activeTeam === 'all'
+        ? null
+        : formatRecord(
+            teamRecord(
+              games,
+              teams,
+              activeTeam,
+              activeClass === 'all'
+                ? undefined
+                : (activeClass as Game['class']),
+            ),
+          ),
+    [games, teams, activeTeam, activeClass],
+  );
+
+  // Index of the first upcoming entry, if there are earlier ones before it.
   // The "now" line is drawn right above it.
   const nowIndex = useMemo(() => {
     if (!now) return -1;
-    const i = filteredGames.findIndex(
-      (game) => toMinutes(game.time) > toMinutes(now),
+    const i = teamEntries.findIndex(
+      (e) => toMinutes(e.game.time) > toMinutes(now),
     );
     return i > 0 ? i : -1;
-  }, [filteredGames, now]);
+  }, [teamEntries, now]);
 
   // All-teams view: games grouped by start time, the "now" line above the
   // first slot that starts after now (same rule as nowIndex).
@@ -169,13 +206,29 @@ export default function GamesTable({
           onChange={setSelectedHall}
         />
       </div>
-      <div className="divider"></div>
+      {activeTeam === 'all' && <div className="divider"></div>}
+      {activeTeam !== 'all' &&
+        outlook &&
+        now &&
+        !loading &&
+        games.length > 0 && (
+          <div className="mt-5">
+            <MeinTeamCard
+              team={activeTeam}
+              outlook={outlook}
+              sides={sides}
+              now={now}
+            />
+          </div>
+        )}
 
       {/* No results message */}
       {loading && <Spinner />}
-      {!loading && !error && filteredGames.length === 0 && (
-        <StatusCard>Keine Spiele gefunden. Passe die Filter an.</StatusCard>
-      )}
+      {!loading &&
+        !error &&
+        (activeTeam === 'all' ? filteredGames : teamEntries).length === 0 && (
+          <StatusCard>Keine Spiele gefunden. Passe die Filter an.</StatusCard>
+        )}
 
       {activeTeam === 'all' ? (
         /* Games by time slot (design: SpielplanAlle) */
@@ -209,27 +262,37 @@ export default function GamesTable({
           ))}
         </section>
       ) : (
-        /* Game cards */
-        <div className="space-y-3">
-          {filteredGames.map((game, index) => {
-            return (
-              <div key={game.id}>
-                {index === nowIndex && now && <NowLine now={now} />}
-                {game.eventname ? (
-                  <EventCard game={game} />
-                ) : (
-                  <GameCard
-                    game={game}
-                    sides={sides.get(game.id)}
-                    now={now}
-                    showClass
-                    showScorer
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
+        /* The team's games and scorer duties (design: Main) */
+        <section
+          aria-label={`Spiele von ${activeTeam}`}
+          className="flex flex-col gap-2.5 pt-5"
+        >
+          {teamEntries.length > 0 && (
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="min-w-0 font-display text-[22px] font-bold tracking-[0.4px] uppercase">
+                Alle Spiele · {activeTeam}
+              </h2>
+              <span className="shrink-0 text-sm text-muted">{record}</span>
+            </div>
+          )}
+          {teamEntries.map(({ kind, game }, index) => (
+            <div key={game.id}>
+              {index === nowIndex && now && <NowLine now={now} />}
+              {kind === 'event' ? (
+                <EventCard game={game} />
+              ) : kind === 'scorer' ? (
+                <ScorerCard game={game} sides={sides.get(game.id)} />
+              ) : (
+                <GameCard
+                  game={game}
+                  sides={sides.get(game.id)}
+                  now={now}
+                  highlight={game === outlook?.next ? 'next' : undefined}
+                />
+              )}
+            </div>
+          ))}
+        </section>
       )}
     </>
   );
