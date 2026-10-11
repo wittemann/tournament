@@ -20,6 +20,9 @@ import {
   type GameLike,
   type TeamLike,
   groupTables,
+  placementRanking,
+  resolveGame,
+  standingsContext,
 } from './standings';
 
 export type OutlookGame = RunningCandidate & {
@@ -67,6 +70,8 @@ export interface TeamOutlook<G extends OutlookGame> {
   scorerDuty: G | null;
   /** No running game, no next game and no scorer duty left. */
   done: boolean;
+  /** The team has games and none has started yet ("Erstes Spiel"). */
+  beforeFirst: boolean;
 }
 
 /**
@@ -77,7 +82,7 @@ export interface TeamOutlook<G extends OutlookGame> {
  * - next: starts strictly after now (a game starting this minute already
  *   runs) and has no result. A game without result that started more than
  *   the running window ago is neither current nor next.
- * - Before the first game, `next` is simply the first game.
+ * - Before the first game (`beforeFirst`), `next` is simply the first game.
  */
 export function getTeamOutlook<G extends OutlookGame>(
   games: G[],
@@ -109,6 +114,8 @@ export function getTeamOutlook<G extends OutlookGame>(
     next,
     scorerDuty: showDuty ? duty : null,
     done: !current && !next && !duty,
+    // Every game of the team starts after now and has no result.
+    beforeFirst: own.length > 0 && own.every(upcoming),
   };
 }
 
@@ -194,4 +201,109 @@ export function formatRecord({ wins, losses, ties }: TeamRecord): string {
   const parts = [`${wins} S`, `${losses} N`];
   if (ties > 0) parts.push(`${ties} U`);
   return parts.join(' · ');
+}
+
+/**
+ * True when a class of the team still has a placement game with an unresolved
+ * side (e.g. group A is done, group B is not, so seed refs wait). The team
+ * may get a placement game then, so the card must not say "all played"
+ * even when it has no game or duty left right now. A class where the team
+ * already has its final place doesn't count (open semifinals don't concern
+ * the team that played for 9th place).
+ */
+export function awaitsPlacement(
+  games: GameLike[],
+  teams: TeamLike[],
+  team: string,
+): boolean {
+  const classes = new Set(
+    teams.filter((t) => t.name === team).map((t) => t.class),
+  );
+  for (const cls of classes) {
+    const ctx = standingsContext(games, teams, cls);
+    if (placementRanking(ctx).some((e) => e.team === team)) continue;
+    for (const g of ctx.games) {
+      if (g.stage !== 'placement') continue;
+      const { home, away } = resolveGame(g, ctx);
+      if (home === null || away === null) return true;
+    }
+  }
+  return false;
+}
+
+export interface TeamSummary {
+  cls: GameClass;
+  /** Group and placement games with a result (not the heading record). */
+  record: TeamRecord;
+  /** Run difference over the same games. */
+  diff: number;
+  /**
+   * The team's place: the overall place from the placement games when they
+   * decide it ('final'), else its place in the group table ('group'). null
+   * when the team has no group row.
+   */
+  place: { value: number; kind: 'final' | 'group' } | null;
+}
+
+/**
+ * Per class in which a team of that name has a group row (a name used in
+ * several classes gets one summary per class, in the order of `teams`).
+ * Record and difference count every played game of the team in the class,
+ * group and placement (results only), unlike `teamRecord`, which follows the
+ * Tabelle; the final place comes from placementRanking, falling back
+ * to the group place when no placement game decides it (no placement games,
+ * not played yet, or a place no game decides).
+ */
+export function teamSummaries(
+  games: GameLike[],
+  teams: TeamLike[],
+  team: string,
+): TeamSummary[] {
+  const classes: GameClass[] = [];
+  for (const t of teams) {
+    if (t.name === team && !classes.includes(t.class)) classes.push(t.class);
+  }
+  const summaries: TeamSummary[] = [];
+  for (const cls of classes) {
+    const ctx = standingsContext(games, teams, cls);
+    let row = null;
+    for (const table of ctx.tables) {
+      row = table.rows.find((r) => r.team === team) ?? row;
+    }
+    if (!row) continue;
+    const record = { wins: 0, losses: 0, ties: 0 };
+    let diff = 0;
+    for (const g of ctx.games) {
+      if (g.homescore == null || g.awayscore == null) continue;
+      const { home, away } = resolveGame(g, ctx);
+      const mine = home === team ? 'home' : away === team ? 'away' : null;
+      if (!mine) continue;
+      const own = mine === 'home' ? g.homescore : g.awayscore;
+      const other = mine === 'home' ? g.awayscore : g.homescore;
+      diff += own - other;
+      if (own > other) record.wins++;
+      else if (own < other) record.losses++;
+      else record.ties++;
+    }
+    const final = placementRanking(ctx).find((e) => e.team === team);
+    summaries.push({
+      cls,
+      record,
+      diff,
+      place: final
+        ? { value: final.place, kind: 'final' }
+        : { value: row.place, kind: 'group' },
+    });
+  }
+  return summaries;
+}
+
+/** "2–3", plus "–1" when there are ties (design: Bilanz tile). */
+export function formatBilanz({ wins, losses, ties }: TeamRecord): string {
+  return ties > 0 ? `${wins}–${losses}–${ties}` : `${wins}–${losses}`;
+}
+
+/** "+5", "−19" (real minus sign), "0". */
+export function formatDiff(diff: number): string {
+  return diff > 0 ? `+${diff}` : diff < 0 ? `\u2212${-diff}` : '0';
 }

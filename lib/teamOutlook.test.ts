@@ -1,13 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import {
+  awaitsPlacement,
+  formatBilanz,
+  formatDiff,
   formatRecord,
   getTeamOutlook,
   teamRecord,
   teamSchedule,
+  teamSummaries,
   type OutlookGame,
 } from '@/lib/teamOutlook';
 import { gameSides, type GameSides } from '@/lib/schedule';
-import { games2025, teams2025 } from '@/lib/fixtures/games2025';
+import {
+  expectedRanking2025,
+  games2025,
+  teams2025,
+} from '@/lib/fixtures/games2025';
 import type { GameLike } from '@/lib/standings';
 
 let nextId = 1;
@@ -94,6 +102,7 @@ describe('getTeamOutlook', () => {
       next: null,
       scorerDuty: null,
       done: true,
+      beforeFirst: false,
     });
   });
 
@@ -248,5 +257,166 @@ describe('with the 2025 fixture', () => {
     const o = getTeamOutlook(open, sides, 'Bretten 2', '14:18');
     expect(o.next?.time).toBe('14:30:00');
     expect(o.scorerDuty?.time).toBe('15:00:00');
+  });
+});
+
+describe('beforeFirst', () => {
+  const first = g('10:30', 'A', 'B');
+  const later = g('12:00', 'C', 'A');
+
+  it('is true while every game of the team is still ahead', () => {
+    const o = getTeamOutlook([first, later], noSides, 'A', '09:00');
+    expect(o.beforeFirst).toBe(true);
+    expect(o.next).toBe(first);
+  });
+
+  it('is false once a game runs, has a result, or the team has no game', () => {
+    expect(
+      getTeamOutlook([first, later], noSides, 'A', '10:30').beforeFirst,
+    ).toBe(false);
+    const played = g('09:00', 'A', 'B', { homescore: 1, awayscore: 0 });
+    expect(
+      getTeamOutlook([played, later], noSides, 'A', '09:30').beforeFirst,
+    ).toBe(false);
+    expect(getTeamOutlook([first], noSides, 'Z', '09:00').beforeFirst).toBe(
+      false,
+    );
+  });
+});
+
+describe('teamSummaries', () => {
+  const games = games2025 as GameLike[];
+
+  it('takes the final place from the placement games (2025)', () => {
+    for (const cls of ['Schüler', 'T-Ball'] as const) {
+      expectedRanking2025[cls].forEach((team, i) => {
+        const s = teamSummaries(games, teams2025, team).find(
+          (x) => x.cls === cls,
+        );
+        expect(s?.place).toEqual({ value: i + 1, kind: 'final' });
+      });
+    }
+  });
+
+  it('counts group and placement games (Bretten 2: 0-6, -74 - 32)', () => {
+    const [s] = teamSummaries(games, teams2025, 'Bretten 2');
+    expect(s.record).toEqual({ wins: 0, losses: 6, ties: 0 });
+    expect(s.diff).toBe(-106);
+  });
+
+  it('counts a tie and a placement win by resolved side', () => {
+    const t = [
+      { name: 'A', class: 'Schüler' as const, group_name: 'X' },
+      { name: 'B', class: 'Schüler' as const, group_name: 'X' },
+    ];
+    const base = {
+      class: 'Schüler' as const,
+      label: null,
+      home_ref: null,
+      away_ref: null,
+    };
+    const gs = [
+      {
+        ...base,
+        stage: 'group' as const,
+        number: 1,
+        hometeam: 'A',
+        awayteam: 'B',
+        homescore: 3,
+        awayscore: 3,
+      },
+      {
+        ...base,
+        stage: 'group' as const,
+        number: 2,
+        hometeam: 'B',
+        awayteam: 'A',
+        homescore: 1,
+        awayscore: 5,
+      },
+      {
+        ...base,
+        stage: 'placement' as const,
+        number: 3,
+        hometeam: null,
+        awayteam: null,
+        home_ref: 'seed:1',
+        away_ref: 'seed:2',
+        homescore: 2,
+        awayscore: 6,
+      },
+    ];
+    const [a] = teamSummaries(gs, t, 'A');
+    expect(a.record).toEqual({ wins: 1, losses: 1, ties: 1 });
+    expect(a.diff).toBe(0 + 4 - 4);
+  });
+
+  it('falls back to the group place without placement results', () => {
+    const groupOnly = games.filter((x) => x.stage === 'group');
+    const [s] = teamSummaries(groupOnly, teams2025, 'Mannheim');
+    expect(s.place).toEqual({ value: 1, kind: 'group' });
+  });
+
+  it('returns one summary per class for a name used in several classes', () => {
+    const names = teams2025
+      .filter((t) => t.class === 'T-Ball')
+      .map((t) => t.name);
+    const shared = names.find((n) =>
+      teams2025.some((t) => t.name === n && t.class === 'Schüler'),
+    );
+    expect(shared).toBeDefined();
+    expect(teamSummaries(games, teams2025, shared!)).toHaveLength(2);
+  });
+
+  it('is empty for an unknown team', () => {
+    expect(teamSummaries(games, teams2025, 'Nobody')).toEqual([]);
+  });
+});
+
+describe('formatBilanz / formatDiff', () => {
+  it('formats the design tiles', () => {
+    expect(formatBilanz({ wins: 2, losses: 3, ties: 0 })).toBe('2–3');
+    expect(formatBilanz({ wins: 2, losses: 3, ties: 1 })).toBe('2–3–1');
+    expect(formatDiff(-19)).toBe('\u221219');
+    expect(formatDiff(5)).toBe('+5');
+    expect(formatDiff(0)).toBe('0');
+  });
+});
+
+describe('awaitsPlacement', () => {
+  const games = games2025 as GameLike[];
+
+  it('is false when the 2025 placement games are all resolved', () => {
+    expect(awaitsPlacement(games, teams2025, 'Bretten 2')).toBe(false);
+  });
+
+  it('is true when the group stage is done but seed refs are unresolved', () => {
+    // Group B of Schüler has one game without result: seeds wait for it.
+    const groupB = games.find(
+      (x) =>
+        x.class === 'Schüler' && x.stage === 'group' && x.hometeam !== null,
+    );
+    const open = games.map((x) =>
+      x === groupB ? { ...x, homescore: null, awayscore: null } : x,
+    );
+    const noPlacementResults = open.map((x) =>
+      x.stage === 'placement' ? { ...x, homescore: null, awayscore: null } : x,
+    );
+    expect(awaitsPlacement(noPlacementResults, teams2025, 'Bretten 2')).toBe(
+      true,
+    );
+  });
+
+  it('is false for an unknown team', () => {
+    expect(awaitsPlacement(games, teams2025, 'Nobody')).toBe(false);
+  });
+
+  it('is false once the team has its final place, even with open semifinals', () => {
+    const openSemis = games.map((x) =>
+      x.label?.startsWith('Halbfinale') || x.label === 'Finale'
+        ? { ...x, homescore: null, awayscore: null }
+        : x,
+    );
+    expect(awaitsPlacement(openSemis, teams2025, 'Bretten 2')).toBe(false);
   });
 });

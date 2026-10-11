@@ -115,7 +115,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 - [x] Class and hall filters as two `SegmentedControl` rows ("Klasse": Alle · Schüler · T-Ball · Jugend, "Halle": Alle · 1 · 2 · 3 · 4 · 5), replacing the three selects. Hall labels are shortened ("Halle 3" → "3", full name as `aria-label`); Essensraum is left out because only events happen there. Selections stay persisted. · `sonnet`
 - [x] **All teams view** (no team selected): games grouped by time slot. Each slot heading shows its status ("beendet", "läuft", "in 12 Min."); each card shows hall and class tag. · `opus`
 - [x] **Team view**: the ["Mein Team" card](specs/next-game-card.md) in the design's style (green card, big time and hall, "in 12 Min." pill, amber scorer strip), then all of the team's games incl. scorer duties as dashed amber cards, with the team's record ("1 S · 1 N", needs section 3) in the heading. Supersedes the card's "Design notes" in the spec. · `opus`
-- [ ] All four card states from the design board (`MeinTeamZustaende`): game running, scorer duty first, before the first game, all games played (record, difference, place, link to the Tabelle; needs section 3 for record and place). · `sonnet`
+- [x] All four card states from the design board (`MeinTeamZustaende`): game running, scorer duty first, before the first game, all games played (record, difference, place, link to the Tabelle; needs section 3 for record and place). · `sonnet`
 
 **Tabelle**
 

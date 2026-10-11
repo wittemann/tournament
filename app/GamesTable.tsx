@@ -23,6 +23,8 @@ import {
   getTeamOutlook,
   teamRecord,
   teamSchedule,
+  teamSummaries,
+  awaitsPlacement,
 } from '@/lib/teamOutlook';
 
 export default function GamesTable({
@@ -127,6 +129,16 @@ export default function GamesTable({
     [games, teams, activeTeam, activeClass],
   );
 
+  const waiting = useMemo(
+    () => outlook?.done === true && awaitsPlacement(games, teams, activeTeam),
+    [games, teams, activeTeam, outlook],
+  );
+  const summaries = useMemo(
+    () =>
+      outlook?.done && !waiting ? teamSummaries(games, teams, activeTeam) : [],
+    [games, teams, activeTeam, outlook, waiting],
+  );
+
   // Index of the first upcoming entry, if there are earlier ones before it.
   // The "now" line is drawn right above it.
   const nowIndex = useMemo(() => {
@@ -217,6 +229,8 @@ export default function GamesTable({
               team={activeTeam}
               outlook={outlook}
               sides={sides}
+              summaries={summaries}
+              waiting={waiting}
               now={now}
             />
           </div>
