@@ -150,15 +150,15 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 ## 7. Content for 2026 (data, not code)
 
 - [ ] FAQ: links point to the 2025 PDFs (`…/2025/12/Regeln-X-Mas-Ball-2025.pdf`, `Anfahrt_Parken.pdf`). Update them for 2026. · **(owner)** (2026 PDF links)
-- [ ] FAQ typos: "Her findest du" → "Hier", "Sporthall" → "Sporthalle", "Medallien" → "Medaillen". · `haiku`
-- [ ] Item names: remove the trailing space in "Süßigkeiten / Chips / Erdnüsse ". Reset the sold-out flags. · `haiku`
+- [ ] FAQ typos: "Her findest du" → "Hier", "Sporthall" → "Sporthalle", "Medallien" → "Medaillen". · `haiku` "Hier" and "Sporthalle" are already fixed in the live data (checked 2026-10-11); "Medallien" (faq id 2, question) is left. The live-data write was blocked in the overnight run, so it needs the owner.
+- [ ] Item names: remove the trailing space in "Süßigkeiten / Chips / Erdnüsse ". Reset the sold-out flags. · `haiku` Still open (items id 18; sold out on 2026-10-11: ids 12, 13, 14); the live-data write was blocked in the overnight run.
 
 ## 8. Features (see specs)
 
 The "Mein Team" card and the bracket are built in the redesign's style (section 6).
 
-- [ ] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above. · built in section 6
-- [ ] [Playoff bracket](specs/playoff-bracket.md): needs section 3. · built in sections 3 and 6
+- [x] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above. · built in section 6
+- [x] [Playoff bracket](specs/playoff-bracket.md): needs section 3. · built in sections 3 and 6
 - [ ] [Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags (optional, ADR still Proposed): Supabase Auth, RLS write policies, rejects tied placement scores. · later, not in this run
 
 ## 9. 2026 schedule (last)
