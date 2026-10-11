@@ -29,10 +29,11 @@ When a team is selected in the team filter, show a card above the game list that
 - The selection is already saved per device (`usePersistedState('selectedTeam')`), so returning visitors see the card immediately.
 
 **"Nächstes Spiel"**
-- The team's first game (`hometeam` or `awayteam` = team) whose `time` (HH:MM) is ≥ now and that has no result yet (`homescore == null`).
+- The team's first game (`hometeam` or `awayteam` = team) whose `time` (HH:MM) is ≥ now and that has no result yet (both scores null).
 - Show time, hall, opponent and a relative hint: "in 12 Min." if it starts within 60 minutes, "läuft" if it started at most 30 minutes ago and has no result yet.
-  - The 30-minute window is an assumption (2025 games were in 30-minute slots). Make it a constant.
-- If a game has started but has no result, it's the "current" game. Show it with "läuft" instead of jumping to the next one.
+  - The 30-minute window is an assumption (2025 games were in 30-minute slots). Make it a constant: `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts`.
+- If a game has started at most 30 minutes ago and has no result (`isRunning` in `lib/gameStatus.ts`), it's the "current" game. Show it with "läuft" instead of jumping to the next one. A game without a result that started more than 30 minutes ago is neither current nor next: the card moves on (the window is a deliberate cut-off for forgotten results).
+- Time handling ("in 12 Min.", slot status) uses `toMinutes` / `isRunning` from `lib/gameStatus.ts`; don't parse times again elsewhere.
 
 **"Scorer-Dienst"**
 - The team's next upcoming game where it is the `scorer`. Show it only if it's the team's next appointment overall, or if it starts within the next 60 minutes. That way the reminder is visible when it matters, but doesn't take over the card.
