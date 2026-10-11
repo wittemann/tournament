@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+supabase/seed.sql
+docs/design/screens
+next-env.d.ts
+*.tsbuildinfo
+public
+# Markdown: Prettier would rewrite hand-written tables and *emphasis*; left alone on purpose.
+*.md
+# Tool-managed (Claude Code launch config).
+.claude
