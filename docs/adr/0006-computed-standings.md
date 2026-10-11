@@ -73,7 +73,7 @@ The table shows wins, losses, ties and run difference.
 
 **Seeding for placement games.** Rank all teams of a class across groups by group place, then win rate, then run difference. This gives Seed 1…n.
 
-**Placement games** are written into the schedule with placeholders instead of team names, e.g. `Seed 1` vs `Seed 4`, or `Sieger #41` vs `Verlierer #42`. The app resolves them as soon as the referenced groups or games are finished. The structure (semifinals, pairs, round robin) is therefore decided per edition when writing the schedule, and the app doesn't need to know the number of teams.
+**Placement games** are written into the schedule with placeholders instead of team names, e.g. `Seed 1` vs `Seed 4`, or `Sieger #41` vs `Verlierer #42`. The app resolves them as soon as the referenced groups or games are finished. The resolved teams are computed in the client only and never written back to the database (decided 2026-10-11). The structure (semifinals, pairs, round robin) is therefore decided per edition when writing the schedule, and the app doesn't need to know the number of teams.
 
 **Ties.** Group games can end tied. Placement games always have a winner, so the admin entry / validation rejects equal scores there.
 

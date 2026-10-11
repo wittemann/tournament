@@ -78,7 +78,7 @@ All of ADR-0006's open questions, plus:
 
 1. Does the 2026 placement structure stay the same (semifinals + pairs + mini round robin)? *Partly answered (2026-10-10): the organizers would rather not have a mini round robin again, so the [design](../design/README.md) leaves it out. If an odd team count forces one anyway, it would reuse the Tabelle group card.*
 2. Own page `/bracket` or a tab within `/standings`?
-3. Should the resolved team name be written back to `hometeam`/`awayteam` (e.g. by the admin page), or only computed in the client?
+3. Should the resolved team name be written back to `hometeam`/`awayteam` (e.g. by the admin page), or only computed in the client? *Answered (2026-10-11): computed in the client only. `hometeam`/`awayteam` stay empty on placement games, so a corrected group score updates the bracket automatically.*
 
 ## Tasks
 

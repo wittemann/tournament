@@ -24,24 +24,27 @@ Every item goes through these steps:
 
 **Progress bar:** the main session reports to the savvy-progress panel. When a section starts, it calls `progress` with the section as `title`, its items as `tasks` (tier: `haiku` → `light`, `sonnet` → `medium`, `opus` → `heavy`), `total` and phase `delegate`. It calls it again on every phase switch (`review`, back to `delegate`), with `done` raised each time an item is committed, and with `finished: true` when the section is pushed. Each task title must match the Agent `description` used for that item word for word. Build and review sub-agents are told in their brief to call `step` right after reading it (`total` = their plan in 3–8 steps, `done: 0`) and again after each step. If the tools aren't available, skip this; it only draws the bar.
 
+**Deploys:** every push to `main` goes straight to Vercel production (checked 2026-10-11), and the live Supabase project is shared with it. That's accepted for this run: nobody uses the app before the event, so the live site may be half-finished between sections.
+
 **Resuming:** the ticks here and [review-later](review-later.md) are the state. After an interruption, continue with the first unticked item that isn't **(owner)**.
 
 ## 1. Housekeeping (do first)
 
 - [ ] Run `npm ci`. The local `node_modules` has Next 16.0.3, but the lockfile pins the security-fixed 16.0.10. · `haiku`
-- [ ] Dependency update pass: Next 16.4, React 19.3, supabase-js 2.117, daisyUI 5.7, Tailwind 4.3, DOMPurify ([ADR-0002](adr/0002-tech-stack.md)). Major jumps (isomorphic-dompurify 4, ESLint 10, TypeScript 7) only if they upgrade cleanly. · `sonnet`
+- [ ] Dependency update pass: Next 16.4, React 19.3, supabase-js 2.117, daisyUI 5.7, Tailwind 4.3, DOMPurify ([ADR-0002](adr/0002-tech-stack.md)). Major jumps (isomorphic-dompurify 4, ESLint 10, TypeScript 7) only if they pass the check gate without code changes; otherwise stay on the current major and log it in review-later. · `sonnet`
 - [ ] Set up a test runner (Vitest). Nothing in the repo is tested yet, and the standings logic must be. · `haiku`
 - [ ] Scripts for the check gate: `format` / `format:check` (Prettier), `typecheck` (`tsc --noEmit`), `test`. Format the codebase once in its own commit. · `haiku`
 - [ ] Replace the create-next-app README with a real one: setup, env vars, and a pre-event runbook (restore the Supabase project, apply migrations, load games and items, invite admins). · `sonnet`
 - [ ] Add `.env.example` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. · `haiku`
+- [ ] **Sentry integration** (`@sentry/nextjs`): client and server errors, plus realtime/fetch failures from `useRealtimeTable`. Sentry org `wittemann` (EU region, `de.sentry.io`), project `tournament`. The DSN is already in the local `.env.local` as `NEXT_PUBLIC_SENTRY_DSN`; add the key (no value) to `.env.example` and the value to Vercel. An auth token for source maps is optional and never committed. Privacy: `sendDefaultPii: false`, no IP addresses, no session replay, low trace sample rate. Check the current Sentry Next.js docs first. · `sonnet`
 - [ ] Mark the baseline migration as applied in the live project (`supabase migration repair --status applied 20251120000000`) before pushing any new migration ([ADR-0005](adr/0005-schema-as-migrations.md)). · `sonnet`
 
 ## 2. Database (one migration)
 
-- [ ] **Teams as data, not free text.** `games.hometeam`/`awayteam`/`scorer` are free text today. One typo ("Stuttgart1") would silently create a new team in the standings. Add a `teams` table (name, class, group) and reference it from `games`, or at least use a check/enum. This replaces the `team` enum, which needs a migration every year. · `opus`
+- [ ] **Teams as data, not free text.** `games.hometeam`/`awayteam`/`scorer` are free text today. One typo ("Stuttgart1") would silently create a new team in the standings. Add a `teams` table (name, class, group) and reference it from `games`. This replaces the `team` enum, which needs a migration every year. A team is **name + class** (decided 2026-10-11): in 2025, Karlsruhe, Nagold, Remchingen, Schriesheim and Stuttgart 1/2 had a team in both classes. `scorer` references a team of any class (the T-Ball team "Bretten" kept score in Schüler games). The persisted "Mein Team" selection stores the class with the name. Convert the 2025 data in the live database to the new structure, including groups and placeholders (approved; the original stays in `seed.sql`). · `opus`
 - [ ] **New age class "Jugend"** (third class next to Schüler and T-Ball). `games.class` is the `class` enum, so inserting a Jugend game fails until the value is added: `alter type public.class add value 'Jugend';`. The app parts are listed in sections 3 and 4. · `haiku`
-- [ ] **More halls.** `games.location` is the `location` enum (`Halle 1`–`3`, `Essensraum`), so add the new halls to it. Use `add value 'Halle 4' before 'Essensraum'`, because the schedule is sorted by `location` in enum order. The app builds the hall filter from the data, so no code changes are needed. · `haiku`
-- [ ] Add to `games`: `stage` (`group` | `placement`), `label` (e.g. "Halbfinale 1"), `home_ref`/`away_ref` for placeholders (`seed:1`, `winner:41`, `loser:42`) ([ADR-0006](adr/0006-computed-standings.md), [playoff-bracket spec](specs/playoff-bracket.md)). · `opus`
+- [ ] **Halls as data.** `games.location` is the `location` enum (`Halle 1`–`3`, `Essensraum`), so every extra hall needs a migration. The number of halls is only known once the 2026 schedule exists (section 9), so make halls data like teams (a `halls` table with a sort order, or a text column with a check), not a hard-coded enum value. The app builds the hall filter from the data. · `opus`
+- [ ] Add to `games`: `stage` (`group` | `placement`), `label` (e.g. "Halbfinale 1"), `home_ref`/`away_ref` for placeholders (`seed:1`, `winner:41`, `loser:42`). Resolved teams are computed in the app only, never written back; `hometeam`/`awayteam` stay empty on placement games (decided 2026-10-11) ([ADR-0006](adr/0006-computed-standings.md), [playoff-bracket spec](specs/playoff-bracket.md)). · `opus`
 - [ ] **Game number separate from the database id.** The schedule shows `#{game.id}` (49, 32, 50, …), which looks random, and placeholders like "Sieger #41" must reference something stable. Add `games.number`. · `sonnet`
 - [ ] Constraint: placement games can't end in a tie (equal scores rejected) ([ADR-0006](adr/0006-computed-standings.md)). · `sonnet`
 - [ ] Drop the `standings` table once the computed standings are live. Its 2025 contents stay in `supabase/seed.sql`. · `haiku`
@@ -149,7 +152,6 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 - [ ] FAQ: links point to the 2025 PDFs (`…/2025/12/Regeln-X-Mas-Ball-2025.pdf`, `Anfahrt_Parken.pdf`). Update them for 2026. · **(owner)** (2026 PDF links)
 - [ ] FAQ typos: "Her findest du" → "Hier", "Sporthall" → "Sporthalle", "Medallien" → "Medaillen". · `haiku`
 - [ ] Item names: remove the trailing space in "Süßigkeiten / Chips / Erdnüsse ". Reset the sold-out flags. · `haiku`
-- [ ] Load the 2026 teams, groups and schedule (with placeholders for placement games). · **(owner)**
 
 ## 8. Features (see specs)
 
@@ -158,3 +160,10 @@ The "Mein Team" card and the bracket are built in the redesign's style (section 
 - [ ] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above. · built in section 6
 - [ ] [Playoff bracket](specs/playoff-bracket.md): needs section 3. · built in sections 3 and 6
 - [ ] [Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags (optional, ADR still Proposed): Supabase Auth, RLS write policies, rejects tied placement scores. · later, not in this run
+
+## 9. 2026 schedule (last)
+
+The app has to be ready before this point: teams register first, and the schedule built from the registrations sets the start and end time, the number of halls, groups and teams per class, and the placement structure. Until then, nothing in the app may hard-code any of these. Halls, classes, groups, times and the "Ende" info tile all come from the data, and the app is tested against the 2025 data plus made-up variants (more halls, a Jugend class, a quarterfinal bracket).
+
+- [ ] Load the 2026 teams, groups, halls and schedule (with placeholders for placement games). · **(owner)**
+- [ ] Smoke test with the real schedule: every page at phone width, standings and bracket resolve correctly. · `sonnet`
