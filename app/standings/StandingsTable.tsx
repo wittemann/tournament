@@ -2,7 +2,7 @@ import type { GroupTable, PlacementEntry, TableRow } from '@/lib/standings';
 
 function GroupTableView({ table }: { table: GroupTable }) {
   return (
-    <div>
+    <div className="rounded-card bg-base-100 p-4">
       <h3 className="text-lg font-semibold mb-2">Gruppe {table.group}</h3>
       <div className="overflow-x-auto">
         <table className="table table-zebra table-sm">
@@ -57,7 +57,7 @@ function GroupTableView({ table }: { table: GroupTable }) {
 
 function RankingView({ entries }: { entries: PlacementEntry[] }) {
   return (
-    <div>
+    <div className="rounded-card bg-base-100 p-4">
       <h3 className="text-lg font-semibold mb-2">Endstand</h3>
       <div className="overflow-x-auto">
         <table className="table table-zebra table-sm">
@@ -97,7 +97,7 @@ export default function StandingsTable({
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
       {tables.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="mb-6 space-y-4">
           {tables.map((table) => (
             <GroupTableView key={table.group} table={table} />
           ))}

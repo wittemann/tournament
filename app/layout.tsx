@@ -34,10 +34,11 @@ export default function RootLayout({
       className={`${barlow.variable} ${barlowCondensed.variable}`}
     >
       <body className="bg-base-200 text-base-content min-h-screen">
-        <div className="max-w-[1024px] mx-auto bg-base-100">
+        {/* Phone column on every screen size (no desktop layout); the page itself is the ground. */}
+        <div className="max-w-[480px] mx-auto">
           <Header />
           <Nav />
-          <div className="px-4 py-4 bg-base-100">{children}</div>
+          <div className="px-4 py-4">{children}</div>
         </div>
       </body>
     </html>

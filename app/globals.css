@@ -66,6 +66,13 @@
   --color-class-jugend-bg: #dce6f7;
   --color-class-jugend-ink: #1e4a8c;
 
+  /* Radii from docs/design/README.md (cards use --radius-box, controls --radius-field).
+     Named so pages can write rounded-header, rounded-card, rounded-game, rounded-control. */
+  --radius-header: 20px;
+  --radius-card: 16px;
+  --radius-game: 14px;
+  --radius-control: 12px;
+
   /* Fonts from next/font (layout.tsx sets the --font-barlow* variables on <html>). */
   --font-sans: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-barlow-condensed), var(--font-barlow), sans-serif;

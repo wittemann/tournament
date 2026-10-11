@@ -6,7 +6,7 @@ export default function Header() {
   const now = useNow();
 
   return (
-    <header className="bg-primary text-primary-content mx-3 mt-3 flex items-center gap-2.5 rounded-[20px] py-2.5 pr-3.5 pl-3">
+    <header className="bg-primary text-primary-content mx-3 mt-3 flex items-center gap-2.5 rounded-header py-2.5 pr-3.5 pl-3">
       {/* Decorative: the title next to it already names the club. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

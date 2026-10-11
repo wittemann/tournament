@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
 import ClassTag from './ClassTag';
@@ -212,13 +212,13 @@ export default function GamesTable({
         </div>
       )}
 
-      {/* Mobile card layout */}
-      <div className="block lg:hidden space-y-3">
+      {/* Game cards */}
+      <div className="space-y-3">
         {filteredGames.map((game, index) => {
           return (
             <div key={game.id}>
               {index === nowIndex && nowLine}
-              <div className="card bg-base-200 shadow-sm p-4">
+              <div className="rounded-game bg-base-100 p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 items-center">
                     {game.number != null && (
@@ -265,71 +265,6 @@ export default function GamesTable({
             </div>
           );
         })}
-      </div>
-
-      {/* Desktop table layout */}
-      <div className="hidden lg:block overflow-x-auto">
-        <table className="table table-zebra">
-          <thead>
-            <tr>
-              <th># / Klasse</th>
-              <th>Zeit / Ort</th>
-              <th>Home</th>
-              <th>Away</th>
-              <th>Score</th>
-              <th>Scorer</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredGames.map((game, index) => (
-              <Fragment key={game.id}>
-                {index === nowIndex && (
-                  <tr>
-                    <td colSpan={6} className="p-0">
-                      {nowLine}
-                    </td>
-                  </tr>
-                )}
-                <tr>
-                  <td>
-                    <div className="flex gap-2 items-center">
-                      {game.number != null && <span>#{game.number}</span>}
-                      <ClassTag cls={game.class} />
-                      {game.label && (
-                        <span className="text-sm text-gray-600">
-                          {game.label}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="text-base">
-                    {game.time.slice(0, 5)} Uhr | {game.location}
-                  </td>
-                  {game.eventname ? (
-                    <td colSpan={4} className="font-semibold text-center">
-                      {game.eventname}
-                    </td>
-                  ) : (
-                    <>
-                      <td>
-                        <SideName side={sides.get(game.id)?.home} />
-                      </td>
-                      <td>
-                        <SideName side={sides.get(game.id)?.away} />
-                      </td>
-                      <td>
-                        {game.homescore != null
-                          ? `${game.homescore}:${game.awayscore}`
-                          : ''}
-                      </td>
-                      <td>{game.scorer}</td>
-                    </>
-                  )}
-                </tr>
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
       </div>
     </>
   );

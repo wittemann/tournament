@@ -96,7 +96,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 - [x] Fonts: Barlow (400–700) and Barlow Condensed (600/700) via `next/font/google`, exposed as CSS variables / Tailwind font families (`font-sans`, `font-display`). · `haiku`
 - [x] Header: rounded green card with the kangaroo, "XMAS-BALL", "Bretten Kangaroos" and the current time as a pill (from `useNow`). Replaces the full-width green bar and `logo.png` in `layout.tsx`. · `sonnet`
 - [x] Main navigation: five pill tabs (Spielplan, Tabelle, Finalrunde, Verkauf, Info), each as wide as its text, current page as a dark pill with `aria-current="page"`. No horizontal scrolling. Check that it still fits at 360 px (and decide what happens at 320 px, e.g. smaller text). · `sonnet`
-- [ ] Page background `ground`, content on white cards with the radii from the design (header 20, cards 16, game cards 14, controls 12). · `haiku`
+- [x] Page background `ground`, content on white cards with the radii from the design (header 20, cards 16, game cards 14, controls 12). · `haiku`
 
 **Shared components**
 
