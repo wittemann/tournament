@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import Spinner from './Spinner';
 import StatusCard from './StatusCard';
 import ConnectionBanner from './ConnectionBanner';
@@ -18,6 +19,7 @@ import { toMinutes } from '@/lib/gameStatus';
 import { classOptions, hallOptions } from '@/lib/filterOptions';
 import { playingTeamNames, type GameSides } from '@/lib/schedule';
 import { groupBySlot, slotStatus } from '@/lib/slots';
+import { tournamentFinished } from '@/lib/tournamentStatus';
 import {
   formatRecord,
   getTeamOutlook,
@@ -158,9 +160,21 @@ export default function GamesTable({
     return i > 0 ? i : -1;
   }, [slots, now]);
 
+  const finished = !loading && tournamentFinished(games);
+
   return (
     <>
       <ConnectionBanner show={error} />
+      {finished && (
+        <div className="mb-4 flex flex-col items-center gap-1 rounded-card bg-base-100 px-4 py-4 text-center">
+          <h2 className="font-display text-2xl font-bold uppercase">
+            Turnier beendet
+          </h2>
+          <Link href="/finalrunde" className="link link-primary font-semibold">
+            Endstand ansehen
+          </Link>
+        </div>
+      )}
       {/* Main control: "Mein Team" (design: Main / SpielplanAlle) */}
       <label htmlFor="team-filter" className="mb-4 flex flex-col gap-1.5">
         <span className="text-xs font-bold uppercase tracking-wider text-muted">

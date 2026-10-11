@@ -5,6 +5,7 @@ import SegmentedControl from '../SegmentedControl';
 import Spinner from '../Spinner';
 import ConnectionBanner from '../ConnectionBanner';
 import StandingsTable from './StandingsTable';
+import StatusCard from '../StatusCard';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
@@ -62,6 +63,14 @@ export default function Page() {
             onChange={setStoredClass}
           />
         )}
+        {active &&
+          active.tables.some((t) => t.total > 0) &&
+          active.tables.every((t) => t.played === 0) && (
+            <StatusCard>
+              Noch keine Ergebnisse. Die Tabelle füllt sich mit dem ersten
+              Spiel.
+            </StatusCard>
+          )}
         {active && (
           <StandingsTable
             tables={active.tables}

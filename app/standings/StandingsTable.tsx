@@ -97,7 +97,14 @@ function GroupTableView({
                 <td
                   className={`py-3 pl-4 font-display text-lg font-bold ${mine ? `${MINE_BG} ${MINE_STRIP}` : ''}`}
                 >
-                  {row.place}
+                  {table.played === 0 ? (
+                    <>
+                      <span aria-hidden="true">–</span>
+                      <span className="sr-only">noch keine Platzierung</span>
+                    </>
+                  ) : (
+                    row.place
+                  )}
                 </td>
                 <td
                   className={`px-2 py-3 font-semibold ${mine ? MINE_BG : ''}`}

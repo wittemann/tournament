@@ -460,8 +460,21 @@ export default function Bracket({
   if (!bracket && placementGames.length === 0)
     return <StatusCard>Für diese Klasse gibt es keine Finalrunde.</StatusCard>;
 
+  const endstand = (
+    <section aria-label="Endstand" className="flex flex-col gap-2.5">
+      <SectionHeading>Endstand</SectionHeading>
+      <Endstand
+        ranking={ranking}
+        hasFinal={hasFinal}
+        selectedTeam={selectedTeam}
+      />
+    </section>
+  );
+
   return (
     <div className="space-y-6">
+      {/* Once the Endstand is decided, it is what people look for. */}
+      {ranking && endstand}
       {bracket && (
         <section
           aria-label={`${rounds.join(', ')} und ${finalName}`}
@@ -505,14 +518,7 @@ export default function Bracket({
           <PlacementList games={placementGames} ctx={ctx} />
         </section>
       )}
-      <section aria-label="Endstand" className="flex flex-col gap-2.5">
-        <SectionHeading>Endstand</SectionHeading>
-        <Endstand
-          ranking={ranking}
-          hasFinal={hasFinal}
-          selectedTeam={selectedTeam}
-        />
-      </section>
+      {!ranking && endstand}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import SegmentedControl from '../SegmentedControl';
 import Spinner from '../Spinner';
 import ConnectionBanner from '../ConnectionBanner';
+import StatusCard from '../StatusCard';
 import Bracket from './Bracket';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
@@ -13,6 +14,7 @@ import { classesInUse } from '@/lib/classesInUse';
 import { buildFinalrunde } from '@/lib/bracket';
 import { gameSides } from '@/lib/schedule';
 import { standingsContext } from '@/lib/standings';
+import { finalrundeStart } from '@/lib/tournamentStatus';
 
 // Bracket and placement games per class (docs/specs/playoff-bracket.md).
 // Shares the Tabelle's class key, so the chosen class carries over.
@@ -44,6 +46,8 @@ export default function Page() {
     [games, teams, active],
   );
 
+  const start = active ? finalrundeStart(games, active) : null;
+
   if (gamesLoading || teamsLoading) return <Spinner />;
 
   return (
@@ -57,6 +61,11 @@ export default function Page() {
             value={active ?? ''}
             onChange={setStoredClass}
           />
+        )}
+        {start && (
+          <StatusCard>
+            Die Finalrunde beginnt um {start.slice(0, 5)}.
+          </StatusCard>
         )}
         {finalrunde && (
           <Bracket

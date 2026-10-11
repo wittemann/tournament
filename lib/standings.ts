@@ -88,9 +88,9 @@ interface Stats {
   runsAgainst: number;
 }
 
-const hasResult = (
-  g: GameLike,
-): g is GameLike & { homescore: number; awayscore: number } =>
+export const hasResult = <G extends Pick<GameLike, 'homescore' | 'awayscore'>>(
+  g: G,
+): g is G & { homescore: number; awayscore: number } =>
   g.homescore !== null && g.awayscore !== null;
 
 /** Stats for `names` over the scored games played among exactly those teams. */
