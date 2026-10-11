@@ -1,20 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { classColour } from '@/lib/classColours';
+import { classColour, neutralClassColour } from '@/lib/classColours';
 
 describe('classColour', () => {
   it('colours Schüler green', () => {
-    expect(classColour('Schüler')).toBe('bg-green-100');
+    expect(classColour('Schüler')).toBe(
+      'bg-class-schueler-bg text-class-schueler-ink',
+    );
   });
 
-  it('colours T-Ball amber', () => {
-    expect(classColour('T-Ball')).toBe('bg-amber-100');
+  it('colours T-Ball orange', () => {
+    expect(classColour('T-Ball')).toBe(
+      'bg-class-tball-bg text-class-tball-ink',
+    );
   });
 
   it('colours Jugend blue', () => {
-    expect(classColour('Jugend')).toBe('bg-blue-100');
+    expect(classColour('Jugend')).toBe(
+      'bg-class-jugend-bg text-class-jugend-ink',
+    );
   });
 
-  it('leaves unknown classes neutral', () => {
-    expect(classColour('Erwachsene')).toBe('');
+  it('gives unknown classes the neutral tag', () => {
+    expect(classColour('Erwachsene')).toBe(neutralClassColour);
+    expect(neutralClassColour).toBe('bg-base-300 text-muted-2');
   });
 });

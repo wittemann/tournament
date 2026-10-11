@@ -101,7 +101,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 **Shared components**
 
 - [x] `SegmentedControl`: grey track, white selected option, ≥ 40 px high, optional uppercase label in front (fixed width so several rows line up). Options come from the data. Proper semantics: a radio group, not a fake tab list, since it filters. · `sonnet`
-- [ ] `ClassTag` with one colour map per class (Schüler green, T-Ball orange, Jugend blue; classes taken from the data, unknown classes get a neutral tag). · `haiku`
+- [x] `ClassTag` with one colour map per class (Schüler green, T-Ball orange, Jugend blue; classes taken from the data, unknown classes get a neutral tag). · `haiku`
 - [ ] `GameCard` with all states from the design: upcoming (score "–"), running (red outline, "läuft"), played (muted, winner bold), the selected team's next game (green outline), placement game with label ("Platz 9/10") and placeholders ("5. Gruppe A", "Sieger HF 2", needs section 3). No `#id`. Optional "Scorer: …" line in the all-teams view. · `opus`
 - [ ] Definition of "läuft": started, no result yet, at most 30 minutes ago. Same constant as in the [next-game-card spec](specs/next-game-card.md), shared in `lib/`. · `haiku`
 - [ ] `EventCard` for rows with `eventname` (Siegerehrung, Mittagspause): dark card, condensed uppercase title. · `haiku`

@@ -1,10 +1,16 @@
-/** Background colour per class badge. Unknown classes get no colour class. */
+/**
+ * Tag classes per class, from the theme tokens in app/globals.css.
+ * Full class strings stay literal so Tailwind picks them up.
+ */
 export const classColours: Record<string, string> = {
-  Schüler: 'bg-green-100',
-  'T-Ball': 'bg-amber-100',
-  Jugend: 'bg-blue-100',
+  Schüler: 'bg-class-schueler-bg text-class-schueler-ink',
+  'T-Ball': 'bg-class-tball-bg text-class-tball-ink',
+  Jugend: 'bg-class-jugend-bg text-class-jugend-ink',
 };
 
+/** Unknown classes get a neutral tag. */
+export const neutralClassColour = 'bg-base-300 text-muted-2';
+
 export function classColour(cls: string): string {
-  return classColours[cls] ?? '';
+  return classColours[cls] ?? neutralClassColour;
 }
