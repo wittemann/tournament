@@ -4,11 +4,11 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 
 ## Decisions made without the owner
 
-_None yet._
+- **Section 1 order:** the test runner and check-gate scripts were set up before the dependency update pass, so the update could be verified against the full gate. `npm ci` ran in the main session (no diff to review).
 
 ## Assumptions
 
-_None yet._
+- npm 11 skips install scripts not covered by `allowScripts` (`sharp`, `unrs-resolver`). Both ship prebuilt binaries, so the build works without them; nothing was approved.
 
 ## Skipped items
 

@@ -30,7 +30,7 @@ Every item goes through these steps:
 
 ## 1. Housekeeping (do first)
 
-- [ ] Run `npm ci`. The local `node_modules` has Next 16.0.3, but the lockfile pins the security-fixed 16.0.10. · `haiku`
+- [x] Run `npm ci`. The local `node_modules` has Next 16.0.3, but the lockfile pins the security-fixed 16.0.10. · `haiku`
 - [ ] Dependency update pass: Next 16.4, React 19.3, supabase-js 2.117, daisyUI 5.7, Tailwind 4.3, DOMPurify ([ADR-0002](adr/0002-tech-stack.md)). Major jumps (isomorphic-dompurify 4, ESLint 10, TypeScript 7) only if they pass the check gate without code changes; otherwise stay on the current major and log it in review-later. · `sonnet`
 - [ ] Set up a test runner (Vitest). Nothing in the repo is tested yet, and the standings logic must be. · `haiku`
 - [ ] Scripts for the check gate: `format` / `format:check` (Prettier), `typecheck` (`tsc --noEmit`), `test`. Format the codebase once in its own commit. · `haiku`
