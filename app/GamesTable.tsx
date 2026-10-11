@@ -170,7 +170,10 @@ export default function GamesTable({
           <h2 className="font-display text-2xl font-bold uppercase">
             Turnier beendet
           </h2>
-          <Link href="/finalrunde" className="link link-primary font-semibold">
+          <Link
+            href="/finalrunde"
+            className="link link-primary inline-flex min-h-10 items-center px-3 font-semibold"
+          >
             Endstand ansehen
           </Link>
         </div>

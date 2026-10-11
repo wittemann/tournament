@@ -35,7 +35,7 @@ All data in the mockups is illustrative (2025 team names, invented scores and ti
 | `ink` | `#142019` | Text, active tab, event cards (Siegerehrung), final |
 | `muted` | `#56645A` | Secondary text, labels, played games |
 | `muted-2` | `#3E4B42` | Inactive tabs and switch options |
-| `faint` | `#8A968D` | Placeholder score "–", crossed-out prices |
+| `faint` | `#818D84` | Borders and connector lines only (3:1 on ground); never text |
 | `ground` | `#EEF2EC` | Page background |
 | `surface` | `#FFFFFF` | Cards |
 | `track` | `#DCE3DA` | Background of segmented switches |

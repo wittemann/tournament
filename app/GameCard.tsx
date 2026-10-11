@@ -56,7 +56,7 @@ function SideRow({
           {score}
         </span>
       ) : (
-        <span className="text-faint font-normal">
+        <span className="font-normal text-muted">
           <span aria-hidden="true">–</span>
           <span className="sr-only">kein Ergebnis</span>
         </span>

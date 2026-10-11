@@ -49,7 +49,7 @@ function Score({
       {value}
     </span>
   ) : (
-    <span className={`font-normal opacity-70 ${className}`}>
+    <span className={`font-normal ${className}`}>
       <span aria-hidden="true">–</span>
       <span className="sr-only">kein Ergebnis</span>
     </span>
@@ -413,7 +413,7 @@ function Endstand({
               <span className="sr-only">.</span>
             </span>
             <span
-              className={`min-w-0 flex-1 ${entry.team ? 'font-semibold' : 'text-faint'}`}
+              className={`min-w-0 flex-1 ${entry.team ? 'font-semibold' : 'text-muted'}`}
             >
               {entry.team ?? (
                 <>
