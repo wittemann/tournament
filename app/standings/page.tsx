@@ -8,34 +8,28 @@ import StandingsTable from './StandingsTable';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
-import { Constants } from '@/lib/database.types';
+import { classesInUse } from '@/lib/classesInUse';
 import { cutOff } from '@/lib/cutOff';
 import {
   groupTables,
   placementRanking,
   standingsContext,
-  type GameClass,
 } from '@/lib/standings';
 
-// Stable display order: the enum order of the schema, not alphabetical.
-const CLASS_ORDER: readonly GameClass[] = Constants.public.Enums.class;
-
 function useStandingsByClass(games: Game[], teams: Team[]) {
-  return useMemo(() => {
-    const present = new Set<GameClass>([
-      ...teams.map((t) => t.class),
-      ...games.map((g) => g.class),
-    ]);
-    return CLASS_ORDER.filter((cls) => present.has(cls)).map((cls) => {
-      const ctx = standingsContext(games, teams, cls);
-      return {
-        cls,
-        tables: groupTables(games, teams, cls),
-        ranking: placementRanking(ctx),
-        cutOff: cutOff(ctx),
-      };
-    });
-  }, [games, teams]);
+  return useMemo(
+    () =>
+      classesInUse(games, teams).map((cls) => {
+        const ctx = standingsContext(games, teams, cls);
+        return {
+          cls,
+          tables: groupTables(games, teams, cls),
+          ranking: placementRanking(ctx),
+          cutOff: cutOff(ctx),
+        };
+      }),
+    [games, teams],
+  );
 }
 
 export default function Page() {
