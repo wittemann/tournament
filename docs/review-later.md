@@ -8,7 +8,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 
 - **ESLint 10 taken** although `eslint-plugin-import`, `eslint-plugin-jsx-a11y` and `eslint-plugin-react` (via `eslint-config-next` 16.4.0) declare peer `eslint` ≤ 9. Clean `npm ci` / `npm install` succeed with peer warnings only, and their rules were checked to fire under ESLint 10. Revert to `^9` if a future install hard-fails.
 - **Vitest 5 and `@types/node` 24 taken** beyond the update list: Vitest 5 needs `@types/node` ≥ 22, and Node 24 is what runs locally.
-- **Node floor:** isomorphic-dompurify 4 (jsdom 30) needs Node `^22.22.2 || ^24.15.0 || >=26`. The Vercel project's Node setting couldn't be checked (connector has no access to the scope); it must be 24.x (or 22.22.2+). Consider `"engines": { "node": ">=22.22.2" }` in package.json.
+- **Node floor:** isomorphic-dompurify 4 (jsdom 30) needs Node `^22.22.2 || ^24.15.0 || >=26`. Done 2026-10-11: the owner switched the Vercel project from Node 22.x to 24.x. Consider `"engines": { "node": ">=22.22.2" }` in package.json.
 - Next 16.4.0 was five days old when taken; pick up 16.4.x patches before the event.
 - `npm audit`: 5 high findings remain in `braces`/`micromatch`/`fast-glob` under `@next/eslint-plugin-next` (dev tooling only; the suggested fix would downgrade `eslint-config-next` to 14).
 - **Baseline migration recorded without the CLI:** no Supabase CLI or DB password here, so `supabase_migrations.schema_migrations` was created the way the CLI does it (version, statements, name) and the row `20251120000000 initial_schema` inserted via the MCP. `list_migrations` now shows it. The auto-mode classifier blocked this once; the owner approved live DB writes in chat.
@@ -27,7 +27,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 ## Skipped items
 
 - TypeScript 7 not taken (stays on 5.9): `npm run lint` crashes with "typescript-eslint does not support TS 7.0" (pulled in by `eslint-config-next` 16.4.0). Revisit when typescript-eslint supports TS 7.
-- Sentry: the Vercel env var could not be set from here. Owner: add `NEXT_PUBLIC_SENTRY_DSN` to Vercel (Production + Preview); optionally `SENTRY_AUTH_TOKEN` for source map upload (build uploads are skipped without it). IPs are kept out by `dataCollection.userInfo: false` (plus a `beforeSend` backstop); additionally enable "Prevent Storing of IP Addresses" in the Sentry project (Settings → Security & Privacy) and set a rate limit / spike protection on the project as a quota backstop. If ad blockers swallow events, `tunnelRoute` in `withSentryConfig` is an option (left off).
+- Sentry: the owner added `NEXT_PUBLIC_SENTRY_DSN` to Vercel Production (2026-10-11); Preview deployments still have none, so they don't report. Still open: optionally `SENTRY_AUTH_TOKEN` for source map upload (build uploads are skipped without it). IPs are kept out by `dataCollection.userInfo: false` (plus a `beforeSend` backstop); additionally enable "Prevent Storing of IP Addresses" in the Sentry project (Settings → Security & Privacy) and set a rate limit / spike protection on the project as a quota backstop. If ad blockers swallow events, `tunnelRoute` in `withSentryConfig` is an option (left off).
 
 ## Deferred review findings
 
