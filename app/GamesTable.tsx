@@ -4,26 +4,11 @@ import { useMemo } from 'react';
 import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
 import ClassTag from './ClassTag';
+import GameCard from './GameCard';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
-import { playingTeamNames, type GameSides, type Side } from '@/lib/schedule';
-
-/** A team name, or for placement games the resolved name plus its placeholder. */
-function SideName({ side }: { side: Side | undefined }) {
-  if (!side) return null;
-  if (!side.ref) return <>{side.team}</>;
-  if (!side.team)
-    return <span className="text-gray-600 font-normal">{side.ref}</span>;
-  return (
-    <>
-      <span className="block">{side.team}</span>
-      <span className="block text-xs font-normal text-gray-600">
-        {side.ref}
-      </span>
-    </>
-  );
-}
+import { playingTeamNames, type GameSides } from '@/lib/schedule';
 
 export default function GamesTable({
   games,
@@ -218,50 +203,27 @@ export default function GamesTable({
           return (
             <div key={game.id}>
               {index === nowIndex && nowLine}
-              <div className="rounded-game bg-base-100 p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex gap-2 items-center">
-                    {game.number != null && (
-                      <span className="badge badge-sm">#{game.number}</span>
-                    )}
+              {game.eventname ? (
+                <div className="rounded-game bg-base-100 p-4">
+                  <div className="flex justify-between items-start mb-2">
                     <ClassTag cls={game.class} />
+                    <span className="text-base">
+                      {game.time.slice(0, 5)} Uhr | {game.location}
+                    </span>
                   </div>
-                  <span className="text-base">
-                    {game.time.slice(0, 5)} Uhr | {game.location}
-                  </span>
-                </div>
-                {game.eventname ? (
                   <div className="text-center font-semibold text-lg py-2">
                     {game.eventname}
                   </div>
-                ) : (
-                  <>
-                    {game.label && (
-                      <div className="text-center text-sm text-gray-600 mb-1">
-                        {game.label}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-3 items-center gap-2 mb-2">
-                      <span className="font-semibold text-right">
-                        <SideName side={sides.get(game.id)?.home} />
-                      </span>
-                      {game.homescore != null && (
-                        <span className="text-lg font-bold text-center">
-                          {game.homescore}:{game.awayscore}
-                        </span>
-                      )}
-                      <span className="font-semibold text-left">
-                        <SideName side={sides.get(game.id)?.away} />
-                      </span>
-                    </div>
-                    {game.scorer && (
-                      <div className="text-sm text-gray-500">
-                        Scorer: {game.scorer}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+                </div>
+              ) : (
+                <GameCard
+                  game={game}
+                  sides={sides.get(game.id)}
+                  now={now}
+                  showClass
+                  showScorer
+                />
+              )}
             </div>
           );
         })}

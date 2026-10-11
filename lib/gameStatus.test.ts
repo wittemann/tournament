@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   RUNNING_WINDOW_MINUTES,
+  gameState,
   isRunning,
   toMinutes,
   type RunningCandidate,
@@ -73,5 +74,47 @@ describe('isRunning', () => {
     expect(isRunning(g, '10:15')).toBe(true);
     expect(isRunning(g, '10:45')).toBe(true);
     expect(isRunning(g, '10:46')).toBe(false);
+  });
+});
+
+describe('gameState', () => {
+  it('is upcoming before the start and before mount', () => {
+    expect(gameState(game(), '09:59')).toEqual({
+      phase: 'upcoming',
+      winner: null,
+    });
+    expect(gameState(game(), null).phase).toBe('upcoming');
+  });
+
+  it('is running inside the window without a result', () => {
+    expect(gameState(game(), '10:15')).toEqual({
+      phase: 'running',
+      winner: null,
+    });
+  });
+
+  it('is upcoming again when the window passed without a result', () => {
+    expect(gameState(game(), '10:31').phase).toBe('upcoming');
+  });
+
+  it('is played with the winning side once scores are in', () => {
+    expect(gameState(game({ homescore: 7, awayscore: 3 }), '10:15')).toEqual({
+      phase: 'played',
+      winner: 'home',
+    });
+    expect(gameState(game({ homescore: 2, awayscore: 9 }), null).winner).toBe(
+      'away',
+    );
+  });
+
+  it('has no winner on a tie or a half-entered result', () => {
+    expect(gameState(game({ homescore: 4, awayscore: 4 }), '12:00')).toEqual({
+      phase: 'played',
+      winner: null,
+    });
+    expect(gameState(game({ homescore: 4 }), '10:05')).toEqual({
+      phase: 'played',
+      winner: null,
+    });
   });
 });

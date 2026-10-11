@@ -44,3 +44,38 @@ export function isRunning(game: RunningCandidate, now: string): boolean {
   const elapsed = toMinutes(now) - toMinutes(game.time);
   return elapsed >= 0 && elapsed <= RUNNING_WINDOW_MINUTES;
 }
+
+export type GamePhase = 'upcoming' | 'running' | 'played';
+
+export interface GameState {
+  phase: GamePhase;
+  /** Side with the higher score; null unless both scores are in and differ. */
+  winner: 'home' | 'away' | null;
+}
+
+/**
+ * Display state of a game card. `now` is "HH:MM" or null before mount (then
+ * nothing counts as running).
+ *
+ * - played: a result is entered (at least one score, matching isRunning).
+ * - running: isRunning() at `now`.
+ * - upcoming: everything else, also a past game whose result is still missing
+ *   after the running window.
+ */
+export function gameState(
+  game: RunningCandidate,
+  now: string | null,
+): GameState {
+  const { homescore: home, awayscore: away } = game;
+  if (home != null || away != null) {
+    const winner =
+      home == null || away == null || home === away
+        ? null
+        : home > away
+          ? 'home'
+          : 'away';
+    return { phase: 'played', winner };
+  }
+  if (now && isRunning(game, now)) return { phase: 'running', winner: null };
+  return { phase: 'upcoming', winner: null };
+}

@@ -11,21 +11,38 @@ import {
   standingsContext,
 } from './standings';
 
+/** Abbreviations for referenced game labels: "Halbfinale 2" → "HF 2". */
+const LABEL_ABBREVIATIONS: [RegExp, string][] = [
+  [/^Halbfinale\b/, 'HF'],
+  [/^Viertelfinale\b/, 'VF'],
+];
+
+function shortLabel(label: string): string {
+  for (const [pattern, short] of LABEL_ABBREVIATIONS) {
+    if (pattern.test(label)) return label.replace(pattern, short);
+  }
+  return label;
+}
+
 /**
  * Short German label for a placeholder ref, shown while it is unresolved and
  * as a small hint next to the resolved team.
  *
  *   seed:1      → "Seed 1"
  *   group:A:5   → "5. Gruppe A"
- *   winner:44   → "Sieger Spiel 44"
- *   loser:45    → "Verlierer Spiel 45"
+ *   winner:44   → "Sieger HF 2"        (game 44 has label "Halbfinale 2")
+ *   winner:44   → "Sieger Spiel 44"    (game 44 has no label)
+ *   loser:45    → "Verlierer Platz 5/6"
  *
- * winner:/loser: always use the referenced game's `games.number`, never its
- * label ("Sieger HF 2"): predictable, needs no lookup, and works for any
- * bracket shape. Invalid refs are returned unchanged so data errors stay
- * visible instead of rendering blank.
+ * winner:/loser: use the referenced game's label when `labelOf` knows one
+ * (Halbfinale/Viertelfinale abbreviated to HF/VF, other labels as they are),
+ * else its `games.number`. Invalid refs are returned unchanged so data errors
+ * stay visible instead of rendering blank.
  */
-export function refLabel(ref: string): string {
+export function refLabel(
+  ref: string,
+  labelOf: (number: number) => string | null | undefined = () => null,
+): string {
   const p = parseRef(ref);
   if (!p) return ref;
   switch (p.kind) {
@@ -34,9 +51,11 @@ export function refLabel(ref: string): string {
     case 'group':
       return `${p.n}. Gruppe ${p.group}`;
     case 'winner':
-      return `Sieger Spiel ${p.number}`;
-    case 'loser':
-      return `Verlierer Spiel ${p.number}`;
+    case 'loser': {
+      const label = labelOf(p.number)?.trim();
+      const game = label ? shortLabel(label) : `Spiel ${p.number}`;
+      return `${p.kind === 'winner' ? 'Sieger' : 'Verlierer'} ${game}`;
+    }
   }
 }
 
@@ -79,14 +98,15 @@ export function gameSides(
       contexts.set(game.class, ctx);
     }
     const { home, away } = resolveGame(game, ctx);
+    const labelOf = (n: number) => ctx.byNumber.get(n)?.label;
     result.set(game.id, {
       home: {
         team: home ?? game.hometeam,
-        ref: game.home_ref ? refLabel(game.home_ref) : null,
+        ref: game.home_ref ? refLabel(game.home_ref, labelOf) : null,
       },
       away: {
         team: away ?? game.awayteam,
-        ref: game.away_ref ? refLabel(game.away_ref) : null,
+        ref: game.away_ref ? refLabel(game.away_ref, labelOf) : null,
       },
     });
   }

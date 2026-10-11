@@ -71,6 +71,25 @@ describe('refLabel', () => {
     expect(refLabel('nonsense')).toBe('nonsense');
     expect(refLabel('')).toBe('');
   });
+
+  it("uses the referenced game's label, abbreviating HF/VF", () => {
+    const labels = new Map<number, string | null>([
+      [40, 'Viertelfinale 3'],
+      [44, 'Halbfinale 2'],
+      [45, 'Platz 5/6'],
+      [46, null],
+      [47, '  '],
+    ]);
+    const labelOf = (n: number) => labels.get(n);
+    expect(refLabel('winner:40', labelOf)).toBe('Sieger VF 3');
+    expect(refLabel('winner:44', labelOf)).toBe('Sieger HF 2');
+    expect(refLabel('loser:44', labelOf)).toBe('Verlierer HF 2');
+    expect(refLabel('loser:45', labelOf)).toBe('Verlierer Platz 5/6');
+    expect(refLabel('winner:46', labelOf)).toBe('Sieger Spiel 46');
+    expect(refLabel('winner:47', labelOf)).toBe('Sieger Spiel 47');
+    expect(refLabel('winner:99', labelOf)).toBe('Sieger Spiel 99');
+    expect(refLabel('group:A:5', labelOf)).toBe('5. Gruppe A');
+  });
 });
 
 describe('gameSides', () => {
@@ -113,6 +132,20 @@ describe('gameSides', () => {
       home: { team: 'B', ref: 'Sieger Spiel 10' },
       away: { team: 'C', ref: '3. Gruppe A' },
     });
+  });
+
+  it("names winner/loser refs after the referenced game's label", () => {
+    const games = [
+      { ...p(20, 'seed:1', 'seed:4'), label: 'Halbfinale 1' },
+      { ...p(21, 'seed:2', 'seed:3'), label: 'Halbfinale 2' },
+      { ...p(22, 'winner:20', 'winner:21'), label: 'Finale' },
+      p(23, 'loser:20', 'loser:22'),
+    ];
+    const sides = gameSides(games, teams);
+    expect(sides.get(1022)?.home.ref).toBe('Sieger HF 1');
+    expect(sides.get(1022)?.away.ref).toBe('Sieger HF 2');
+    expect(sides.get(1023)?.home.ref).toBe('Verlierer HF 1');
+    expect(sides.get(1023)?.away.ref).toBe('Verlierer Finale');
   });
 
   it('resolves each class against its own teams and games', () => {
