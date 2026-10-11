@@ -6,11 +6,13 @@ import StatusCard from './StatusCard';
 import ConnectionBanner from './ConnectionBanner';
 import EventCard from './EventCard';
 import GameCard from './GameCard';
+import SegmentedControl from './SegmentedControl';
 import NowLine from './NowLine';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
 import { toMinutes } from '@/lib/gameStatus';
+import { classOptions, hallOptions } from '@/lib/filterOptions';
 import { playingTeamNames, type GameSides } from '@/lib/schedule';
 
 export default function GamesTable({
@@ -54,23 +56,16 @@ export default function GamesTable({
       ? selectedTeam
       : 'all';
 
-  // Get unique halls from all games
-  const halls = useMemo(() => {
-    const hallSet = new Set<string>();
-    games.forEach((game) => {
-      hallSet.add(game.location);
-    });
-    return Array.from(hallSet).sort();
-  }, [games]);
-
-  // Get unique classes from all games
-  const classes = useMemo(() => {
-    const classSet = new Set<string>();
-    games.forEach((game) => {
-      classSet.add(game.class);
-    });
-    return Array.from(classSet).sort();
-  }, [games]);
+  const classChoices = useMemo(() => classOptions(games), [games]);
+  const hallChoices = useMemo(() => hallOptions(games), [games]);
+  // A remembered class or hall that is no longer offered counts as "all"
+  // (storage is left untouched, like for the team).
+  const activeClass = classChoices.some((o) => o.value === selectedClass)
+    ? selectedClass
+    : 'all';
+  const activeHall = hallChoices.some((o) => o.value === selectedHall)
+    ? selectedHall
+    : 'all';
 
   // Filter games based on selected team, hall, and class
   const filteredGames = useMemo(() => {
@@ -83,13 +78,15 @@ export default function GamesTable({
         side?.home.team === activeTeam ||
         side?.away.team === activeTeam ||
         game.scorer === activeTeam;
+      // Events (Siegerehrung) happen outside the game halls; keep them visible.
       const hallMatch =
-        selectedHall === 'all' || game.location === selectedHall;
-      const classMatch =
-        selectedClass === 'all' || game.class === selectedClass;
+        activeHall === 'all' ||
+        !!game.eventname ||
+        game.location === activeHall;
+      const classMatch = activeClass === 'all' || game.class === activeClass;
       return teamMatch && hallMatch && classMatch;
     });
-  }, [games, sides, activeTeam, selectedHall, selectedClass]);
+  }, [games, sides, activeTeam, activeHall, activeClass]);
 
   // Index of the first upcoming game, if there are earlier games before it.
   // The "now" line is drawn right above it.
@@ -144,46 +141,22 @@ export default function GamesTable({
         </span>
       </label>
 
-      <div>
-        <div>
-          <fieldset className="fieldset w-full">
-            <legend className="fieldset-legend">Klasse</legend>
-
-            <select
-              id="class-filter"
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="select w-full"
-            >
-              <option value="all">Alle</option>
-              {classes.map((cls) => (
-                <option key={cls} value={cls}>
-                  {cls}
-                </option>
-              ))}
-            </select>
-          </fieldset>
-        </div>
-      </div>
-
-      <div>
-        <fieldset className="fieldset w-full">
-          <legend className="fieldset-legend">Ort</legend>
-
-          <select
-            id="hall-filter"
-            value={selectedHall}
-            onChange={(e) => setSelectedHall(e.target.value)}
-            className="select w-full"
-          >
-            <option value="all">Alle</option>
-            {halls.map((hall) => (
-              <option key={hall} value={hall}>
-                {hall}
-              </option>
-            ))}
-          </select>
-        </fieldset>
+      <div className="flex flex-col gap-3">
+        <SegmentedControl
+          label="Klasse"
+          options={[{ value: 'all', label: 'Alle' }, ...classChoices]}
+          value={activeClass}
+          onChange={setSelectedClass}
+        />
+        <SegmentedControl
+          label="Halle"
+          options={[
+            { value: 'all', label: 'Alle', ariaLabel: 'Alle Hallen' },
+            ...hallChoices,
+          ]}
+          value={activeHall}
+          onChange={setSelectedHall}
+        />
       </div>
       <div className="divider"></div>
 
