@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
-import ClassTag from './ClassTag';
+import EventCard from './EventCard';
 import GameCard from './GameCard';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
@@ -204,17 +204,7 @@ export default function GamesTable({
             <div key={game.id}>
               {index === nowIndex && nowLine}
               {game.eventname ? (
-                <div className="rounded-game bg-base-100 p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <ClassTag cls={game.class} />
-                    <span className="text-base">
-                      {game.time.slice(0, 5)} Uhr | {game.location}
-                    </span>
-                  </div>
-                  <div className="text-center font-semibold text-lg py-2">
-                    {game.eventname}
-                  </div>
-                </div>
+                <EventCard game={game} />
               ) : (
                 <GameCard
                   game={game}
