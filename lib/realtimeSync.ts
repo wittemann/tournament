@@ -18,6 +18,7 @@ export function shouldRefetchOnStatus(
 export function createResponseGate() {
   let issued = 0;
   let applied = 0;
+  let settled = 0;
   return {
     begin(): number {
       return ++issued;
@@ -25,6 +26,16 @@ export function createResponseGate() {
     accept(ticket: number): boolean {
       if (ticket <= applied) return false;
       applied = ticket;
+      return true;
+    },
+    // For the error flag, which must reflect the newest request that has
+    // finished, whether it succeeded or failed: true only if no newer response
+    // (of either kind) has settled yet. Unlike `accept`, failures count, so an
+    // older success arriving after a newer failure does not clear the error,
+    // and an older failure arriving after a newer success does not set it.
+    settle(ticket: number): boolean {
+      if (ticket <= settled) return false;
+      settled = ticket;
       return true;
     },
   };

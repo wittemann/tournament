@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo } from 'react';
 import Spinner from './Spinner';
+import ConnectionBanner from './ConnectionBanner';
 import { Game } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
@@ -27,12 +28,15 @@ export default function GamesTable({
   games,
   sides,
   loading,
+  error,
 }: {
   games: Game[];
   /** Resolved sides per game id (see lib/schedule.ts gameSides). */
   sides: Map<number, GameSides>;
   /** True until the first games fetch finished; hides the empty message. */
   loading: boolean;
+  /** True when data could not be loaded or the connection is down. */
+  error: boolean;
 }) {
   const [selectedTeam, setSelectedTeam] = usePersistedState(
     'selectedTeam',
@@ -116,6 +120,7 @@ export default function GamesTable({
 
   return (
     <>
+      <ConnectionBanner show={error} />
       <div>
         <div>
           <fieldset className="fieldset w-full">
@@ -181,7 +186,7 @@ export default function GamesTable({
 
       {/* No results message */}
       {loading && <Spinner />}
-      {!loading && filteredGames.length === 0 && (
+      {!loading && !error && filteredGames.length === 0 && (
         <div className="alert alert-info alert-soft">
           <svg
             xmlns="http://www.w3.org/2000/svg"

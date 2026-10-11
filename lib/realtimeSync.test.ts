@@ -49,6 +49,35 @@ describe('createResponseGate', () => {
     expect(gate.accept(newer)).toBe(true);
   });
 
+  describe('settle', () => {
+    it('lets the newest response decide, whatever its outcome', () => {
+      const gate = createResponseGate();
+      const a = gate.begin();
+      const b = gate.begin();
+      expect(gate.settle(a)).toBe(true);
+      expect(gate.settle(b)).toBe(true);
+    });
+
+    it('ignores an older response that settles after a newer one', () => {
+      const gate = createResponseGate();
+      const older = gate.begin();
+      const newer = gate.begin();
+      expect(gate.settle(newer)).toBe(true);
+      expect(gate.settle(older)).toBe(false);
+    });
+
+    it('is independent of accept: a failed newer request still settles', () => {
+      const gate = createResponseGate();
+      const older = gate.begin();
+      const newer = gate.begin();
+      // newer failed (settled, never accepted); older success must not clear it
+      expect(gate.settle(newer)).toBe(true);
+      expect(gate.settle(older)).toBe(false);
+      // but older rows are still accepted, since errors never count as applied
+      expect(gate.accept(older)).toBe(true);
+    });
+  });
+
   it('accepts each ticket only once', () => {
     const gate = createResponseGate();
     const t = gate.begin();

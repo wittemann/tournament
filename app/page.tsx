@@ -7,14 +7,19 @@ import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { gameSides } from '@/lib/schedule';
 
 export default function Page() {
-  const { rows: games, loading: gamesLoading } = useRealtimeTable<Game>(
-    'games',
-    [{ column: 'time' }, { column: 'location' }],
-  );
-  const { rows: teams, loading: teamsLoading } = useRealtimeTable<Team>(
-    'teams',
-    [{ column: 'name' }],
-  );
+  const {
+    rows: games,
+    loading: gamesLoading,
+    error: gamesError,
+  } = useRealtimeTable<Game>('games', [
+    { column: 'time' },
+    { column: 'location' },
+  ]);
+  const {
+    rows: teams,
+    loading: teamsLoading,
+    error: teamsError,
+  } = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
   const sides = useMemo(() => gameSides(games, teams), [games, teams]);
 
   return (
@@ -22,6 +27,7 @@ export default function Page() {
       games={games}
       sides={sides}
       loading={gamesLoading || teamsLoading}
+      error={gamesError || teamsError}
     />
   );
 }

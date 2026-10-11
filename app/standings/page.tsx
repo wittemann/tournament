@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo } from 'react';
 import Spinner from '../Spinner';
+import ConnectionBanner from '../ConnectionBanner';
 import StandingsTable from './StandingsTable';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
@@ -31,27 +32,32 @@ function useStandingsByClass(games: Game[], teams: Team[]) {
 }
 
 export default function Page() {
-  const { rows: games, loading: gamesLoading } = useRealtimeTable<Game>(
-    'games',
-    [{ column: 'time' }],
-  );
-  const { rows: teams, loading: teamsLoading } = useRealtimeTable<Team>(
-    'teams',
-    [{ column: 'name' }],
-  );
+  const {
+    rows: games,
+    loading: gamesLoading,
+    error: gamesError,
+  } = useRealtimeTable<Game>('games', [{ column: 'time' }]);
+  const {
+    rows: teams,
+    loading: teamsLoading,
+    error: teamsError,
+  } = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
 
   const standings = useStandingsByClass(games, teams);
 
   if (gamesLoading || teamsLoading) return <Spinner />;
 
   return (
-    <div className="space-y-8">
-      {standings.map(({ cls, tables, ranking }, i) => (
-        <Fragment key={cls}>
-          {i > 0 && <div className="divider"></div>}
-          <StandingsTable tables={tables} ranking={ranking} title={cls} />
-        </Fragment>
-      ))}
-    </div>
+    <>
+      <ConnectionBanner show={gamesError || teamsError} />
+      <div className="space-y-8">
+        {standings.map(({ cls, tables, ranking }, i) => (
+          <Fragment key={cls}>
+            {i > 0 && <div className="divider"></div>}
+            <StandingsTable tables={tables} ranking={ranking} title={cls} />
+          </Fragment>
+        ))}
+      </div>
+    </>
   );
 }

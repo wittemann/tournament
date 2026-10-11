@@ -68,7 +68,7 @@ Every item goes through these steps:
 
 - [x] **Loading state.** Before data arrives, every page shows its empty message ("Keine Spiele gefunden. Bitte passen Sie die Filter an.", "Keine FAQs verfügbar.", "Keine Artikel verfügbar."). Add a loading state to `useRealtimeTable` and show the empty message only after loading. · `sonnet`
 - [x] **Stale data after the phone sleeps.** A phone in a pocket loses the realtime connection, and nothing reloads when it wakes up. Refetch on `visibilitychange` / reconnect in `useRealtimeTable`. This is the most likely cause of "the app shows an old score" on the day. · `opus`
-- [ ] **Errors are invisible.** Fetch errors only go to `console.error`, and a missing env var throws inside an effect. Show a small "Keine Verbindung" banner instead. · `sonnet`
+- [x] **Errors are invisible.** Fetch errors only go to `console.error`, and a missing env var throws inside an effect. Show a small "Keine Verbindung" banner instead. · `sonnet`
 - [ ] The team filter lists scorer-only names like "Bretten" (a club, not a team). Build the team list from teams that actually play (or from the `teams` table) ([next-game-card spec](specs/next-game-card.md)). · `sonnet`
 - [ ] The class badge colour (`'Schüler'` → green, else amber) is duplicated in the mobile and desktop views. Extract it into one place, and give Jugend its own colour (right now it would get T-Ball's amber). Covered by the `ClassTag` item in section 6. · `haiku`
 - [ ] Two components subscribing to the same table on one page would both use the channel name `games-changes`. Make channel names unique per hook instance before the bracket and next-game card add more subscribers. · `sonnet`

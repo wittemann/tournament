@@ -1,6 +1,7 @@
 'use client';
 
 import Spinner from '../Spinner';
+import ConnectionBanner from '../ConnectionBanner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type Item = {
@@ -12,7 +13,11 @@ type Item = {
 };
 
 export default function Page() {
-  const { rows: items, loading } = useRealtimeTable<Item>('items', [
+  const {
+    rows: items,
+    loading,
+    error,
+  } = useRealtimeTable<Item>('items', [
     { column: 'category' },
     { column: 'id' },
   ]);
@@ -38,6 +43,8 @@ export default function Page() {
 
   return (
     <div className="container mx-auto p-4">
+      <ConnectionBanner show={error} />
+
       {categories.map((category) => (
         <div key={category} className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">{category}</h2>
@@ -92,7 +99,7 @@ export default function Page() {
 
       {loading && <Spinner />}
 
-      {!loading && categories.length === 0 && (
+      {!loading && !error && categories.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400">
           Keine Artikel verfügbar.
         </p>

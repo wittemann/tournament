@@ -16,21 +16,44 @@ type Order = { column: string; ascending?: boolean };
 // also reloaded when the channel rejoins, when the page becomes visible again,
 // when the browser comes back online, and when it is restored from the
 // back/forward cache. Refetches keep the current rows (no spinner).
+//
+// `error` is true when the last fetch failed (cleared by the next successful
+// one), when Supabase is not configured, or when the channel has been down for
+// CHANNEL_DOWN_DELAY_MS (shorter drops, e.g. a wake-up reconnect, stay quiet).
+// The rows stay as they were, so pages can show them under a banner.
+const CHANNEL_DOWN_DELAY_MS = 5000;
+
 export function useRealtimeTable<T>(
   table: string,
   order: Order[],
-): { rows: T[]; loading: boolean } {
+): { rows: T[]; loading: boolean; error: boolean } {
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchFailed, setFetchFailed] = useState(false);
+  const [channelDown, setChannelDown] = useState(false);
   const orderKey = JSON.stringify(order);
 
   useEffect(() => {
-    const supabase = getSupabase();
+    let supabase;
+    try {
+      supabase = getSupabase();
+    } catch (e) {
+      console.error('Supabase unavailable:', e);
+      Sentry.captureException(e, { tags: { table, source: 'config' } });
+      // Deferred: the react-hooks/set-state-in-effect rule forbids setting state
+      // synchronously in an effect body.
+      queueMicrotask(() => {
+        setFetchFailed(true);
+        setLoading(false);
+      });
+      return;
+    }
     const orderBy: Order[] = JSON.parse(orderKey);
     const gate = createResponseGate();
     let cancelled = false;
     // A failing channel retries and errors again; report once until it recovers.
     let reported = false;
+    let downTimer: ReturnType<typeof setTimeout> | undefined;
 
     const fetchRows = async () => {
       const ticket = gate.begin();
@@ -40,6 +63,7 @@ export function useRealtimeTable<T>(
       }
       const { data, error } = await query;
       if (cancelled) return;
+      if (gate.settle(ticket)) setFetchFailed(!!error);
       if (error) {
         console.error(`Supabase error (${table}):`, error);
         Sentry.captureException(
@@ -73,12 +97,17 @@ export function useRealtimeTable<T>(
           previous = status;
           if (status === 'SUBSCRIBED') {
             reported = false;
+            clearTimeout(downTimer);
+            downTimer = undefined;
+            setChannelDown(false);
           } else if (status === 'CLOSED') {
             closed = true;
-          } else if (
-            (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') &&
-            !reported
-          ) {
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            downTimer ??= setTimeout(
+              () => setChannelDown(true),
+              CHANNEL_DOWN_DELAY_MS,
+            );
+            if (reported) return;
             reported = true;
             console.error(`Realtime ${status} (${table}):`, err);
             Sentry.captureException(
@@ -113,6 +142,7 @@ export function useRealtimeTable<T>(
 
     return () => {
       cancelled = true;
+      clearTimeout(downTimer);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('online', wake);
       window.removeEventListener('pageshow', onPageShow);
@@ -120,5 +150,5 @@ export function useRealtimeTable<T>(
     };
   }, [table, orderKey]);
 
-  return { rows, loading };
+  return { rows, loading, error: fetchFailed || channelDown };
 }

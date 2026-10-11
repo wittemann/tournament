@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
 import Spinner from '../Spinner';
+import ConnectionBanner from '../ConnectionBanner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type FAQ = {
@@ -12,9 +13,11 @@ type FAQ = {
 };
 
 export default function Page() {
-  const { rows: faqs, loading } = useRealtimeTable<FAQ>('faq', [
-    { column: 'question' },
-  ]);
+  const {
+    rows: faqs,
+    loading,
+    error,
+  } = useRealtimeTable<FAQ>('faq', [{ column: 'question' }]);
   const [openId, setOpenId] = useState<number | null>(null);
 
   const toggleQuestion = (id: number) => {
@@ -42,6 +45,8 @@ export default function Page() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
+      <ConnectionBanner show={error} />
+
       <div className="mb-6 p-4 bg-green-50 dark:bg-green-900 rounded-lg border border-green-200 dark:border-green-700">
         <p className="text-gray-700 dark:text-gray-200">
           Willkommen beim Bretten Kangaroos Xmas-Ball! Hier findest du alle
@@ -89,7 +94,7 @@ export default function Page() {
 
       {loading && <Spinner />}
 
-      {!loading && faqs.length === 0 && (
+      {!loading && !error && faqs.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400">
           Keine FAQs verfügbar.
         </p>
