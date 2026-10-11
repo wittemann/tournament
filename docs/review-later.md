@@ -32,4 +32,5 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 Nice-to-haves from the reviews, and findings left after the review cap. Security findings are only written here once they're fixed (the repo is public).
 
 - The schedule sorts by `location` as text now, so "Essensraum" sorts before "Halle 1" at the same time. Order by `halls.sort` when the schedule is rebuilt.
+- `app/sell` and `app/faq` still declare local `Item`/`FAQ` types; switch them to the generated aliases in `app/types.ts` when those pages are rebuilt. A typed client (`createClient<Database>`) would remove the `as T[]` cast in `useRealtimeTable`.
 - The schedule still shows `#{game.id}`, not `games.number` (section 6 drops the `#id`).

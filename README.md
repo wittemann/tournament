@@ -52,6 +52,7 @@ Check gate: before every commit, `format:check`, `lint`, `typecheck`, `test` and
 ## Database
 
 - The schema, RLS policies and Realtime settings live in `supabase/migrations/` ([ADR-0005](docs/adr/0005-schema-as-migrations.md)). Schema changes always go through a new migration, never through the dashboard alone.
+- After a schema change, regenerate `lib/database.types.ts` (Supabase MCP `generate_typescript_types`, or `supabase gen types typescript --project-id bylkrfekrtbbsubhdbfb`).
 - The 2025 tournament data is backed up in `supabase/seed.sql`.
 - Apply migrations to the live project with the Supabase MCP (`apply_migration`). It records its own timestamp as the version, so afterwards check `list_migrations` and rename the repo file to that version, so repo and history match. (Alternative: `supabase db push`.)
 - The baseline migration `20251120000000` is recorded as applied in the live project's migration history (TODO section 1), so it is never run again.

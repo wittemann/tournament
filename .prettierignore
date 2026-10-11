@@ -13,3 +13,4 @@ public
 *.md
 # Tool-managed (Claude Code launch config).
 .claude
+lib/database.types.ts

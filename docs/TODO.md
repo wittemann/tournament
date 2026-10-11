@@ -53,7 +53,7 @@ Every item goes through these steps:
 - [x] Optional: `faq.sort` column, so FAQs aren't just sorted alphabetically by question. · `haiku`
 - [x] Optional: `faq.link_url` / `faq.link_label`, so an answer can carry one proper link button as in the [design](design/README.md) instead of HTML in the text. If all links move there, the answers become plain text and DOMPurify ([ADR-0008](adr/0008-faq-sanitized-html.md)) can go. · `sonnet`
 - [x] Optional: disable the unused GraphQL extension (`pg_graphql`). The Supabase security check flags that all tables are visible over GraphQL. The data is public anyway, so this is just cleanup. · `haiku`
-- [ ] Generate `app/types.ts` from the schema (`supabase gen types`) instead of maintaining it by hand ([ADR-0005](adr/0005-schema-as-migrations.md)). · `sonnet`
+- [x] Generate `app/types.ts` from the schema (`supabase gen types`) instead of maintaining it by hand ([ADR-0005](adr/0005-schema-as-migrations.md)). · `sonnet`
 
 ## 3. Computed standings (must-have)
 

@@ -1,22 +1,8 @@
-export type Game = {
-  id: number;
-  time: string;
-  class: string;
-  hometeam?: string;
-  awayteam?: string;
-  location: string;
-  homescore?: number | null;
-  awayscore?: number | null;
-  scorer?: string;
-  eventname?: string;
-};
+import type { Tables } from '../lib/database.types';
 
-export type Standing = {
-  id: number;
-  position: string;
-  team: string;
-  wins: number;
-  losses: number;
-  diff: number;
-  class: string;
-};
+export type Game = Tables<'games'>;
+export type Team = Tables<'teams'>;
+export type Hall = Tables<'halls'>;
+export type Item = Tables<'items'>;
+export type Faq = Tables<'faq'>;
+export type Standing = Tables<'standings'>;
