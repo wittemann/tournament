@@ -516,3 +516,42 @@ export function placementRanking(ctx: StandingsContext): PlacementEntry[] {
   }
   return result;
 }
+
+// --- Display helpers -----------------------------------------------------------
+
+/**
+ * Win–loss record per row of a group table: "3–1", or "3–1–1" (S–N–U) for
+ * every row as soon as one team of the group has a tie, so columns line up.
+ * `withTies` tells the header which of the two it is.
+ */
+export function recordLabels(rows: TableRow[]): {
+  withTies: boolean;
+  labels: string[];
+} {
+  const withTies = rows.some((r) => r.ties > 0);
+  return {
+    withTies,
+    labels: rows.map((r) =>
+      withTies ? `${r.wins}–${r.losses}–${r.ties}` : `${r.wins}–${r.losses}`,
+    ),
+  };
+}
+
+/**
+ * Card heading status of a group: "abgeschlossen" or "8 von 10 Spielen";
+ * null while the group has no games at all.
+ */
+export function groupStatusLabel(
+  table: Pick<GroupTable, 'played' | 'total' | 'complete'>,
+): string | null {
+  if (table.total === 0) return null;
+  if (table.complete) return 'abgeschlossen';
+  return `${table.played} von ${table.total} ${table.total === 1 ? 'Spiel' : 'Spielen'}`;
+}
+
+/** Signed run difference with a real minus sign: "+71", "−33", "0". */
+export function formatDiff(diff: number): string {
+  if (diff > 0) return `+${diff}`;
+  if (diff < 0) return `−${Math.abs(diff)}`;
+  return '0';
+}

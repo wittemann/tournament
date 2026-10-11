@@ -67,11 +67,7 @@ export default function Page() {
           />
         )}
         {active && (
-          <StandingsTable
-            tables={active.tables}
-            ranking={active.ranking}
-            title={active.cls}
-          />
+          <StandingsTable tables={active.tables} ranking={active.ranking} />
         )}
       </div>
     </>
