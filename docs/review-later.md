@@ -9,6 +9,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 ## Assumptions
 
 - npm 11 skips install scripts not covered by `allowScripts` (`sharp`, `unrs-resolver`). Both ship prebuilt binaries, so the build works without them; nothing was approved.
+- Vitest 4 instead of 5: Vitest 5 needs `@types/node` ≥ 22, the repo had `^20`. Revisit once `@types/node` is bumped.
 
 ## Skipped items
 
