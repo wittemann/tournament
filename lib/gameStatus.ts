@@ -9,6 +9,12 @@
  */
 export const RUNNING_WINDOW_MINUTES = 30;
 
+/**
+ * A start this many minutes ahead or less gets the relative "in N Min." hint
+ * (docs/specs/next-game-card.md); further ahead it is hidden.
+ */
+export const SOON_WINDOW_MINUTES = 60;
+
 /** Minutes since midnight for "HH:MM" or "HH:MM:SS". Seconds are ignored. */
 export function toMinutes(time: string): number {
   const [hours, minutes] = time.split(':');

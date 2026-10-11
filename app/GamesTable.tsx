@@ -8,12 +8,14 @@ import EventCard from './EventCard';
 import GameCard from './GameCard';
 import SegmentedControl from './SegmentedControl';
 import NowLine from './NowLine';
+import SlotHeading from './SlotHeading';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
 import { toMinutes } from '@/lib/gameStatus';
 import { classOptions, hallOptions } from '@/lib/filterOptions';
 import { playingTeamNames, type GameSides } from '@/lib/schedule';
+import { groupBySlot, slotStatus } from '@/lib/slots';
 
 export default function GamesTable({
   games,
@@ -98,6 +100,15 @@ export default function GamesTable({
     return i > 0 ? i : -1;
   }, [filteredGames, now]);
 
+  // All-teams view: games grouped by start time, the "now" line above the
+  // first slot that starts after now (same rule as nowIndex).
+  const slots = useMemo(() => groupBySlot(filteredGames), [filteredGames]);
+  const nowSlotIndex = useMemo(() => {
+    if (!now) return -1;
+    const i = slots.findIndex((slot) => toMinutes(slot.time) > toMinutes(now));
+    return i > 0 ? i : -1;
+  }, [slots, now]);
+
   return (
     <>
       <ConnectionBanner show={error} />
@@ -166,27 +177,60 @@ export default function GamesTable({
         <StatusCard>Keine Spiele gefunden. Passe die Filter an.</StatusCard>
       )}
 
-      {/* Game cards */}
-      <div className="space-y-3">
-        {filteredGames.map((game, index) => {
-          return (
-            <div key={game.id}>
-              {index === nowIndex && now && <NowLine now={now} />}
-              {game.eventname ? (
-                <EventCard game={game} />
-              ) : (
-                <GameCard
-                  game={game}
-                  sides={sides.get(game.id)}
-                  now={now}
-                  showClass
-                  showScorer
-                />
+      {activeTeam === 'all' ? (
+        /* Games by time slot (design: SpielplanAlle) */
+        <section
+          aria-label="Spiele nach Uhrzeit"
+          className="flex flex-col gap-[18px]"
+        >
+          {slots.map((slot, index) => (
+            <div key={slot.time} className="flex flex-col gap-2">
+              {index === nowSlotIndex && now && <NowLine now={now} />}
+              <SlotHeading
+                time={slot.time.slice(0, 5)}
+                status={slotStatus(slot, now)}
+              />
+              {slot.games.map((game) =>
+                game.eventname ? (
+                  <EventCard key={game.id} game={game} showTime={false} />
+                ) : (
+                  <GameCard
+                    key={game.id}
+                    game={game}
+                    sides={sides.get(game.id)}
+                    now={now}
+                    showTime={false}
+                    showClass
+                    showScorer
+                  />
+                ),
               )}
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </section>
+      ) : (
+        /* Game cards */
+        <div className="space-y-3">
+          {filteredGames.map((game, index) => {
+            return (
+              <div key={game.id}>
+                {index === nowIndex && now && <NowLine now={now} />}
+                {game.eventname ? (
+                  <EventCard game={game} />
+                ) : (
+                  <GameCard
+                    game={game}
+                    sides={sides.get(game.id)}
+                    now={now}
+                    showClass
+                    showScorer
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

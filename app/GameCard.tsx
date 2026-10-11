@@ -71,7 +71,8 @@ function SideRow({
  *
  * - showTime (default): time and hall in a fixed left column, for lists of
  *   single games (team view). Off for lists grouped by time slot, where the
- *   hall moves into the top row next to the class tag.
+ *   hall moves into the top row next to the class tag and "läuft" moves
+ *   to the slot heading (the card keeps its red outline).
  * - showClass / showScorer: class tag and "Scorer: …" in the top row
  *   (all-teams view).
  * - highlight 'next': green outline for the selected team's next game. A
@@ -133,7 +134,8 @@ export default function GameCard({
               <span className="font-semibold">{game.location}</span>
             )}
             {showClass && <ClassTag cls={game.class} />}
-            {!showTime && running && <LiveMarker />}
+            {/* The slot heading shows "läuft"; the card only has its red outline. */}
+            {!showTime && running && <span className="sr-only">läuft</span>}
             {scorer && <span className="ml-auto">Scorer: {scorer}</span>}
           </div>
         )}
