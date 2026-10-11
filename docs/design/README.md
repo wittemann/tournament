@@ -43,8 +43,8 @@ All data in the mockups is illustrative (2025 team names, invented scores and ti
 | `live` | `#B3261E` | "Jetzt" line and running games ("läuft"); used for nothing else |
 | `negative` | `#A12A21` | Negative difference |
 | `scorer-bg` / `scorer-ink` / `scorer-line` | `#FFF1D6` / `#5C3800` / `#D9A441` | Scorer duty, own team highlight ("Mein Team" tag `#FFDFA3`) |
-| `win-bg` / `win-ink` | `#DDEFE2` / `#1B5E34` | "S" badge, class tag Schüler |
-| `loss-bg` / `loss-ink` | `#F6DEDC` / `#8E1F18` | "N" badge, "Ausverkauft" tag |
+| `win-bg` / `win-ink` | `#DDEFE2` / `#1B5E34` | "S" badge (not built yet), class tag Schüler |
+| `loss-bg` / `loss-ink` | `#F6DEDC` / `#8E1F18` | "N" badge (not built yet), "Ausverkauft" tag |
 | class T-Ball | `#FCE3CF` / `#7A3300` | Class tag |
 | class Jugend | `#DCE6F7` / `#1E4A8C` | Class tag |
 | `gold` | `#E8B84A` | Trophy icon on the final |
@@ -73,8 +73,33 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 - "Mein Team" card states: a running game gets a red outline and a red "läuft" pill, with the next game as a line below. When scorer duty comes before the next game, the amber scorer block moves to the top with its own "in X Min.". Before the first game the card says "Erstes Spiel" and shows no countdown. When everything is played, the card turns white with record, difference, final place and a link to the Tabelle (instead of the spec's 🎉 emoji).
 - The Info page pulls "Ende" and "Turnierleitung" out of the FAQ into tiles, and the rules and directions answers get a real link instead of HTML inside the answer.
 
+## Before and after the tournament
+
+Decided in the build, not drawn in the canvas ([review-later](../review-later.md)):
+
+- **Tabelle:** until a group game of the class has a result it shows "Noch keine Ergebnisse. Die Tabelle füllt sich mit dem ersten Spiel."; a group without a played game shows "–" instead of the place.
+- **Finalrunde:** "Die Finalrunde beginnt um HH:MM." (earliest placement game) until the first placement result; it stays after that time until a result is entered. Once the Endstand is decided it moves above the bracket.
+- **Spielplan:** a "Turnier beendet" card with a link to the Endstand once every non-event game has a result (also when filtered).
+
+## Loading, empty and connection states
+
+One `StatusCard` (white card, muted text, one line) for loading and empty messages ("du" form, e.g. "Passe die Filter an."). "Keine Verbindung – die Daten sind evtl. nicht aktuell." is an amber banner (scorer tones, not the red of running games) above the stale rows, which stay visible. Empty messages are hidden while the banner shows.
+
+## Build differs from the canvas
+
+Where the build deliberately departs from the canvas (reasons in [review-later](../review-later.md)); the canvas is to be updated to match, except for the "Not built" items, which are still open.
+
+- **Verkauf:** one row per item, not merged ("Cola · Fanta · Mezzo Mix"), so each keeps its own sold-out flag. The sold-out price is `muted` (canvas #8A968D, too light for text); the red tag and strikethrough carry the meaning. The sold-out row background is `base-200` (canvas #F5F7F4). Categories come from the data, sorted alphabetically.
+- **Info:** the "Ende" and "Turnierleitung" tiles and the link buttons are generated from the FAQ data, not hard-coded.
+- **Tokens instead of canvas hex values:** `faint` for the cut-off line (canvas #B9C6BB), the bracket connectors (#9AA89D) and the "Mein Team" select border once a team is chosen (#B9C6BB; with no team chosen it stays green, as drawn); `base-300` (= `track`) for the grey quarterfinal box. `ground` is `base-200`.
+- **Contrast:** `faint` is borders and connectors only; the "–" placeholders (unplayed score, open Endstand place) are `muted` at full opacity (canvas #8A968D or 0.6 opacity).
+- **Tiebreak note** under each Tabelle group: "Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs." (the canvas wording skips two [ADR-0006](../adr/0006-computed-standings.md) rules).
+- **Finalrunde:** placement games that are not part of the drawn bracket (mini round robins such as "Platzierungsrunde 11–13", 2025 data; none planned for 2026) are listed game by game under "Platzierungsspiele", without a table. Any shape other than two halves into a final (with or without quarterfinals) falls back to that list.
+- **"Mein Team" card:** radius 16 px (`card`, canvas 18). The all-played state labels the place "Gr.-Platz" when no placement game decides it, and shows one tile row per class for a name used in several classes. When the group stage is over but the team's Finalrunde opponents aren't known yet, the card says "Gruppenphase beendet / Finalrunde folgt – Gegner stehen noch nicht fest." instead.
+- **Nav below 360 px:** 13 px text and 4 px padding. At any width, labels truncate with an ellipsis rather than scrolling sideways.
+- **Quarterfinal cards (compact):** 8 px padding, 4 px gaps (canvas 10/6).
+- **Not built:** the "S"/"N" result badges on played games in the team list, the quarterfinal subtitles ("1. Gruppe A gegen 4. Gruppe B …", "Verlierer der Viertelfinals"), the green next-game outline inside the bracket, and the lone "Platz 9" row (9 teams).
+
 ## Not designed yet
 
-- Loading, empty and "Keine Verbindung" states (decide later).
-- Before and after the tournament: Spielplan, Tabelle and Finalrunde before the first result and after the final (decide later).
 - Admin page for entering results ([ADR-0007](../adr/0007-admin-results-entry.md)).

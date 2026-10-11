@@ -145,7 +145,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 - [x] Check every page at 360–430 px phone width; touch targets ≥ 40 px; text contrast ≥ 4.5:1 (the class tags and muted greys are close to the limit, so measure them). · `sonnet`
 - [ ] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use). · **(owner)**
-- [ ] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth. · `sonnet` for docs/design, **(owner)** for the canvas
+- [ ] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth. · `sonnet` for docs/design, **(owner)** for the canvas (docs/design done 2026-10-11; the canvas changes are listed in review-later)
 
 ## 7. Content for 2026 (data, not code)
 
