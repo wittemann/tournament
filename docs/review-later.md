@@ -11,6 +11,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 - **Node floor:** isomorphic-dompurify 4 (jsdom 30) needs Node `^22.22.2 || ^24.15.0 || >=26`. The Vercel project's Node setting couldn't be checked (connector has no access to the scope); it must be 24.x (or 22.22.2+). Consider `"engines": { "node": ">=22.22.2" }` in package.json.
 - Next 16.4.0 was five days old when taken; pick up 16.4.x patches before the event.
 - `npm audit`: 5 high findings remain in `braces`/`micromatch`/`fast-glob` under `@next/eslint-plugin-next` (dev tooling only; the suggested fix would downgrade `eslint-config-next` to 14).
+- **Baseline migration recorded without the CLI:** no Supabase CLI or DB password here, so `supabase_migrations.schema_migrations` was created the way the CLI does it (version, statements, name) and the row `20251120000000 initial_schema` inserted via the MCP. `list_migrations` now shows it. The auto-mode classifier blocked this once; the owner approved live DB writes in chat.
 
 ## Assumptions
 
