@@ -14,20 +14,25 @@ export default function Nav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex border-b border-line">
-      {links.map(({ href, label }) => (
-        <Link
-          key={href}
-          href={href}
-          className={`flex-1 py-3 px-1 sm:px-4 text-center font-medium transition-colors ${
-            pathname === href
-              ? 'bg-win-bg text-primary border-b-2 border-primary'
-              : 'text-muted-2 hover:text-primary hover:bg-base-200'
-          }`}
-        >
-          {label}
-        </Link>
-      ))}
-    </div>
+    <nav aria-label="Hauptnavigation" className="flex gap-0.5 px-3 pt-2.5">
+      {links.map(({ href, label }) => {
+        const current = pathname === href;
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={current ? 'page' : undefined}
+            className={`flex h-10 min-w-10 flex-auto items-center justify-center rounded-full px-2 text-sm whitespace-nowrap transition-colors max-[359px]:px-1 max-[359px]:text-[13px] ${
+              current
+                ? 'bg-neutral font-bold text-neutral-content'
+                : 'font-semibold text-muted-2 hover:bg-base-200'
+            }`}
+          >
+            {/* Ellipsis instead of sideways scrolling if text is scaled up */}
+            <span className="truncate">{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
