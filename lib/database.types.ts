@@ -23,6 +23,9 @@ export type Database = {
           link_url: string | null
           question: string
           sort: number | null
+          tile_detail: string | null
+          tile_title: string | null
+          tile_value: string | null
         }
         Insert: {
           answer: string
@@ -31,6 +34,9 @@ export type Database = {
           link_url?: string | null
           question: string
           sort?: number | null
+          tile_detail?: string | null
+          tile_title?: string | null
+          tile_value?: string | null
         }
         Update: {
           answer?: string
@@ -39,6 +45,9 @@ export type Database = {
           link_url?: string | null
           question?: string
           sort?: number | null
+          tile_detail?: string | null
+          tile_title?: string | null
+          tile_value?: string | null
         }
         Relationships: []
       }

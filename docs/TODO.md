@@ -138,8 +138,8 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 **Info**
 
-- [ ] Quick-fact tiles ("Ende", "Turnierleitung") and two green link buttons (Regeln PDF, Anfahrt PDF), depending on the decision above. · `sonnet`
-- [ ] FAQ as an accordion in one white card, chevron rotates when open, link answers show a proper link. Includes the accessibility item in section 5. · `sonnet`
+- [x] Quick-fact tiles ("Ende", "Turnierleitung") and two green link buttons (Regeln PDF, Anfahrt PDF), depending on the decision above. · `sonnet`
+- [x] FAQ as an accordion in one white card, chevron rotates when open, link answers show a proper link. Includes the accessibility item in section 5. · `sonnet`
 
 **Finish**
 
