@@ -1,2 +1,68 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+
+/* One light theme only; the built-in themes and the dark auto-switch are off. */
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+@plugin "daisyui/theme" {
+  name: 'xmasball';
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #eef2ec;
+  --color-base-300: #dce3da;
+  --color-base-content: #142019;
+  --color-primary: #1b5e34;
+  --color-primary-content: #ffffff;
+  --color-secondary: #3e4b42;
+  --color-secondary-content: #ffffff;
+  --color-accent: #e8b84a;
+  --color-accent-content: #142019;
+  --color-neutral: #142019;
+  --color-neutral-content: #ffffff;
+  --color-info: #1e4a8c;
+  --color-info-content: #ffffff;
+  --color-success: #1b5e34;
+  --color-success-content: #ffffff;
+  --color-warning: #d9a441;
+  --color-warning-content: #5c3800;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
+  --radius-selector: 999px;
+  --radius-field: 12px;
+  --radius-box: 16px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Extra design tokens (docs/design/README.md#colours) as Tailwind colours:
+   text-muted, border-line, bg-scorer-bg, bg-class-tball-bg, ...
+   ground = base-200 (bg-base-200), track = base-300 (bg-base-300), ink = base-content. */
+@theme {
+  --color-muted: #56645a;
+  --color-muted-2: #3e4b42;
+  --color-faint: #8a968d;
+  --color-line: #e6ece5;
+  --color-live: #b3261e;
+  --color-negative: #a12a21;
+  --color-gold: #e8b84a;
+  --color-scorer-bg: #fff1d6;
+  --color-scorer-ink: #5c3800;
+  --color-scorer-line: #d9a441;
+  --color-scorer-tag: #ffdfa3;
+  --color-win-bg: #ddefe2;
+  --color-win-ink: #1b5e34;
+  --color-loss-bg: #f6dedc;
+  --color-loss-ink: #8e1f18;
+  --color-class-schueler-bg: #ddefe2;
+  --color-class-schueler-ink: #1b5e34;
+  --color-class-tball-bg: #fce3cf;
+  --color-class-tball-ink: #7a3300;
+  --color-class-jugend-bg: #dce6f7;
+  --color-class-jugend-ink: #1e4a8c;
+}

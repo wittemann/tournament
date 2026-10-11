@@ -92,7 +92,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 **Foundation**
 
-- [ ] daisyUI theme `xmasball` with the colours from [docs/design](design/README.md#colours): `primary` = green, `base-100` = white, `base-200` = ground, `base-content` = ink, plus CSS variables for the extra tokens (`live`, `scorer-*`, `win-*`, `loss-*`, class colours, `track`, `line`). Use the theme tokens everywhere; no more hard-coded `green-700` / `gray-*` classes in `layout.tsx` and `Nav.tsx`. · `sonnet`
+- [x] daisyUI theme `xmasball` with the colours from [docs/design](design/README.md#colours): `primary` = green, `base-100` = white, `base-200` = ground, `base-content` = ink, plus CSS variables for the extra tokens (`live`, `scorer-*`, `win-*`, `loss-*`, class colours, `track`, `line`). Use the theme tokens everywhere; no more hard-coded `green-700` / `gray-*` classes in `layout.tsx` and `Nav.tsx`. · `sonnet`
 - [ ] Fonts: Barlow (400–700) and Barlow Condensed (600/700) via `next/font/google`, exposed as CSS variables / Tailwind font families (`font-sans`, `font-display`). · `haiku`
 - [ ] Header: rounded green card with the kangaroo, "XMAS-BALL", "Bretten Kangaroos" and the current time as a pill (from `useNow`). Replaces the full-width green bar and `logo.png` in `layout.tsx`. · `sonnet`
 - [ ] Main navigation: five pill tabs (Spielplan, Tabelle, Finalrunde, Verkauf, Info), each as wide as its text, current page as a dark pill with `aria-current="page"`. No horizontal scrolling. Check that it still fits at 360 px (and decide what happens at 320 px, e.g. smaller text). · `sonnet`

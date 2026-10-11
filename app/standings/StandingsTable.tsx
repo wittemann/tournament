@@ -37,9 +37,9 @@ function GroupTableView({ table }: { table: GroupTable }) {
                 <td
                   className={`px-1 text-center tabular-nums ${
                     row.diff > 0
-                      ? 'text-green-600 dark:text-green-400 font-semibold'
+                      ? 'text-green-600 font-semibold'
                       : row.diff < 0
-                        ? 'text-red-600 dark:text-red-400 font-semibold'
+                        ? 'text-red-600 font-semibold'
                         : ''
                   }`}
                 >

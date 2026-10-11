@@ -14,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body className="bg-gray-100 dark:bg-gray-900 min-h-screen">
-        <div className="max-w-[1024px] mx-auto bg-white dark:bg-gray-800">
-          <div className="bg-green-700 dark:bg-green-800 text-white p-6 text-center">
+      <body className="bg-base-200 text-base-content min-h-screen">
+        <div className="max-w-[1024px] mx-auto bg-base-100">
+          <div className="bg-primary text-primary-content p-6 text-center">
             <div className="flex items-center gap-3 justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -29,7 +29,7 @@ export default function RootLayout({
             </div>
           </div>
           <Nav />
-          <div className="px-4 py-4 bg-white dark:bg-gray-800">{children}</div>
+          <div className="px-4 py-4 bg-base-100">{children}</div>
         </div>
       </body>
     </html>

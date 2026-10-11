@@ -255,7 +255,7 @@ export default function GamesTable({
                       </span>
                     </div>
                     {game.scorer && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-gray-500">
                         Scorer: {game.scorer}
                       </div>
                     )}
