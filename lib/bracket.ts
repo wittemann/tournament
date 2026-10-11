@@ -6,15 +6,20 @@
  *  - Final: `findFinal` (shared with the Tabelle's cut-off line).
  *  - Halves: each side of the final follows its `winner:` refs down to the
  *    games whose sides are group places or seeds. A half is a list of rounds,
- *    earliest first (semifinal layout: one round with one game).
+ *    earliest first (semifinal layout: one round with one game; quarterfinal
+ *    layout: two quarterfinals, then one semifinal).
  *  - "Spiel um Platz 3": the game fed by the `loser:` refs of the two games
  *    that feed the final.
+ *  - Losers' block ("Platz 5–8"), quarterfinal layout only: the games whose
+ *    refs all are `loser:` refs of a quarterfinal or `winner:`/`loser:` refs
+ *    of a game already in the block (e.g. a 5–8 mini bracket).
  *  - Every other placement game goes into a list, ordered by the places it
  *    decides (`slotKey`); games that share a ref (a mini round robin) stay
  *    together.
  *
- * Only the semifinal layout is drawn for now; any other shape (quarterfinals,
- * byes, a final straight from seeds) falls back to the plain list.
+ * Only the semifinal and quarterfinal layouts are drawn; any other shape
+ * (deeper rounds, byes, a final straight from seeds) falls back to the plain
+ * list.
  */
 import { findFinal, roundName } from './cutOff';
 import {
@@ -27,7 +32,10 @@ import {
 } from './standings';
 
 export interface BracketHalf<G> {
-  /** Rounds before the final, earliest first, each in schedule (number) order. */
+  /**
+   * Rounds before the final, earliest first; within a round, the games feeding
+   * the next game's home side come before those feeding its away side.
+   */
   rounds: G[][];
 }
 
@@ -37,11 +45,21 @@ export interface Bracket<G> {
   halves: [BracketHalf<G>, BracketHalf<G>];
   thirdPlace: G | null;
   /**
-   * Name of the round that feeds the final, from its games' labels with the
-   * trailing number stripped ("Halbfinale"); null when they lack a label or
-   * disagree.
+   * Name of each round before the final, earliest first, from its games'
+   * labels with the trailing number stripped ("Viertelfinale",
+   * "Halbfinale"); null when they lack a label or disagree.
    */
-  round: string | null;
+  rounds: (string | null)[];
+  /** Games among the losers of the first round (quarterfinal layout only). */
+  losers: LosersBlock<G> | null;
+}
+
+export interface LosersBlock<G> {
+  /** Places the block decides, e.g. 5 and 8 for "Platz 5–8". */
+  from: number;
+  to: number;
+  /** In schedule (number) order, so a mini bracket reads round by round. */
+  games: G[];
 }
 
 export interface Finalrunde<G> {
@@ -95,6 +113,7 @@ export function buildFinalrunde<G extends GameLike>(
           bracket.final,
           ...bracket.halves.flatMap((h) => h.rounds.flat()),
           ...(bracket.thirdPlace ? [bracket.thirdPlace] : []),
+          ...(bracket.losers?.games ?? []),
         ]
       : [],
   );
@@ -115,7 +134,7 @@ export function buildFinalrunde<G extends GameLike>(
   };
 }
 
-/** The semifinal layout, or null for any other shape. */
+/** The semifinal or quarterfinal layout, or null for any other shape. */
 function layout<G extends GameLike>(
   final: G,
   byNumber: Map<number, G>,
@@ -124,25 +143,78 @@ function layout<G extends GameLike>(
   const left = half(final.home_ref, byNumber, new Set([final]));
   const right = half(final.away_ref, byNumber, new Set([final]));
   if (!left || !right) return null;
-  // Quarterfinals (more than one round per half) are the next TODO item.
-  if (left.rounds.length !== 1 || right.rounds.length !== 1) return null;
+  const depth = left.rounds.length;
+  if (depth > 2 || right.rounds.length !== depth) return null;
 
   const feeders = [left, right].map((h) => h.rounds[h.rounds.length - 1][0]);
   if (feeders[0] === feeders[1] || feeders.some((g) => g.number === null))
     return null;
-  const losers = new Set(feeders.map((g) => `loser:${g.number}`));
+  const feederLosers = new Set(feeders.map((g) => `loser:${g.number}`));
   const thirdPlace =
     [...byNumber.values()].find((g) => {
       const refs = refsOf(g);
       return (
         refs.length === 2 &&
         refs[0] !== refs[1] &&
-        refs.every((r) => losers.has(r))
+        refs.every((r) => feederLosers.has(r))
       );
     }) ?? null;
-  const names = new Set(feeders.map((g) => roundName(g.label)));
-  const round = names.size === 1 ? [...names][0] : null;
-  return { final, halves: [left, right], thirdPlace, round };
+  const rounds = left.rounds.map((round, i) => {
+    const names = new Set(
+      [...round, ...right.rounds[i]].map((g) => roundName(g.label)),
+    );
+    return names.size === 1 ? [...names][0] : null;
+  });
+  const first = [...left.rounds[0], ...right.rounds[0]];
+  const losers =
+    depth === 2 ? losersBlock(first, 2 * feeders.length, byNumber) : null;
+  return { final, halves: [left, right], thirdPlace, rounds, losers };
+}
+
+/**
+ * The games the first round's losers play among themselves: every ref is a
+ * `loser:` ref of a first-round game, or a `winner:`/`loser:` ref of a game
+ * already in the block. They decide the places after the teams that reached
+ * the second round (`reached`): 5–8 behind four semifinalists.
+ */
+function losersBlock<G extends GameLike>(
+  first: G[],
+  reached: number,
+  byNumber: Map<number, G>,
+): LosersBlock<G> | null {
+  const firstNumbers = new Set(first.map((g) => g.number));
+  const block = new Set<G>();
+  const fits = (ref: string) => {
+    const p = parseRef(ref);
+    if (p?.kind !== 'winner' && p?.kind !== 'loser') return false;
+    const source = byNumber.get(p.number);
+    return (
+      (p.kind === 'loser' && firstNumbers.has(p.number)) ||
+      (!!source && block.has(source))
+    );
+  };
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const g of byNumber.values()) {
+      const refs = refsOf(g);
+      if (
+        block.has(g) ||
+        refs.length !== 2 ||
+        refs[0] === refs[1] ||
+        !refs.every(fits)
+      )
+        continue;
+      block.add(g);
+      changed = true;
+    }
+  }
+  if (block.size === 0) return null;
+  return {
+    from: reached + 1,
+    to: 2 * first.length,
+    games: [...block].sort((a, b) => (a.number ?? 0) - (b.number ?? 0)),
+  };
 }
 
 /**
@@ -166,11 +238,8 @@ function half<G extends GameLike>(
   const a = half(game.home_ref, byNumber, next);
   const b = half(game.away_ref, byNumber, next);
   if (!a || !b || a.rounds.length !== b.rounds.length) return null;
-  const rounds = a.rounds.map((round, i) =>
-    [...round, ...b.rounds[i]].sort(
-      (x, y) => (x.number ?? 0) - (y.number ?? 0),
-    ),
-  );
+  // Home side's games first, so each round lines up with the next game's sides.
+  const rounds = a.rounds.map((round, i) => [...round, ...b.rounds[i]]);
   return { rounds: [...rounds, [game]] };
 }
 

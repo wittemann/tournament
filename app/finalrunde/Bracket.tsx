@@ -9,7 +9,10 @@ import type { PlacementEntry } from '@/lib/standings';
 
 // Finalrunde as in the design (docs/design/screens/Finalrunde.dc.html):
 // semifinals in two columns joined to the dark final card, the 3rd-place
-// game, the other placement games as a list and the Endstand.
+// game, the other placement games as a list and the Endstand. With
+// quarterfinals (FinalrundeVF.dc.html) each column stacks its two
+// quarterfinals above its semifinal, and the quarterfinal losers' games get
+// their own "Platz 5–8" block.
 
 type SidesOf = (game: Game) => GameSides | undefined;
 
@@ -71,8 +74,18 @@ function metaLine(game: Game, state: GameState, label: string | null) {
     .join(' · ');
 }
 
-function SemiCard({ game, ctx }: { game: Game; ctx: Ctx }) {
+function SemiCard({
+  game,
+  ctx,
+  compact = false,
+}: {
+  game: Game;
+  ctx: Ctx;
+  /** Quarterfinal card inside its column's grey group box. */
+  compact?: boolean;
+}) {
   const state = gameState(game, ctx.now);
+  const seeded = !!(seedTag(game.home_ref) || seedTag(game.away_ref));
   const sides = ctx.sidesOf(game);
   const running = state.phase === 'running';
   const rows = [
@@ -91,7 +104,7 @@ function SemiCard({ game, ctx }: { game: Game; ctx: Ctx }) {
   ];
   return (
     <article
-      className={`flex min-w-0 flex-col gap-1.5 rounded-game bg-base-100 px-3 py-2.5 ${running ? 'ring-2 ring-inset ring-live' : ''}`}
+      className={`flex min-w-0 flex-col bg-base-100 ${compact ? 'gap-1 rounded-[11px] px-2 py-2' : 'gap-1.5 rounded-game px-3 py-2.5'} ${running ? 'ring-2 ring-inset ring-live' : ''}`}
     >
       <div
         className={`flex items-center gap-1.5 text-xs font-semibold ${running ? 'font-bold text-live' : 'text-muted'}`}
@@ -109,16 +122,18 @@ function SemiCard({ game, ctx }: { game: Game; ctx: Ctx }) {
         return (
           <div
             key={i}
-            className={`-mx-1.5 flex items-center gap-1.5 rounded-md px-1.5 text-[15px] ${tone(state, won, side)} ${mine ? `${MINE_BG} ${MINE_STRIP} pl-2.5` : ''}`}
+            className={`-mx-1.5 flex items-center rounded-md px-1.5 text-[15px] ${compact ? 'gap-1' : 'gap-1.5'} ${tone(state, won, side)} ${mine ? `${MINE_BG} ${MINE_STRIP} pl-2.5` : ''}`}
           >
             {/* The placeholder ("Seed 1", "1. Gruppe A") says the same to screen readers. */}
-            <span
-              aria-hidden="true"
-              className="w-[18px] shrink-0 text-xs font-normal text-muted"
-            >
-              {seedTag(ref)}
-            </span>
-            <span className="min-w-0 flex-1 break-words">
+            {seeded && (
+              <span
+                aria-hidden="true"
+                className="w-[18px] shrink-0 text-xs font-normal text-muted"
+              >
+                {seedTag(ref)}
+              </span>
+            )}
+            <span className="min-w-0 flex-1 break-words hyphens-auto">
               {won && <span className="sr-only">Sieger: </span>}
               {nameOf(side)}
               {side?.team && side.ref && (
@@ -131,6 +146,25 @@ function SemiCard({ game, ctx }: { game: Game; ctx: Ctx }) {
         );
       })}
     </article>
+  );
+}
+
+/** One column of the quarterfinal layout: two quarterfinals above their semifinal. */
+function QuarterColumn({ rounds, ctx }: { rounds: Game[][]; ctx: Ctx }) {
+  return (
+    <div className="flex min-w-0 flex-col">
+      <div className="flex flex-col gap-1.5 rounded-card bg-base-300 p-1.5">
+        {rounds[0].map((game) => (
+          <SemiCard key={game.id} game={game} ctx={ctx} compact />
+        ))}
+      </div>
+      {/* Grows when the other column's quarterfinals are taller, so both semifinals line up. */}
+      <div
+        aria-hidden="true"
+        className="min-h-4 w-0.5 flex-1 self-center bg-faint"
+      />
+      <SemiCard game={rounds[1][0]} ctx={ctx} />
+    </div>
   );
 }
 
@@ -415,8 +449,14 @@ export default function Bracket({
 }) {
   const ctx: Ctx = { sidesOf, now, selectedTeam };
   // Round names come from the game labels; neutral fallbacks without one.
-  const round = bracket?.round ?? 'Vor dem Finale';
+  const quarters = bracket?.rounds.length === 2;
+  const rounds = (bracket?.rounds ?? []).map(
+    (name, i) =>
+      name ??
+      (quarters ? ['Erste Runde', 'Zweite Runde'][i] : 'Vor dem Finale'),
+  );
   const finalName = bracket?.final.label ?? 'Finale';
+  const losers = bracket?.losers;
   if (!bracket && placementGames.length === 0)
     return <StatusCard>Für diese Klasse gibt es keine Finalrunde.</StatusCard>;
 
@@ -424,14 +464,18 @@ export default function Bracket({
     <div className="space-y-6">
       {bracket && (
         <section
-          aria-label={`${round} und ${finalName}`}
+          aria-label={`${rounds.join(', ')} und ${finalName}`}
           className="flex flex-col gap-2.5"
         >
-          <SectionHeading>{round}</SectionHeading>
+          <SectionHeading>{rounds[0]}</SectionHeading>
           <div className="grid grid-cols-2 gap-2.5">
-            {bracket.halves.map((half, i) => (
-              <SemiCard key={i} game={half.rounds[0][0]} ctx={ctx} />
-            ))}
+            {bracket.halves.map((half, i) =>
+              quarters ? (
+                <QuarterColumn key={i} rounds={half.rounds} ctx={ctx} />
+              ) : (
+                <SemiCard key={i} game={half.rounds[0][0]} ctx={ctx} />
+              ),
+            )}
           </div>
           <Connector />
           <SectionHeading>{finalName}</SectionHeading>
@@ -439,6 +483,17 @@ export default function Bracket({
           {bracket.thirdPlace && (
             <ThirdPlaceCard game={bracket.thirdPlace} ctx={ctx} />
           )}
+        </section>
+      )}
+      {losers && (
+        <section
+          aria-label={`Platz ${losers.from} bis ${losers.to}`}
+          className="flex flex-col gap-2.5"
+        >
+          <SectionHeading>
+            Platz {losers.from}–{losers.to}
+          </SectionHeading>
+          <PlacementList games={losers.games} ctx={ctx} />
         </section>
       )}
       {placementGames.length > 0 && (
