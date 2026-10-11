@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
+import Spinner from '../Spinner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type FAQ = {
@@ -11,7 +12,9 @@ type FAQ = {
 };
 
 export default function Page() {
-  const faqs = useRealtimeTable<FAQ>('faq', [{ column: 'question' }]);
+  const { rows: faqs, loading } = useRealtimeTable<FAQ>('faq', [
+    { column: 'question' },
+  ]);
   const [openId, setOpenId] = useState<number | null>(null);
 
   const toggleQuestion = (id: number) => {
@@ -84,7 +87,9 @@ export default function Page() {
         ))}
       </div>
 
-      {faqs.length === 0 && (
+      {loading && <Spinner />}
+
+      {!loading && faqs.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400">
           Keine FAQs verfügbar.
         </p>

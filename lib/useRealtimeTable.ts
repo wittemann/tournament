@@ -6,9 +6,15 @@ import { getSupabase } from './supabase';
 
 type Order = { column: string; ascending?: boolean };
 
-// Loads a table and reloads it whenever any row changes.
-export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
+// Loads a table and reloads it whenever any row changes. `loading` stays true
+// until the first fetch has finished; a failed first fetch also ends it, so
+// pages show their empty state instead of spinning forever.
+export function useRealtimeTable<T>(
+  table: string,
+  order: Order[],
+): { rows: T[]; loading: boolean } {
   const [rows, setRows] = useState<T[]>([]);
+  const [loading, setLoading] = useState(true);
   const orderKey = JSON.stringify(order);
 
   useEffect(() => {
@@ -35,6 +41,7 @@ export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
       } else if (data && !cancelled) {
         setRows(data as T[]);
       }
+      if (!cancelled) setLoading(false);
     };
 
     fetchRows();
@@ -69,5 +76,5 @@ export function useRealtimeTable<T>(table: string, order: Order[]): T[] {
     };
   }, [table, orderKey]);
 
-  return rows;
+  return { rows, loading };
 }

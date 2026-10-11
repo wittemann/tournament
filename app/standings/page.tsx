@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useMemo } from 'react';
+import Spinner from '../Spinner';
 import StandingsTable from './StandingsTable';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
@@ -30,10 +31,18 @@ function useStandingsByClass(games: Game[], teams: Team[]) {
 }
 
 export default function Page() {
-  const games = useRealtimeTable<Game>('games', [{ column: 'time' }]);
-  const teams = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
+  const { rows: games, loading: gamesLoading } = useRealtimeTable<Game>(
+    'games',
+    [{ column: 'time' }],
+  );
+  const { rows: teams, loading: teamsLoading } = useRealtimeTable<Team>(
+    'teams',
+    [{ column: 'name' }],
+  );
 
   const standings = useStandingsByClass(games, teams);
+
+  if (gamesLoading || teamsLoading) return <Spinner />;
 
   return (
     <div className="space-y-8">

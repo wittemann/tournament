@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useMemo } from 'react';
+import Spinner from './Spinner';
 import { Game } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
@@ -25,10 +26,13 @@ function SideName({ side }: { side: Side | undefined }) {
 export default function GamesTable({
   games,
   sides,
+  loading,
 }: {
   games: Game[];
   /** Resolved sides per game id (see lib/schedule.ts gameSides). */
   sides: Map<number, GameSides>;
+  /** True until the first games fetch finished; hides the empty message. */
+  loading: boolean;
 }) {
   const [selectedTeam, setSelectedTeam] = usePersistedState(
     'selectedTeam',
@@ -176,7 +180,8 @@ export default function GamesTable({
       <div className="divider"></div>
 
       {/* No results message */}
-      {filteredGames.length === 0 && (
+      {loading && <Spinner />}
+      {!loading && filteredGames.length === 0 && (
         <div className="alert alert-info alert-soft">
           <svg
             xmlns="http://www.w3.org/2000/svg"

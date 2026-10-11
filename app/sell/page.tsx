@@ -1,5 +1,6 @@
 'use client';
 
+import Spinner from '../Spinner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 
 type Item = {
@@ -11,7 +12,7 @@ type Item = {
 };
 
 export default function Page() {
-  const items = useRealtimeTable<Item>('items', [
+  const { rows: items, loading } = useRealtimeTable<Item>('items', [
     { column: 'category' },
     { column: 'id' },
   ]);
@@ -89,7 +90,9 @@ export default function Page() {
         </div>
       ))}
 
-      {categories.length === 0 && (
+      {loading && <Spinner />}
+
+      {!loading && categories.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400">
           Keine Artikel verfügbar.
         </p>
