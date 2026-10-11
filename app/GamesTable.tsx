@@ -104,6 +104,46 @@ export default function GamesTable({
   return (
     <>
       <ConnectionBanner show={error} />
+      {/* Main control: "Mein Team" (design: Main / SpielplanAlle) */}
+      <label htmlFor="team-filter" className="mb-4 flex flex-col gap-1.5">
+        <span className="text-xs font-bold uppercase tracking-wider text-muted">
+          Mein Team
+        </span>
+        <span className="relative block">
+          <select
+            id="team-filter"
+            value={activeTeam}
+            onChange={(e) => setSelectedTeam(e.target.value)}
+            className={`h-12 w-full appearance-none rounded-control border-[1.5px] bg-base-100 pr-9 pl-3.5 text-[17px] font-semibold text-base-content ${
+              activeTeam === 'all' ? 'border-primary' : 'border-faint'
+            }`}
+          >
+            <option value="all">
+              {activeTeam === 'all'
+                ? 'Team wählen – nächstes Spiel sehen'
+                : 'Alle Teams'}
+            </option>
+            {teamNames.map((team) => (
+              <option key={team} value={team}>
+                {team}
+              </option>
+            ))}
+          </select>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-muted"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </span>
+      </label>
+
       <div>
         <div>
           <fieldset className="fieldset w-full">
@@ -124,26 +164,6 @@ export default function GamesTable({
             </select>
           </fieldset>
         </div>
-      </div>
-
-      <div>
-        <fieldset className="fieldset w-full">
-          <legend className="fieldset-legend">Team</legend>
-
-          <select
-            id="team-filter"
-            value={activeTeam}
-            onChange={(e) => setSelectedTeam(e.target.value)}
-            className="select w-full"
-          >
-            <option value="all">Alle</option>
-            {teamNames.map((team) => (
-              <option key={team} value={team}>
-                {team}
-              </option>
-            ))}
-          </select>
-        </fieldset>
       </div>
 
       <div>
