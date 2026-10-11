@@ -35,7 +35,7 @@ Every item goes through these steps:
 - [x] Set up a test runner (Vitest). Nothing in the repo is tested yet, and the standings logic must be. · `haiku`
 - [x] Scripts for the check gate: `format` / `format:check` (Prettier), `typecheck` (`tsc --noEmit`), `test`. Format the codebase once in its own commit. · `haiku`
 - [ ] Replace the create-next-app README with a real one: setup, env vars, and a pre-event runbook (restore the Supabase project, apply migrations, load games and items, invite admins). · `sonnet`
-- [ ] Add `.env.example` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. · `haiku`
+- [x] Add `.env.example` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. · `haiku`
 - [ ] **Sentry integration** (`@sentry/nextjs`): client and server errors, plus realtime/fetch failures from `useRealtimeTable`. Sentry org `wittemann` (EU region, `de.sentry.io`), project `tournament`. The DSN is already in the local `.env.local` as `NEXT_PUBLIC_SENTRY_DSN`; add the key (no value) to `.env.example` and the value to Vercel. An auth token for source maps is optional and never committed. Privacy: `sendDefaultPii: false`, no IP addresses, no session replay, low trace sample rate. Check the current Sentry Next.js docs first. · `sonnet`
 - [ ] Mark the baseline migration as applied in the live project (`supabase migration repair --status applied 20251120000000`) before pushing any new migration ([ADR-0005](adr/0005-schema-as-migrations.md)). · `sonnet`
 
