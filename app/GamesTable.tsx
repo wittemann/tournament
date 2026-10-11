@@ -3,6 +3,7 @@
 import { Fragment, useMemo } from 'react';
 import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
+import ClassTag from './ClassTag';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
@@ -223,15 +224,7 @@ export default function GamesTable({
                     {game.number != null && (
                       <span className="badge badge-sm">#{game.number}</span>
                     )}
-                    <span
-                      className={`badge badge-outline badge-sm ${
-                        game.class === 'Schüler'
-                          ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
-                          : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
-                      }`}
-                    >
-                      {game.class}
-                    </span>
+                    <ClassTag cls={game.class} />
                   </div>
                   <span className="text-base">
                     {game.time.slice(0, 5)} Uhr | {game.location}
@@ -301,15 +294,7 @@ export default function GamesTable({
                   <td>
                     <div className="flex gap-2 items-center">
                       {game.number != null && <span>#{game.number}</span>}
-                      <span
-                        className={`badge badge-outline badge-sm ${
-                          game.class === 'Schüler'
-                            ? 'bg-green-100 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-amber-100 dark:bg-amber-900 dark:text-amber-200'
-                        }`}
-                      >
-                        {game.class}
-                      </span>
+                      <ClassTag cls={game.class} />
                       {game.label && (
                         <span className="text-sm text-gray-600">
                           {game.label}
