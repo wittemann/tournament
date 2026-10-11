@@ -10,7 +10,7 @@ FAQ answers need light formatting: links (parking, directions), bold text and li
 
 ## Decision
 
-Store answers as a small subset of HTML in `faq.answer`. Clean them in the browser with DOMPurify before display, allowing only `a, b, i, em, strong, p, br, ul, ol, li` and the attributes `href, target, rel` (see `app/faq/page.tsx`).
+Store answers as a small subset of HTML in `faq.answer`. Clean them in the browser with DOMPurify before display, allowing only `a, b, i, em, strong, p, br, ul, ol, li` and the attributes `href, target, rel` (see `lib/sanitizeFaq.ts`). Links to `http(s)` open in a new tab with `rel="noopener noreferrer"`; `target` is removed from all other links.
 
 ## Options Considered
 

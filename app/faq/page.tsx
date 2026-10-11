@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import DOMPurify from 'isomorphic-dompurify';
 import Spinner from '../Spinner';
 import ConnectionBanner from '../ConnectionBanner';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
+import { sanitizeFaq } from '@/lib/sanitizeFaq';
 
 type FAQ = {
   id: number;
@@ -24,25 +24,6 @@ export default function Page() {
     setOpenId(openId === id ? null : id);
   };
 
-  // Sanitize HTML to prevent XSS attacks
-  const sanitizeHtml = (html: string) => {
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'a',
-        'b',
-        'i',
-        'em',
-        'strong',
-        'p',
-        'br',
-        'ul',
-        'ol',
-        'li',
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel'],
-    });
-  };
-
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <ConnectionBanner show={error} />
@@ -59,6 +40,10 @@ export default function Page() {
         {faqs.map((faq) => (
           <div key={faq.id}>
             <button
+              type="button"
+              id={`faq-question-${faq.id}`}
+              aria-expanded={openId === faq.id}
+              aria-controls={`faq-answer-${faq.id}`}
               onClick={() => toggleQuestion(faq.id)}
               className="w-full py-2 text-left flex justify-between items-center hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
@@ -70,6 +55,7 @@ export default function Page() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -80,14 +66,15 @@ export default function Page() {
               </svg>
             </button>
 
-            {openId === faq.id && (
-              <div
-                className="py-2 text-gray-700 dark:text-gray-300"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(faq.answer),
-                }}
-              />
-            )}
+            <div
+              id={`faq-answer-${faq.id}`}
+              aria-labelledby={`faq-question-${faq.id}`}
+              hidden={openId !== faq.id}
+              className="py-2 text-gray-700 dark:text-gray-300"
+              dangerouslySetInnerHTML={{
+                __html: openId === faq.id ? sanitizeFaq(faq.answer) : '',
+              }}
+            />
           </div>
         ))}
       </div>

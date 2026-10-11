@@ -75,7 +75,7 @@ Every item goes through these steps:
 
 ## 5. Smaller UI and consistency fixes
 
-- [ ] FAQ accordion: add `aria-expanded`/`aria-controls` to the question buttons. Open external links (`a[href^=http]`) in a new tab with `rel="noopener"`. · `sonnet`
+- [x] FAQ accordion: add `aria-expanded`/`aria-controls` to the question buttons. Open external links (`a[href^=http]`) in a new tab with `rel="noopener"`. · `sonnet`
 - [ ] Check every page at phone width (light mode only, see section 6). · `sonnet`
 
 ## 6. Redesign
