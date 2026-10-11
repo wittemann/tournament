@@ -121,7 +121,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 - [x] Class `SegmentedControl` instead of stacked class sections. Classes from the data (also needed for Jugend, section 3). · `sonnet`
 - [x] One card per group: "#", Team, "S–N" (W–L–T once ties exist, section 3), "Diff" (green / red). Status in the card heading: "8 von 10 Spielen" or "abgeschlossen". · `sonnet`
-- [ ] Highlight the selected team's row (amber, "Mein Team" tag), using the same persisted `selectedTeam`. · `haiku`
+- [x] Highlight the selected team's row (amber, "Mein Team" tag), using the same persisted `selectedTeam`. · `haiku`
 - [ ] Dashed cut-off line under the last place that reaches the semifinals, derived from the placement structure (ADR-0006), plus the tiebreak note under each group, worded to match ADR-0006. · `sonnet`
 
 **Finalrunde** (needs section 3 and the [bracket spec](specs/playoff-bracket.md))

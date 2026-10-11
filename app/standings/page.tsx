@@ -49,6 +49,8 @@ export default function Page() {
   // Own storage key: the Spielplan's class filter can be "all", which has no
   // table. A stored class that is gone falls back to the first one.
   const [storedClass, setStoredClass] = usePersistedState('tableClass', '');
+  // Same key as the Spielplan's team select: name only, "all" means none.
+  const [selectedTeam] = usePersistedState('selectedTeam', 'all');
 
   if (gamesLoading || teamsLoading) return <Spinner />;
 
@@ -67,7 +69,11 @@ export default function Page() {
           />
         )}
         {active && (
-          <StandingsTable tables={active.tables} ranking={active.ranking} />
+          <StandingsTable
+            tables={active.tables}
+            ranking={active.ranking}
+            selectedTeam={selectedTeam}
+          />
         )}
       </div>
     </>

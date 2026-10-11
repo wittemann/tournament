@@ -8,7 +8,25 @@ import {
   type TableRow,
 } from '@/lib/standings';
 
-function GroupTableView({ table }: { table: GroupTable }) {
+// Own team: amber row with a left strip and a "Mein Team" tag (design: Tabelle).
+const MINE_BG = 'bg-scorer-bg';
+const MINE_STRIP = 'shadow-[inset_4px_0_0_var(--color-primary)]';
+
+function MeinTeamTag() {
+  return (
+    <span className="rounded-md bg-scorer-tag px-1.5 py-0.5 text-[12px] font-bold text-scorer-ink">
+      Mein Team
+    </span>
+  );
+}
+
+function GroupTableView({
+  table,
+  selectedTeam,
+}: {
+  table: GroupTable;
+  selectedTeam: string;
+}) {
   const { withTies, labels: records } = recordLabels(table.rows);
   const headingId = useId();
   const status = groupStatusLabel(table);
@@ -68,35 +86,54 @@ function GroupTableView({ table }: { table: GroupTable }) {
           </tr>
         </thead>
         <tbody>
-          {table.rows.map((row: TableRow, i) => (
-            <tr key={row.team} className="border-t border-line">
-              <td className="py-3 pl-4 font-display text-lg font-bold">
-                {row.place}
-              </td>
-              <td className="px-2 py-3 font-semibold">{row.team}</td>
-              <td className="px-2 py-3 text-right tabular-nums">
-                {records[i]}
-              </td>
-              <td
-                className={`py-3 pr-4 pl-2 text-right font-semibold tabular-nums ${
-                  row.diff > 0
-                    ? 'text-primary'
-                    : row.diff < 0
-                      ? 'text-negative'
-                      : ''
-                }`}
-              >
-                {formatDiff(row.diff)}
-              </td>
-            </tr>
-          ))}
+          {table.rows.map((row: TableRow, i) => {
+            const mine = row.team === selectedTeam;
+            return (
+              <tr key={row.team} className="border-t border-line">
+                <td
+                  className={`py-3 pl-4 font-display text-lg font-bold ${mine ? `${MINE_BG} ${MINE_STRIP}` : ''}`}
+                >
+                  {row.place}
+                </td>
+                <td
+                  className={`px-2 py-3 font-semibold ${mine ? MINE_BG : ''}`}
+                >
+                  {row.team}
+                  {mine && ' '}
+                  {mine && <MeinTeamTag />}
+                </td>
+                <td
+                  className={`px-2 py-3 text-right tabular-nums ${mine ? MINE_BG : ''}`}
+                >
+                  {records[i]}
+                </td>
+                <td
+                  className={`py-3 pr-4 pl-2 text-right font-semibold tabular-nums ${mine ? MINE_BG : ''} ${
+                    row.diff > 0
+                      ? 'text-primary'
+                      : row.diff < 0
+                        ? 'text-negative'
+                        : ''
+                  }`}
+                >
+                  {formatDiff(row.diff)}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
 
-function RankingView({ entries }: { entries: PlacementEntry[] }) {
+function RankingView({
+  entries,
+  selectedTeam,
+}: {
+  entries: PlacementEntry[];
+  selectedTeam: string;
+}) {
   return (
     <div className="rounded-card bg-base-100 p-4">
       <h2 className="text-lg font-semibold mb-2">Endstand</h2>
@@ -109,12 +146,21 @@ function RankingView({ entries }: { entries: PlacementEntry[] }) {
             </tr>
           </thead>
           <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.place}>
-                <td>{entry.place}</td>
-                <td className="font-semibold">{entry.team}</td>
-              </tr>
-            ))}
+            {entries.map((entry) => {
+              const mine = entry.team === selectedTeam;
+              return (
+                <tr key={entry.place}>
+                  <td className={mine ? `${MINE_BG} ${MINE_STRIP}` : ''}>
+                    {entry.place}
+                  </td>
+                  <td className={`font-semibold ${mine ? MINE_BG : ''}`}>
+                    {entry.team}
+                    {mine && ' '}
+                    {mine && <MeinTeamTag />}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -125,9 +171,12 @@ function RankingView({ entries }: { entries: PlacementEntry[] }) {
 export default function StandingsTable({
   tables,
   ranking,
+  selectedTeam,
 }: {
   tables: GroupTable[];
   ranking: PlacementEntry[];
+  /** Persisted "Mein Team" name; "all" or a team not in the tables marks nothing. */
+  selectedTeam: string;
 }) {
   const decided = ranking.filter((e) => e.team !== null);
 
@@ -136,12 +185,18 @@ export default function StandingsTable({
       {tables.length > 0 && (
         <div className="mb-6 space-y-4">
           {tables.map((table) => (
-            <GroupTableView key={table.group} table={table} />
+            <GroupTableView
+              key={table.group}
+              table={table}
+              selectedTeam={selectedTeam}
+            />
           ))}
         </div>
       )}
 
-      {decided.length > 0 && <RankingView entries={decided} />}
+      {decided.length > 0 && (
+        <RankingView entries={decided} selectedTeam={selectedTeam} />
+      )}
     </div>
   );
 }
