@@ -18,6 +18,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 - **`supabase/seed.sql` is now a pre-migration backup:** it no longer loads on top of the new schema. It stays as the 2025 reference; section 3 builds its fixtures from it plus the placement mapping.
 - **"Bretten" as scorer** is the T-Ball team (`scorer_class = 'T-Ball'`). The next-game-card spec treats "Bretten" as a club matching "Bretten 1/2" by prefix; settle that when building the card (sections 4/6).
 - **Standings rules where ADR-0006 is silent** (`lib/standings.ts`): teams with no game played sort last; head-to-head compares win rate only among the level teams, is re-applied to smaller level subsets, and is skipped unless every pair in the level set has played (then runs scored decide); a tie left after runs scored is ordered by name and flagged `tiedWithNext`; seed ties (same place, win rate and difference) go by group letter. `seed:`/`group:` refs resolve even through such name-order ties, so the bracket never stalls; the organizers settle them and the UI can warn. `group:G:n` resolves once that group alone is complete; `seed:n` waits for all groups with games. Places that no game decides (e.g. no 3rd-place game) are left out of the final ranking.
+- **Second 2025 typo:** the replay tests found that A1 Mannheim was entered as +71; its four group games give +70. The fixture and ADR-0006 now say so (the ADR only named Herrenberg).
 
 ## Assumptions
 

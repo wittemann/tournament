@@ -43,7 +43,7 @@ These rules were inferred by recomputing the 2025 games (`supabase/seed.sql`) an
 
 **Format.** Groups play a round robin (Schüler: A with 5 teams, B and C with 4; T-Ball: A with 4, B with 3). Then every team plays placement games, and the overall ranking comes from those games, not from the group tables.
 
-**Group ranking.** Wins, then run difference (runs for minus runs against). With games 41 and 62 counted as placement games, all hand-entered group tables match the results. The one exception is a typo: B1 Herrenberg was entered as +14, the results give +15. Every tie in 2025 was decided by run difference. Head-to-head was never needed (the only three-way tie, Schüler group B, was circular).
+**Group ranking.** Wins, then run difference (runs for minus runs against). With games 41 and 62 counted as placement games, all hand-entered group tables match the results. The exceptions are two typos: B1 Herrenberg was entered as +14, the results give +15; A1 Mannheim was entered as +71, the results give +70 (found by the replay tests, 2026-10-11). Every tie in 2025 was decided by run difference. Head-to-head was never needed (the only three-way tie, Schüler group B, was circular).
 
 **Seeding.** Rank all teams across groups by group place, then win rate, then run difference, giving seeds 1…n. Win rate is used because the groups had different sizes; plain wins would have given the same order in 2025. Then:
 
