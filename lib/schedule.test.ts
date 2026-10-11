@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { gameSides, refLabel } from '@/lib/schedule';
+import { gameSides, playingTeamNames, refLabel } from '@/lib/schedule';
+import { games2025, teams2025 } from '@/lib/fixtures/games2025';
 import type { GameLike, TeamLike } from '@/lib/standings';
 
 type G = GameLike & { id: number };
@@ -125,5 +126,57 @@ describe('gameSides', () => {
       home: { team: 'Y', ref: 'Seed 1' },
       away: { team: 'X', ref: 'Seed 2' },
     });
+  });
+});
+
+describe('playingTeamNames', () => {
+  it('lists every 2025 team once, sorted, with shared names deduplicated', () => {
+    const names = playingTeamNames(teams2025, games2025);
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, 'de')));
+    expect(new Set(names).size).toBe(names.length);
+    expect(names).toContain('Bretten');
+    expect(names).toContain('Bretten 1');
+    expect(names).toContain('Stuttgart 1');
+    expect(names).toEqual(
+      [...new Set(teams2025.map((t) => t.name))].sort((a, b) =>
+        a.localeCompare(b, 'de'),
+      ),
+    );
+  });
+
+  it('ignores names that are not teams and teams without games', () => {
+    const names = playingTeamNames(
+      [
+        { name: 'A', class: 'Schüler', group_name: 'A' },
+        { name: 'B', class: 'Schüler', group_name: 'A' },
+        { name: 'Idle', class: 'Schüler', group_name: 'A' },
+      ],
+      [
+        {
+          class: 'Schüler',
+          hometeam: 'A',
+          awayteam: 'B',
+          scorer: 'Club',
+          scorer_class: null,
+        },
+      ],
+    );
+    expect(names).toEqual(['A', 'B']);
+  });
+
+  it('counts a scorer of another class as playing in that class', () => {
+    const names = playingTeamNames(
+      [{ name: 'Bretten', class: 'T-Ball', group_name: 'A' }],
+      [
+        {
+          class: 'Schüler',
+          hometeam: 'X',
+          awayteam: 'Y',
+          scorer: 'Bretten',
+          scorer_class: 'T-Ball',
+        },
+      ],
+    );
+    expect(names).toEqual(['Bretten']);
   });
 });

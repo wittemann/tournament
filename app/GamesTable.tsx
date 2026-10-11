@@ -3,10 +3,10 @@
 import { Fragment, useMemo } from 'react';
 import Spinner from './Spinner';
 import ConnectionBanner from './ConnectionBanner';
-import { Game } from './types';
+import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
-import type { GameSides, Side } from '@/lib/schedule';
+import { playingTeamNames, type GameSides, type Side } from '@/lib/schedule';
 
 /** A team name, or for placement games the resolved name plus its placeholder. */
 function SideName({ side }: { side: Side | undefined }) {
@@ -26,11 +26,13 @@ function SideName({ side }: { side: Side | undefined }) {
 
 export default function GamesTable({
   games,
+  teams,
   sides,
   loading,
   error,
 }: {
   games: Game[];
+  teams: Team[];
   /** Resolved sides per game id (see lib/schedule.ts gameSides). */
   sides: Map<number, GameSides>;
   /** True until the first games fetch finished; hides the empty message. */
@@ -52,16 +54,16 @@ export default function GamesTable({
   );
   const now = useNow();
 
-  // Get unique teams from all games
-  const teams = useMemo(() => {
-    const teamSet = new Set<string>();
-    games.forEach((game) => {
-      if (game.hometeam) teamSet.add(game.hometeam);
-      if (game.awayteam) teamSet.add(game.awayteam);
-      if (game.scorer) teamSet.add(game.scorer);
-    });
-    return Array.from(teamSet).sort();
-  }, [games]);
+  // Teams from the teams table that appear in some game
+  const teamNames = useMemo(
+    () => playingTeamNames(teams, games),
+    [teams, games],
+  );
+  // A remembered team that is gone (new year, renamed) counts as "all".
+  const activeTeam =
+    teamNames.length === 0 || teamNames.includes(selectedTeam)
+      ? selectedTeam
+      : 'all';
 
   // Get unique halls from all games
   const halls = useMemo(() => {
@@ -86,19 +88,19 @@ export default function GamesTable({
     return games.filter((game) => {
       const side = sides.get(game.id);
       const teamMatch =
-        selectedTeam === 'all' ||
-        game.hometeam === selectedTeam ||
-        game.awayteam === selectedTeam ||
-        side?.home.team === selectedTeam ||
-        side?.away.team === selectedTeam ||
-        game.scorer === selectedTeam;
+        activeTeam === 'all' ||
+        game.hometeam === activeTeam ||
+        game.awayteam === activeTeam ||
+        side?.home.team === activeTeam ||
+        side?.away.team === activeTeam ||
+        game.scorer === activeTeam;
       const hallMatch =
         selectedHall === 'all' || game.location === selectedHall;
       const classMatch =
         selectedClass === 'all' || game.class === selectedClass;
       return teamMatch && hallMatch && classMatch;
     });
-  }, [games, sides, selectedTeam, selectedHall, selectedClass]);
+  }, [games, sides, activeTeam, selectedHall, selectedClass]);
 
   // Index of the first upcoming game, if there are earlier games before it.
   // The "now" line is drawn right above it.
@@ -149,12 +151,12 @@ export default function GamesTable({
 
           <select
             id="team-filter"
-            value={selectedTeam}
+            value={activeTeam}
             onChange={(e) => setSelectedTeam(e.target.value)}
             className="select w-full"
           >
             <option value="all">Alle</option>
-            {teams.map((team) => (
+            {teamNames.map((team) => (
               <option key={team} value={team}>
                 {team}
               </option>

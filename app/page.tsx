@@ -25,6 +25,7 @@ export default function Page() {
   return (
     <GamesTable
       games={games}
+      teams={teams}
       sides={sides}
       loading={gamesLoading || teamsLoading}
       error={gamesError || teamsError}
