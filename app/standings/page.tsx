@@ -1,11 +1,13 @@
 'use client';
 
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
+import SegmentedControl from '../SegmentedControl';
 import Spinner from '../Spinner';
 import ConnectionBanner from '../ConnectionBanner';
 import StandingsTable from './StandingsTable';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
+import { usePersistedState } from '@/lib/usePersistedState';
 import { Constants } from '@/lib/database.types';
 import {
   groupTables,
@@ -44,19 +46,33 @@ export default function Page() {
   } = useRealtimeTable<Team>('teams', [{ column: 'name' }]);
 
   const standings = useStandingsByClass(games, teams);
+  // Own storage key: the Spielplan's class filter can be "all", which has no
+  // table. A stored class that is gone falls back to the first one.
+  const [storedClass, setStoredClass] = usePersistedState('tableClass', '');
 
   if (gamesLoading || teamsLoading) return <Spinner />;
+
+  const active = standings.find((s) => s.cls === storedClass) ?? standings[0];
 
   return (
     <>
       <ConnectionBanner show={gamesError || teamsError} />
-      <div className="space-y-8">
-        {standings.map(({ cls, tables, ranking }, i) => (
-          <Fragment key={cls}>
-            {i > 0 && <div className="divider"></div>}
-            <StandingsTable tables={tables} ranking={ranking} title={cls} />
-          </Fragment>
-        ))}
+      <div className="space-y-4">
+        {standings.length > 1 && (
+          <SegmentedControl
+            ariaLabel="Klasse"
+            options={standings.map(({ cls }) => ({ value: cls, label: cls }))}
+            value={active?.cls ?? ''}
+            onChange={setStoredClass}
+          />
+        )}
+        {active && (
+          <StandingsTable
+            tables={active.tables}
+            ranking={active.ranking}
+            title={active.cls}
+          />
+        )}
       </div>
     </>
   );
