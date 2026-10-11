@@ -1,25 +1,13 @@
 import { useId } from 'react';
+import { MINE_BG, MINE_STRIP, MeinTeamTag } from '../MeinTeam';
 import { cutOffLegend, type CutOff } from '@/lib/cutOff';
 import {
   formatDiff,
   groupStatusLabel,
   recordLabels,
   type GroupTable,
-  type PlacementEntry,
   type TableRow,
 } from '@/lib/standings';
-
-// Own team: amber row with a left strip and a "Mein Team" tag (design: Tabelle).
-const MINE_BG = 'bg-scorer-bg';
-const MINE_STRIP = 'shadow-[inset_4px_0_0_var(--color-primary)]';
-
-function MeinTeamTag() {
-  return (
-    <span className="rounded-md bg-scorer-tag px-1.5 py-0.5 text-[12px] font-bold text-scorer-ink">
-      Mein Team
-    </span>
-  );
-}
 
 // Order of the group ranking, worded after ADR-0006.
 const TIEBREAK_NOTE =
@@ -155,79 +143,26 @@ function GroupTableView({
   );
 }
 
-function RankingView({
-  entries,
-  selectedTeam,
-}: {
-  entries: PlacementEntry[];
-  selectedTeam: string;
-}) {
-  return (
-    <div className="rounded-card bg-base-100 p-4">
-      <h2 className="text-lg font-semibold mb-2">Endstand</h2>
-      <div className="overflow-x-auto">
-        <table className="table table-zebra table-sm">
-          <thead>
-            <tr>
-              <th scope="col">Platz</th>
-              <th scope="col">Team</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => {
-              const mine = entry.team === selectedTeam;
-              return (
-                <tr key={entry.place}>
-                  <td className={mine ? `${MINE_BG} ${MINE_STRIP}` : ''}>
-                    {entry.place}
-                  </td>
-                  <td className={`font-semibold ${mine ? MINE_BG : ''}`}>
-                    {entry.team}
-                    {mine && ' '}
-                    {mine && <MeinTeamTag />}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
 export default function StandingsTable({
   tables,
-  ranking,
   cutOff,
   selectedTeam,
 }: {
   tables: GroupTable[];
-  ranking: PlacementEntry[];
   cutOff: CutOff | null;
   /** Persisted "Mein Team" name; "all" or a team not in the tables marks nothing. */
   selectedTeam: string;
 }) {
-  const decided = ranking.filter((e) => e.team !== null);
-
   return (
-    <div>
-      {tables.length > 0 && (
-        <div className="mb-6 space-y-4">
-          {tables.map((table) => (
-            <GroupTableView
-              key={table.group}
-              table={table}
-              selectedTeam={selectedTeam}
-              cutOff={cutOff}
-            />
-          ))}
-        </div>
-      )}
-
-      {decided.length > 0 && (
-        <RankingView entries={decided} selectedTeam={selectedTeam} />
-      )}
+    <div className="space-y-4">
+      {tables.map((table) => (
+        <GroupTableView
+          key={table.group}
+          table={table}
+          selectedTeam={selectedTeam}
+          cutOff={cutOff}
+        />
+      ))}
     </div>
   );
 }

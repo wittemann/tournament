@@ -17,7 +17,7 @@ const LABEL_ABBREVIATIONS: [RegExp, string][] = [
   [/^Viertelfinale\b/, 'VF'],
 ];
 
-function shortLabel(label: string): string {
+export function shortLabel(label: string): string {
   for (const [pattern, short] of LABEL_ABBREVIATIONS) {
     if (pattern.test(label)) return label.replace(pattern, short);
   }

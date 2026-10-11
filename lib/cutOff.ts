@@ -39,7 +39,8 @@ export interface CutOff {
   extra: { place: number; count: number } | null;
 }
 
-const roundName = (label: string | null) =>
+/** Round name from a game label: "Halbfinale 1" → "Halbfinale"; null without one. */
+export const roundName = (label: string | null) =>
   label?.replace(/\s*\d+$/, '').trim() || null;
 
 /** Largest m such that 1..m are all in `values`. */
@@ -50,11 +51,16 @@ function contiguousFromOne(values: number[]): number {
   return m;
 }
 
-export function cutOff(ctx: StandingsContext): CutOff | null {
-  const placement = ctx.games.filter((g) => g.stage === 'placement');
-  const refsOf = (g: GameLike) =>
-    [g.home_ref, g.away_ref].filter((r): r is string => !!r);
+const refsOf = (g: GameLike) =>
+  [g.home_ref, g.away_ref].filter((r): r is string => !!r);
 
+/**
+ * The final of the top bracket (rule 1 above): the placement game that no
+ * `winner:` ref points at, shares no ref with another placement game and has
+ * the best slot. null without such a game. Shared with lib/bracket.ts.
+ */
+export function findFinal(ctx: StandingsContext): GameLike | null {
+  const placement = ctx.games.filter((g) => g.stage === 'placement');
   const winnerTargets = new Set<number>();
   for (const g of placement)
     for (const r of refsOf(g)) {
@@ -77,7 +83,12 @@ export function cutOff(ctx: StandingsContext): CutOff | null {
     }))
     .filter((c) => c.key !== Infinity)
     .sort((a, b) => a.key - b.key || (a.g.number ?? 0) - (b.g.number ?? 0));
-  if (candidates.length === 0) return null;
+  return candidates[0]?.g ?? null;
+}
+
+export function cutOff(ctx: StandingsContext): CutOff | null {
+  const final = findFinal(ctx);
+  if (!final) return null;
 
   // Walk down the winner: refs, collecting leaf refs and the deepest round.
   const leaves: string[] = [];
@@ -103,7 +114,6 @@ export function cutOff(ctx: StandingsContext): CutOff | null {
       deepestLabel = g.label;
     }
   };
-  const final = candidates[0].g;
   walk(final, 0, new Set(final.number === null ? [] : [final.number]));
   if (leaves.length === 0) return null;
 

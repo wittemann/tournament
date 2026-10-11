@@ -128,7 +128,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 - [x] Own route `/finalrunde` with its nav tab. This answers open question 2 of the bracket spec. · `haiku`
 - [x] Class `SegmentedControl`. · `haiku`
-- [ ] Bracket as in the design: two columns, one per half; semifinals joined to the final with CSS borders; final as a dark card with the trophy; "Spiel um Platz 3"; placement games as a list; own team highlighted; "Endstand" once the final is played. · `opus`
+- [x] Bracket as in the design: two columns, one per half; semifinals joined to the final with CSS borders; final as a dark card with the trophy; "Spiel um Platz 3"; placement games as a list; own team highlighted; "Endstand" once the final is played. · `opus`
 - [ ] Quarterfinal variant (8 teams): each column groups its two quarterfinals above its semifinal; seeds shown as "A1", "B4"; "Platz 5–8" block for the quarterfinal losers. More than 8 teams would need one tab per round (out of scope unless the 2026 schedule needs it). · `opus`
 
 **Verkauf**

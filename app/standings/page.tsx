@@ -10,11 +10,7 @@ import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { classesInUse } from '@/lib/classesInUse';
 import { cutOff } from '@/lib/cutOff';
-import {
-  groupTables,
-  placementRanking,
-  standingsContext,
-} from '@/lib/standings';
+import { groupTables, standingsContext } from '@/lib/standings';
 
 function useStandingsByClass(games: Game[], teams: Team[]) {
   return useMemo(
@@ -24,7 +20,6 @@ function useStandingsByClass(games: Game[], teams: Team[]) {
         return {
           cls,
           tables: groupTables(games, teams, cls),
-          ranking: placementRanking(ctx),
           cutOff: cutOff(ctx),
         };
       }),
@@ -70,7 +65,6 @@ export default function Page() {
         {active && (
           <StandingsTable
             tables={active.tables}
-            ranking={active.ranking}
             cutOff={active.cutOff}
             selectedTeam={selectedTeam}
           />
