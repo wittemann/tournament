@@ -23,6 +23,13 @@ type Order = { column: string; ascending?: boolean };
 // The rows stay as they were, so pages can show them under a banner.
 const CHANNEL_DOWN_DELAY_MS = 5000;
 
+// supabase.channel(topic) returns the channel already registered under that
+// topic, and removeChannel() is async. Two hooks on one table, or a StrictMode
+// cleanup followed by an immediate re-run, would otherwise share a channel that
+// is still leaving (and `.on()` on a subscribed channel throws). So every
+// effect run gets its own topic.
+let channelSeq = 0;
+
 export function useRealtimeTable<T>(
   table: string,
   order: Order[],
@@ -82,10 +89,13 @@ export function useRealtimeTable<T>(
     // but a CLOSED channel is removed from the socket for good. `closed`
     // marks that, so the next wake-up creates a fresh channel.
     let closed = false;
+    // Per effect run, so a wake re-subscribe reuses the name: the CLOSED channel
+    // is already gone from the socket then.
+    const topic = `${table}-changes-${++channelSeq}`;
     const subscribe = (): RealtimeChannel => {
       let previous: string | null = null;
       return supabase
-        .channel(`${table}-changes`)
+        .channel(topic)
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table },
