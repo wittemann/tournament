@@ -86,8 +86,8 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 - [x] **Dark mode:** dropped for 2026 (decided 2026-10-10). One light daisyUI theme with `color-scheme: light`, so phones in dark mode don't get dark native controls on a light page. Remove the `dark:` classes.
 - [x] **Desktop / `lg`:** no separate layout (decided 2026-10-10). Keep the phone column, centred at about 480 px wide, on every screen size. That also removes the separate desktop table in `GamesTable`.
-- [ ] **Info tiles** ("Ende", "Turnierleitung"): hard-code them for 2026, or take them from the data (e.g. flagged FAQ rows). Decide together with the optional `faq.link_*` columns in section 2. · main thread decides
-- [ ] **Verkauf:** keep one row per item, or merge items with the same price ("Cola · Fanta · Mezzo Mix") as in the design. Merging needs either a data change or grouping in code. · main thread decides
+- [x] **Info tiles** ("Ende", "Turnierleitung"): taken from the data (decided 2026-10-11). Section 9 rules out hard-coding "Ende". FAQ rows get optional `tile_title` / `tile_value` / `tile_detail` columns; a row with a `tile_title` also shows as a tile. The link buttons come from FAQ rows with `link_url` / `link_label`.
+- [x] **Verkauf:** one row per item (decided 2026-10-11). Merging "Cola · Fanta · Mezzo Mix" would lose the per-item sold-out flag, and grouping by price in code would also merge unrelated drinks (Glühwein, Mineralwasser are 2,50 € too). The canvas gets updated in the Finish step.
 - [ ] **Higher-res kangaroo:** [`public/kangaroo.png`](../public/kangaroo.png) is cut from the logo and only 90 px wide, so it looks soft on phones. Ask the club for a larger original or an SVG. · **(owner)**
 
 **Foundation**
