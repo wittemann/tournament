@@ -119,16 +119,15 @@ type PlayingGame = Pick<GameLike, 'class' | 'hometeam' | 'awayteam'> & {
 };
 
 /**
- * Names for the team filter: teams from the `teams` table that appear in at
- * least one game (as home, away or scorer), sorted, one entry per name. A name
- * used in several classes ("Stuttgart 1") appears once; the filter then shows
- * the team's games of every class. Teams without any game (registered, not
- * scheduled yet) are left out, as they would only give an empty list.
+ * Teams (name and class) for the team filter: teams from the `teams` table
+ * that appear in at least one game (as home, away or scorer). Teams without
+ * any game (registered, not scheduled yet) are left out, as they would only
+ * give an empty list. See lib/teamSelection.ts for the select options.
  */
-export function playingTeamNames(
+export function playingTeams(
   teams: TeamLike[],
   games: PlayingGame[],
-): string[] {
+): { name: string; cls: GameClass }[] {
   const used = new Set<string>();
   for (const game of games) {
     if (game.hometeam) used.add(`${game.class}|${game.hometeam}`);
@@ -136,9 +135,7 @@ export function playingTeamNames(
     if (game.scorer)
       used.add(`${game.scorer_class ?? game.class}|${game.scorer}`);
   }
-  const names = new Set<string>();
-  for (const t of teams) {
-    if (used.has(`${t.class}|${t.name}`)) names.add(t.name);
-  }
-  return [...names].sort((a, b) => a.localeCompare(b, 'de'));
+  return teams
+    .filter((t) => used.has(`${t.class}|${t.name}`))
+    .map((t) => ({ name: t.name, cls: t.class }));
 }

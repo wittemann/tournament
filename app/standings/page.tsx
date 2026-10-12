@@ -9,6 +9,7 @@ import StatusCard from '../StatusCard';
 import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
+import { teamNameInClass } from '@/lib/teamSelection';
 import { classesInUse } from '@/lib/classesInUse';
 import { cutOff } from '@/lib/cutOff';
 import { groupTables, standingsContext } from '@/lib/standings';
@@ -44,7 +45,7 @@ export default function Page() {
   // Own storage key: the Spielplan's class filter can be "all", which has no
   // table. A stored class that is gone falls back to the first one.
   const [storedClass, setStoredClass] = usePersistedState('tableClass', '');
-  // Same key as the Spielplan's team select: name only, "all" means none.
+  // Same key as the Spielplan's team select (see lib/teamSelection.ts).
   const [selectedTeam] = usePersistedState('selectedTeam', 'all');
 
   if (gamesLoading || teamsLoading) return <Spinner />;
@@ -75,7 +76,7 @@ export default function Page() {
           <StandingsTable
             tables={active.tables}
             cutOff={active.cutOff}
-            selectedTeam={selectedTeam}
+            selectedTeam={teamNameInClass(selectedTeam, active?.cls)}
           />
         )}
       </div>

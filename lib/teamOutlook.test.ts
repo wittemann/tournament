@@ -420,3 +420,77 @@ describe('awaitsPlacement', () => {
     expect(awaitsPlacement(openSemis, teams2025, 'Bretten 2')).toBe(false);
   });
 });
+
+describe('class-aware selection', () => {
+  const schueler = g('09:00', 'Stuttgart 1', 'B', { class: 'Schüler' });
+  const tball = g('10:00', 'Stuttgart 1', 'C', { class: 'T-Ball' });
+  const duty = g('11:00', 'X', 'Y', {
+    class: 'Schüler',
+    scorer: 'Stuttgart 1',
+    scorer_class: 'T-Ball',
+  });
+  const games = [schueler, tball, duty];
+  const gamesOf = (team: Parameters<typeof teamSchedule>[2]) =>
+    teamSchedule(games, noSides, team).map((e) => `${e.kind}:${e.game.id}`);
+
+  it('follows only the selected class', () => {
+    expect(gamesOf({ name: 'Stuttgart 1', cls: 'T-Ball' })).toEqual([
+      `game:${tball.id}`,
+      `scorer:${duty.id}`,
+    ]);
+    expect(gamesOf({ name: 'Stuttgart 1', cls: 'Schüler' })).toEqual([
+      `game:${schueler.id}`,
+    ]);
+  });
+
+  it('keeps matching every class for a legacy selection', () => {
+    expect(gamesOf({ name: 'Stuttgart 1', cls: null })).toEqual(
+      gamesOf('Stuttgart 1'),
+    );
+    expect(gamesOf('Stuttgart 1')).toHaveLength(3);
+  });
+
+  it('limits the outlook to the selected class', () => {
+    const o = getTeamOutlook(
+      games,
+      noSides,
+      { name: 'Stuttgart 1', cls: 'Schüler' },
+      '08:00',
+    );
+    expect(o.next).toBe(schueler);
+    expect(o.scorerDuty).toBeNull();
+  });
+
+  it('counts the record per class', () => {
+    const teams = [
+      { name: 'Stuttgart 1', class: 'Schüler', group_name: 'A' },
+      { name: 'B', class: 'Schüler', group_name: 'A' },
+      { name: 'Stuttgart 1', class: 'T-Ball', group_name: 'A' },
+      { name: 'C', class: 'T-Ball', group_name: 'A' },
+    ] as const;
+    const played = (home: string, cls: 'Schüler' | 'T-Ball', n: number) => ({
+      id: n,
+      class: cls,
+      stage: 'group' as const,
+      number: n,
+      hometeam: home,
+      awayteam: home === 'Stuttgart 1' ? (cls === 'T-Ball' ? 'C' : 'B') : null,
+      homescore: 5,
+      awayscore: 1,
+      home_ref: null,
+      away_ref: null,
+      label: null,
+    });
+    const gs = [
+      played('Stuttgart 1', 'Schüler', 1),
+      played('Stuttgart 1', 'T-Ball', 2),
+    ];
+    const tb = { name: 'Stuttgart 1', cls: 'T-Ball' as const };
+    expect(teamRecord(gs, [...teams], tb).wins).toBe(1);
+    expect(teamRecord(gs, [...teams], 'Stuttgart 1').wins).toBe(2);
+    expect(teamSummaries(gs, [...teams], tb).map((s) => s.cls)).toEqual([
+      'T-Ball',
+    ]);
+    expect(teamSummaries(gs, [...teams], 'Stuttgart 1')).toHaveLength(2);
+  });
+});

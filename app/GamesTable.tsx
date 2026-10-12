@@ -17,7 +17,14 @@ import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
 import { toMinutes } from '@/lib/gameStatus';
 import { classOptions, hallOptions } from '@/lib/filterOptions';
-import { playingTeamNames, type GameSides } from '@/lib/schedule';
+import { playingTeams, type GameSides } from '@/lib/schedule';
+import {
+  NO_TEAM,
+  parseTeam,
+  resolveTeam,
+  serializeTeam,
+  teamOptions,
+} from '@/lib/teamSelection';
 import { groupBySlot, slotStatus } from '@/lib/slots';
 import { tournamentFinished } from '@/lib/tournamentStatus';
 import {
@@ -59,16 +66,20 @@ export default function GamesTable({
   );
   const now = useNow();
 
-  // Teams from the teams table that appear in some game
-  const teamNames = useMemo(
-    () => playingTeamNames(teams, games),
-    [teams, games],
+  // Teams (name + class) from the teams table that appear in some game
+  const teamList = useMemo(() => playingTeams(teams, games), [teams, games]);
+  const teamChoices = useMemo(() => teamOptions(teamList), [teamList]);
+  // A remembered team that is gone (new year, renamed) counts as "all". An
+  // old name-only value stays active while any class has a team of that name.
+  const activeSelection = useMemo(
+    () => resolveTeam(parseTeam(selectedTeam), teamList),
+    [selectedTeam, teamList],
   );
-  // A remembered team that is gone (new year, renamed) counts as "all".
-  const activeTeam =
-    teamNames.length === 0 || teamNames.includes(selectedTeam)
-      ? selectedTeam
-      : 'all';
+  const activeTeam = activeSelection ? activeSelection.name : NO_TEAM;
+  const selectValue = serializeTeam(activeSelection);
+  // A legacy name used in several classes has no option of its own; show it
+  // as its own row (not while the teams are still loading).
+  const legacyOption = activeSelection?.cls === null && teamList.length > 0;
 
   const classChoices = useMemo(() => classOptions(games), [games]);
   const hallChoices = useMemo(() => hallOptions(games), [games]);
@@ -100,45 +111,50 @@ export default function GamesTable({
   // and hall filters. The "Mein Team" card ignores the filters.
   const teamEntries = useMemo(
     () =>
-      activeTeam === 'all'
+      !activeSelection
         ? []
-        : teamSchedule(games, sides, activeTeam).filter((e) =>
+        : teamSchedule(games, sides, activeSelection).filter((e) =>
             matchesFilters(e.game),
           ),
-    [games, sides, activeTeam, matchesFilters],
+    [games, sides, activeSelection, matchesFilters],
   );
   const outlook = useMemo(
     () =>
-      activeTeam !== 'all' && now
-        ? getTeamOutlook(games, sides, activeTeam, now)
+      activeSelection && now
+        ? getTeamOutlook(games, sides, activeSelection, now)
         : null,
-    [games, sides, activeTeam, now],
+    [games, sides, activeSelection, now],
   );
   const record = useMemo(
     () =>
-      activeTeam === 'all'
+      !activeSelection
         ? null
         : formatRecord(
             teamRecord(
               games,
               teams,
-              activeTeam,
+              activeSelection,
               activeClass === 'all'
                 ? undefined
                 : (activeClass as Game['class']),
             ),
           ),
-    [games, teams, activeTeam, activeClass],
+    [games, teams, activeSelection, activeClass],
   );
 
   const waiting = useMemo(
-    () => outlook?.done === true && awaitsPlacement(games, teams, activeTeam),
-    [games, teams, activeTeam, outlook],
+    () =>
+      !!activeSelection &&
+      outlook?.done === true &&
+      awaitsPlacement(games, teams, activeSelection),
+    [games, teams, activeSelection, outlook],
   );
   const summaries = useMemo(
     () =>
-      outlook?.done && !waiting ? teamSummaries(games, teams, activeTeam) : [],
-    [games, teams, activeTeam, outlook, waiting],
+      activeSelection && outlook?.done && !waiting
+        ? teamSummaries(games, teams, activeSelection)
+        : [],
+    [games, teams, activeSelection, outlook, waiting],
   );
 
   // Index of the first upcoming entry, if there are earlier ones before it.
@@ -186,7 +202,7 @@ export default function GamesTable({
         <span className="relative block">
           <select
             id="team-filter"
-            value={activeTeam}
+            value={selectValue}
             onChange={(e) => setSelectedTeam(e.target.value)}
             className={`h-12 w-full appearance-none rounded-control border-[1.5px] bg-base-100 pr-9 pl-3.5 text-[17px] font-semibold text-base-content ${
               activeTeam === 'all' ? 'border-primary' : 'border-faint'
@@ -197,9 +213,12 @@ export default function GamesTable({
                 ? 'Team wählen – nächstes Spiel sehen'
                 : 'Alle Teams'}
             </option>
-            {teamNames.map((team) => (
-              <option key={team} value={team}>
-                {team}
+            {legacyOption && (
+              <option value={selectValue}>{activeTeam} (alle Klassen)</option>
+            )}
+            {teamChoices.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>

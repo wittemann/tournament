@@ -2,9 +2,10 @@
  * The selected team's view of the schedule: the "Mein Team" card
  * (docs/specs/next-game-card.md) and the team's own game list.
  *
- * A team is selected by name only, so a name used in several classes
- * ("Stuttgart 1" in Schüler and T-Ball) covers that name's games in every
- * class. Scorer duties match the name exactly: the 2025 club-prefix rule
+ * A team is selected by name and class (lib/teamSelection.ts), so
+ * "Stuttgart 1" in T-Ball and in Schüler are different teams. A legacy
+ * selection without class (or a plain string here) covers that name's games
+ * in every class. Scorer duties match the name exactly: the 2025 club-prefix rule
  * ("Bretten" → "Bretten 1/2") is gone, since "Bretten" is a real T-Ball team
  * in the 2026 schema and would otherwise hand its duties to the Schüler teams.
  */
@@ -15,6 +16,7 @@ import {
   toMinutes,
 } from './gameStatus';
 import type { GameSides } from './schedule';
+import { type TeamSelection, matchesTeam } from './teamSelection';
 import {
   type GameClass,
   type GameLike,
@@ -35,21 +37,33 @@ export type OutlookGame = RunningCandidate & {
   scorer_class: GameClass | null;
 };
 
+/** A team as selected, or a plain name that matches in every class. */
+export type TeamRef = TeamSelection | string;
+
+const asSelection = (team: TeamRef): TeamSelection =>
+  typeof team === 'string' ? { name: team, cls: null } : team;
+
 /** True when the team plays in the game (placement sides once resolved). */
 export function playsIn(
   game: OutlookGame,
   sides: GameSides | undefined,
-  team: string,
+  team: TeamRef,
 ): boolean {
   if (game.eventname) return false;
+  const sel = asSelection(team);
   const home = sides ? sides.home.team : game.hometeam;
   const away = sides ? sides.away.team : game.awayteam;
-  return home === team || away === team;
+  return (
+    matchesTeam(sel, home, game.class) || matchesTeam(sel, away, game.class)
+  );
 }
 
 /** True when the team is the game's scorer (exact name, see above). */
-export function scoresIn(game: OutlookGame, team: string): boolean {
-  return !game.eventname && game.scorer === team;
+export function scoresIn(game: OutlookGame, team: TeamRef): boolean {
+  return (
+    !game.eventname &&
+    matchesTeam(asSelection(team), game.scorer, game.scorer_class ?? game.class)
+  );
 }
 
 function hasResult(game: RunningCandidate): boolean {
@@ -87,7 +101,7 @@ export interface TeamOutlook<G extends OutlookGame> {
 export function getTeamOutlook<G extends OutlookGame>(
   games: G[],
   sides: Map<number, GameSides>,
-  team: string,
+  team: TeamRef,
   now: string,
 ): TeamOutlook<G> {
   const nowMin = toMinutes(now);
@@ -132,7 +146,7 @@ export type TeamEntry<G> =
 export function teamSchedule<G extends OutlookGame>(
   games: G[],
   sides: Map<number, GameSides>,
-  team: string,
+  team: TeamRef,
 ): TeamEntry<G>[] {
   const kindOf = (game: G): TeamEntry<G>['kind'] | null =>
     playsIn(game, sides.get(game.id), team)
@@ -174,19 +188,22 @@ export interface TeamRecord {
 export function teamRecord(
   games: GameLike[],
   teams: TeamLike[],
-  team: string,
+  team: TeamRef,
   cls?: GameClass,
 ): TeamRecord {
+  const sel = asSelection(team);
   const record = { wins: 0, losses: 0, ties: 0 };
   const classes = new Set(
     teams
-      .filter((t) => t.name === team && (!cls || t.class === cls))
+      .filter(
+        (t) => matchesTeam(sel, t.name, t.class) && (!cls || t.class === cls),
+      )
       .map((t) => t.class),
   );
   for (const cls of classes) {
     for (const table of groupTables(games, teams, cls)) {
       for (const row of table.rows) {
-        if (row.team !== team) continue;
+        if (row.team !== sel.name) continue;
         record.wins += row.wins;
         record.losses += row.losses;
         record.ties += row.ties;
@@ -214,14 +231,15 @@ export function formatRecord({ wins, losses, ties }: TeamRecord): string {
 export function awaitsPlacement(
   games: GameLike[],
   teams: TeamLike[],
-  team: string,
+  team: TeamRef,
 ): boolean {
+  const sel = asSelection(team);
   const classes = new Set(
-    teams.filter((t) => t.name === team).map((t) => t.class),
+    teams.filter((t) => matchesTeam(sel, t.name, t.class)).map((t) => t.class),
   );
   for (const cls of classes) {
     const ctx = standingsContext(games, teams, cls);
-    if (placementRanking(ctx).some((e) => e.team === team)) continue;
+    if (placementRanking(ctx).some((e) => e.team === sel.name)) continue;
     for (const g of ctx.games) {
       if (g.stage !== 'placement') continue;
       const { home, away } = resolveGame(g, ctx);
@@ -257,18 +275,21 @@ export interface TeamSummary {
 export function teamSummaries(
   games: GameLike[],
   teams: TeamLike[],
-  team: string,
+  team: TeamRef,
 ): TeamSummary[] {
+  const sel = asSelection(team);
+  const name = sel.name;
   const classes: GameClass[] = [];
   for (const t of teams) {
-    if (t.name === team && !classes.includes(t.class)) classes.push(t.class);
+    if (matchesTeam(sel, t.name, t.class) && !classes.includes(t.class))
+      classes.push(t.class);
   }
   const summaries: TeamSummary[] = [];
   for (const cls of classes) {
     const ctx = standingsContext(games, teams, cls);
     let row = null;
     for (const table of ctx.tables) {
-      row = table.rows.find((r) => r.team === team) ?? row;
+      row = table.rows.find((r) => r.team === name) ?? row;
     }
     if (!row) continue;
     const record = { wins: 0, losses: 0, ties: 0 };
@@ -276,7 +297,7 @@ export function teamSummaries(
     for (const g of ctx.games) {
       if (g.homescore == null || g.awayscore == null) continue;
       const { home, away } = resolveGame(g, ctx);
-      const mine = home === team ? 'home' : away === team ? 'away' : null;
+      const mine = home === name ? 'home' : away === name ? 'away' : null;
       if (!mine) continue;
       const own = mine === 'home' ? g.homescore : g.awayscore;
       const other = mine === 'home' ? g.awayscore : g.homescore;
@@ -285,7 +306,7 @@ export function teamSummaries(
       else if (own < other) record.losses++;
       else record.ties++;
     }
-    const final = placementRanking(ctx).find((e) => e.team === team);
+    const final = placementRanking(ctx).find((e) => e.team === name);
     summaries.push({
       cls,
       record,

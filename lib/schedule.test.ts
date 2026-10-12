@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gameSides, playingTeamNames, refLabel } from '@/lib/schedule';
+import { gameSides, playingTeams, refLabel } from '@/lib/schedule';
 import { games2025, teams2025 } from '@/lib/fixtures/games2025';
 import type { GameLike, TeamLike } from '@/lib/standings';
 
@@ -162,54 +162,54 @@ describe('gameSides', () => {
   });
 });
 
-describe('playingTeamNames', () => {
-  it('lists every 2025 team once, sorted, with shared names deduplicated', () => {
-    const names = playingTeamNames(teams2025, games2025);
-    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, 'de')));
-    expect(new Set(names).size).toBe(names.length);
-    expect(names).toContain('Bretten');
-    expect(names).toContain('Bretten 1');
-    expect(names).toContain('Stuttgart 1');
-    expect(names).toEqual(
-      [...new Set(teams2025.map((t) => t.name))].sort((a, b) =>
-        a.localeCompare(b, 'de'),
-      ),
-    );
+describe('playingTeams', () => {
+  const game = (
+    cls: 'Schüler' | 'T-Ball',
+    home: string,
+    away: string | null = null,
+    scorer: string | null = null,
+    scorer_class: 'Schüler' | 'T-Ball' | null = null,
+  ) => ({ class: cls, hometeam: home, awayteam: away, scorer, scorer_class });
+
+  it('keeps a shared name once per class', () => {
+    const teams: TeamLike[] = [
+      { name: 'Stuttgart 1', class: 'Schüler', group_name: 'A' },
+      { name: 'Stuttgart 1', class: 'T-Ball', group_name: 'A' },
+      { name: 'Idle', class: 'T-Ball', group_name: 'A' },
+    ];
+    expect(
+      playingTeams(teams, [
+        game('Schüler', 'Stuttgart 1'),
+        game('T-Ball', 'Stuttgart 1'),
+      ]),
+    ).toEqual([
+      { name: 'Stuttgart 1', cls: 'Schüler' },
+      { name: 'Stuttgart 1', cls: 'T-Ball' },
+    ]);
+  });
+
+  it('lists every 2025 team', () => {
+    expect(playingTeams(teams2025, games2025)).toHaveLength(teams2025.length);
   });
 
   it('ignores names that are not teams and teams without games', () => {
-    const names = playingTeamNames(
+    const result = playingTeams(
       [
         { name: 'A', class: 'Schüler', group_name: 'A' },
         { name: 'B', class: 'Schüler', group_name: 'A' },
         { name: 'Idle', class: 'Schüler', group_name: 'A' },
       ],
-      [
-        {
-          class: 'Schüler',
-          hometeam: 'A',
-          awayteam: 'B',
-          scorer: 'Club',
-          scorer_class: null,
-        },
-      ],
+      [game('Schüler', 'A', 'B', 'Club')],
     );
-    expect(names).toEqual(['A', 'B']);
+    expect(result.map((t) => t.name)).toEqual(['A', 'B']);
   });
 
   it('counts a scorer of another class as playing in that class', () => {
-    const names = playingTeamNames(
-      [{ name: 'Bretten', class: 'T-Ball', group_name: 'A' }],
-      [
-        {
-          class: 'Schüler',
-          hometeam: 'X',
-          awayteam: 'Y',
-          scorer: 'Bretten',
-          scorer_class: 'T-Ball',
-        },
-      ],
-    );
-    expect(names).toEqual(['Bretten']);
+    expect(
+      playingTeams(
+        [{ name: 'Bretten', class: 'T-Ball', group_name: 'A' }],
+        [game('Schüler', 'X', 'Y', 'Bretten', 'T-Ball')],
+      ),
+    ).toEqual([{ name: 'Bretten', cls: 'T-Ball' }]);
   });
 });
