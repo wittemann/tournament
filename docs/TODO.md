@@ -172,7 +172,7 @@ The app has to be ready before this point: teams register first, and the schedul
 
 ## 10. From the review-later walkthrough
 
-- [ ] Add `"engines": { "node": ">=22.22.2" }` to `package.json` (isomorphic-dompurify 4 needs it; Vercel runs 24.x). · `haiku`
+- [x] Add `"engines": { "node": ">=22.22.2" }` to `package.json` (isomorphic-dompurify 4 needs it; Vercel runs 24.x). · `haiku`
 - [ ] **Class-aware "Mein Team" selection** (section 2 decision, not built yet): the select labels names used in more than one class with the class ("Stuttgart 1 (T-Ball)"), and `selectedTeam` stores name + class. Spielplan list, Mein-Team card (`lib/teamOutlook.ts`), Tabelle and Finalrunde highlights follow the class. An old stored value (name only) keeps matching every class with that name. Tests for both. · `sonnet`
 - [ ] Team-view heading record (`teamRecord` in `lib/teamOutlook.ts`, shown in `app/GamesTable.tsx`) counts group **and** placement games, so it agrees with the card's Bilanz at the end of the day. · `haiku`
 - [ ] **Class order T-Ball, Schüler, Jugend** everywhere (Spielplan class switch, Tabelle, Finalrunde). Today `lib/classesInUse.ts` and `lib/filterOptions.ts` take the enum order (Schüler, T-Ball, Jugend). One shared order constant in code; classes it doesn't know are appended at the end instead of dropped. The Tabelle/Finalrunde default (first class) becomes T-Ball. Tests. · `haiku`

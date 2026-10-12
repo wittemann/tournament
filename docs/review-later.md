@@ -11,3 +11,5 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 ## Deferred review findings
 
 Nice-to-haves from the reviews, and findings left after the review cap. Security findings are only written here once they're fixed (the repo is public).
+
+- `engines.node` is `>=22.22.2` as agreed. The real isomorphic-dompurify/jsdom range is `^22.22.2 || ^24.15.0 || >=26.0.0`, so 24.0–24.14 pass the field but not the dependency, and Vercel may move to Node 26 once it ships. Tighten to `^22.22.2 || ^24.15.0` or `24.x` if that matters. The lockfile's root entry doesn't mirror `engines` (syncing it pulled in unrelated wasm packages).
