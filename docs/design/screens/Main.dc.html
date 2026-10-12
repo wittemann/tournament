@@ -37,7 +37,7 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
   <section style="padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 12px">
     <label for="team" style="display: flex; flex-direction: column; gap: 6px">
       <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Mein Team</span>
-      <select id="team" style="height: 48px; border-radius: 12px; border: 1.5px solid #B9C6BB; background: #FFFFFF; padding: 0 14px; font-family: inherit; font-size: 17px; font-weight: 600; color: #142019">
+      <select id="team" style="height: 48px; border-radius: 12px; border: 1.5px solid #818D84; background: #FFFFFF; padding: 0 14px; font-family: inherit; font-size: 17px; font-weight: 600; color: #142019">
         <option>Alle Teams</option>
         <option selected="selected">Bretten 2</option>
         <option>Mannheim</option>
@@ -46,27 +46,27 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
     </label>
     <div style="display: flex; align-items: center; gap: 10px">
       <span id="Main-class-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Klasse</span>
-      <div role="tablist" aria-labelledby="Main-class-label" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
-        <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Schüler</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
+      <div role="radiogroup" aria-labelledby="Main-class-label" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="radio" aria-checked="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Schüler</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 10px">
       <span id="Main-hall-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Halle</span>
-      <div role="tablist" aria-labelledby="Main-hall-label" style="flex: 1; display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
-        <button type="button" role="tab" aria-selected="true" aria-label="Alle Hallen" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 1" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">1</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 2" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">2</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 3" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">3</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 4" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">4</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 5" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">5</button>
+      <div role="radiogroup" aria-labelledby="Main-hall-label" style="flex: 1; display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="radio" aria-checked="true" aria-label="Alle Hallen" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 1" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">1</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 2" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">2</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 3" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">3</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 4" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">4</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 5" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">5</button>
       </div>
     </div>
   </section>
 
-  <section aria-label="Nächstes Spiel" style="margin: 8px 16px 0; border-radius: 18px; background: {{green}}; color: #FFFFFF; overflow: hidden">
+  <section aria-label="Nächstes Spiel" style="margin: 8px 16px 0; border-radius: 16px; background: {{green}}; color: #FFFFFF; overflow: hidden">
     <div style="padding: 16px 18px 14px; display: flex; flex-direction: column; gap: 10px">
       <div style="display: flex; align-items: center; justify-content: space-between">
         <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85">Nächstes Spiel</div>
@@ -137,8 +137,8 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
         <div style="font-size: 13px; font-weight: 600">Halle 3</div>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #56645A">–</span></div>
       </div>
     </article>
 
@@ -159,8 +159,8 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
         <div style="font-size: 13px; color: #56645A">Halle 1</div>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Nagold</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Nagold</span><span style="color: #56645A">–</span></div>
       </div>
     </article>
 
@@ -171,8 +171,8 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
         <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #56645A">Platz 9/10</div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe A</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe B</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe A</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #56645A"><span>5. Gruppe B</span><span style="color: #56645A">–</span></div>
       </div>
     </article>
 

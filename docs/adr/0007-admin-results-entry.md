@@ -1,6 +1,6 @@
 # ADR-0007: Results entry through an admin page
 
-**Status:** Proposed
+**Status:** Rejected (2026-10-12: the owner enters results directly in the Supabase table editor, which is good enough)
 **Date:** 2026-10-10
 **Deciders:** Martin Wittemann
 

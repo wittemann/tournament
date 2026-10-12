@@ -45,22 +45,22 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
     </label>
     <div style="display: flex; align-items: center; gap: 10px">
       <span id="Spie-class-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Klasse</span>
-      <div role="tablist" aria-labelledby="Spie-class-label" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
-        <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Schüler</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
-        <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
+      <div role="radiogroup" aria-labelledby="Spie-class-label" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="radio" aria-checked="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Schüler</button>
+        <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 10px">
       <span id="Spie-hall-label" style="width: 52px; flex: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A">Halle</span>
-      <div role="tablist" aria-labelledby="Spie-hall-label" style="flex: 1; display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
-        <button type="button" role="tab" aria-selected="true" aria-label="Alle Hallen" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 1" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">1</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 2" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">2</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 3" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">3</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 4" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">4</button>
-        <button type="button" role="tab" aria-selected="false" aria-label="Halle 5" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">5</button>
+      <div role="radiogroup" aria-labelledby="Spie-hall-label" style="flex: 1; display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+        <button type="button" role="radio" aria-checked="true" aria-label="Alle Hallen" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Alle</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 1" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">1</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 2" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">2</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 3" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">3</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 4" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">4</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="Halle 5" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #3E4B42">5</button>
       </div>
     </div>
   </section>
@@ -91,13 +91,13 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
       </div>
       <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 0 0 2px #B3261E">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 2</span><span style="padding: 2px 8px; border-radius: 6px; background: #DDEFE2; color: #1B5E34; font-weight: 700">Schüler</span><span style="margin-left: auto">Scorer: Bretten 2</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Darmstadt 2</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Darmstadt 2</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #56645A">–</span></div>
       </article>
       <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 0 0 2px #B3261E">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 4</span><span style="padding: 2px 8px; border-radius: 6px; background: #DCE6F7; color: #1E4A8C; font-weight: 700">Jugend</span><span style="margin-left: auto">Scorer: Heidelberg</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Herrenberg</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Stuttgart 1</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Herrenberg</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Stuttgart 1</span><span style="color: #56645A">–</span></div>
       </article>
     </div>
 
@@ -114,13 +114,13 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
       </div>
       <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 1</span><span style="padding: 2px 8px; border-radius: 6px; background: #FCE3CF; color: #7A3300; font-weight: 700">T-Ball</span><span style="margin-left: auto">Scorer: Karlsruhe</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Stuttgart 2</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Schriesheim</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Stuttgart 2</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Schriesheim</span><span style="color: #56645A">–</span></div>
       </article>
       <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 3</span><span style="padding: 2px 8px; border-radius: 6px; background: #DDEFE2; color: #1B5E34; font-weight: 700">Schüler</span><span style="margin-left: auto">Scorer: Darmstadt 2</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #56645A">–</span></div>
       </article>
     </div>
 
@@ -130,8 +130,8 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
       </div>
       <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 2</span><span style="padding: 2px 8px; border-radius: 6px; background: #DDEFE2; color: #1B5E34; font-weight: 700">Schüler</span><span style="margin-left: auto">Scorer: Nagold</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Heidelberg</span><span style="color: #8A968D">–</span></div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 1</span><span style="color: #8A968D">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Heidelberg</span><span style="color: #56645A">–</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 1</span><span style="color: #56645A">–</span></div>
       </article>
       <article style="background: #142019; color: #FFFFFF; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px">
         <span style="font-size: 13px; opacity: 0.8; font-weight: 600">Essensraum</span>

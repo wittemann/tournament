@@ -144,8 +144,8 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 **Finish**
 
 - [x] Check every page at 360–430 px phone width; touch targets ≥ 40 px; text contrast ≥ 4.5:1 (the class tags and muted greys are close to the limit, so measure them). · `sonnet`
-- [ ] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use). Also check: the loading spinner animates (it didn't in the browser pane), and the "Mein Team" placeholder "Team wählen – nächstes Spiel sehen" isn't cut off. · **(owner)**
-- [ ] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth. · `sonnet` for docs/design, **(owner)** for the canvas (docs/design done 2026-10-11; the canvas changes are listed in review-later)
+- [x] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use). Also check: the loading spinner animates (it didn't in the browser pane), and the "Mein Team" placeholder "Team wählen – nächstes Spiel sehen" isn't cut off. · **(owner)** Tested by the owner 2026-10-12.
+- [x] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth. · `sonnet` docs/design done 2026-10-11, canvas updated 2026-10-12 (new board for loading, empty and edge states).
 
 ## 7. Content for 2026 (data, not code)
 
@@ -159,7 +159,7 @@ The "Mein Team" card and the bracket are built in the redesign's style (section 
 
 - [x] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above. · built in section 6
 - [x] [Playoff bracket](specs/playoff-bracket.md): needs section 3. · built in sections 3 and 6
-- [ ] [Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags (optional, ADR still Proposed): Supabase Auth, RLS write policies, rejects tied placement scores. Careful: an UPDATE policy on `teams`/`halls` also rewrites `games` through the `on update cascade` FKs, and cascades skip RLS. · later, not in this run
+- [x] ~~[Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags~~: dropped 2026-10-12, results go straight into the database (ADR-0007 rejected).
 
 ## 9. 2026 schedule (last)
 

@@ -70,7 +70,7 @@ Do this a few weeks before the event.
 3. Load the year's data in the Supabase table editor or with SQL: teams and halls (once those tables exist, TODO section 2), games (with placeholders for placement games) and the sales items.
 4. Reset the sold-out flags on the items.
 5. Update the FAQ links (rules, directions) to this year's PDFs.
-6. Invite helpers to the Supabase organization (Organization Settings → Team). This gives them access to the whole project, which is why [ADR-0007](docs/adr/0007-admin-results-entry.md) proposes an admin page. Until it is built, results are entered in the table editor.
+6. Invite helpers to the Supabase organization (Organization Settings → Team). This gives them access to the whole project. Results are entered in the table editor; an admin page was considered and rejected ([ADR-0007](docs/adr/0007-admin-results-entry.md)).
 7. Run a dependency security update pass (`npm outdated`, `npm audit`), especially Next.js and React. Run the check gate, then push.
 8. Check the live site on a phone: schedule, standings, sales and FAQ, and that a changed result shows up without reloading.
 

@@ -35,10 +35,10 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
   </nav>
 
   <div style="padding: 16px 16px 4px">
-    <div role="tablist" aria-label="Klasse" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
-      <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Schüler</button>
-      <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
-      <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
+    <div role="radiogroup" aria-label="Klasse" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #DCE3DA; padding: 4px; border-radius: 12px">
+      <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">T-Ball</button>
+      <button type="button" role="radio" aria-checked="true" style="height: 40px; border: 0; border-radius: 9px; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #142019; box-shadow: 0 1px 2px rgba(20,32,25,0.15)">Schüler</button>
+      <button type="button" role="radio" aria-checked="false" style="height: 40px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: #3E4B42">Jugend</button>
     </div>
   </div>
 
@@ -71,7 +71,7 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
             <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">3–1</td>
             <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+28</td>
           </tr>
-          <tr style="border-top: 2px dashed #B9C6BB">
+          <tr style="border-top: 2px dashed #818D84">
             <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">3</td>
             <td style="padding: 12px 8px; font-weight: 600">Remchingen</td>
             <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–2</td>
@@ -91,9 +91,9 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
           </tr>
         </tbody>
       </table>
-      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A; display: flex; align-items: center; gap: 8px">
-        <span style="width: 18px; height: 0; border-top: 2px dashed #B9C6BB"></span>
-        Platz 1–2 im Halbfinale
+      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; flex: none; height: 0; border-top: 2px dashed #818D84"></span>Platz 1–2 im Halbfinale</div>
+        <div>Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs.</div>
       </div>
     </div>
 
@@ -124,7 +124,7 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
             <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–1</td>
             <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; color: #1B5E34; font-variant-numeric: tabular-nums">+11</td>
           </tr>
-          <tr style="border-top: 2px dashed #B9C6BB">
+          <tr style="border-top: 2px dashed #818D84">
             <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">3</td>
             <td style="padding: 12px 8px; font-weight: 600">Bretten 1</td>
             <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">2–1</td>
@@ -138,7 +138,7 @@ a{color:#1B5E34}a:hover{color:#0F3D21}
           </tr>
         </tbody>
       </table>
-      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A">Gleiche Bilanz: Differenz entscheidet, dann direkter Vergleich.</div>
+      <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A">Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs.</div>
     </div>
   </section>
 </div>

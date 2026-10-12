@@ -12,7 +12,7 @@ This folder records the significant decisions behind the Xmas-Ball tournament ap
 | [0004](0004-client-side-realtime-reads.md) | Public client-side reads with Supabase Realtime | Accepted |
 | [0005](0005-schema-as-migrations.md) | Database schema lives in the repo as migrations | Accepted |
 | [0006](0006-computed-standings.md) | Standings are computed from game results | Accepted |
-| [0007](0007-admin-results-entry.md) | Results entry through an admin page | Proposed |
+| [0007](0007-admin-results-entry.md) | Results entry through an admin page | Rejected |
 | [0008](0008-faq-sanitized-html.md) | FAQ answers stored as sanitized HTML | Accepted |
 
 ## Writing a new ADR

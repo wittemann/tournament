@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Lade-, Leer- und Randzustände</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B5E34}a:hover{color:#0F3D21}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1560px; box-sizing: border-box; background: #EEF2EC; font-family: 'Barlow', system-ui, sans-serif; color: #142019; padding: 20px 16px 28px; display: flex; flex-direction: column; gap: 14px">
+
+  <h1 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; text-transform: uppercase">Lade-, Leer- und Randzustände</h1>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 4px">1 · Lädt (alle Seiten)</div>
+  <div role="status" style="background: #FFFFFF; border-radius: 16px; padding: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; color: #56645A">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"></path></svg>
+    Lädt…
+  </div>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">2 · Leer (Text je Seite)</div>
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 16px; text-align: center; font-size: 14px; color: #56645A">Keine Spiele gefunden. Passe die Filter an.</div>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">3 · Keine Verbindung (alte Daten bleiben sichtbar)</div>
+  <div role="status" style="background: #FFF1D6; border: 1px solid #D9A441; border-radius: 16px; padding: 16px; text-align: center; font-size: 14px; color: #5C3800">Keine Verbindung – die Daten sind evtl. nicht aktuell.</div>
+  <article style="background: #FFFFFF; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56645A"><span style="font-weight: 600">Halle 3</span><span style="padding: 2px 8px; border-radius: 6px; background: #DDEFE2; color: #1B5E34; font-weight: 700">Schüler</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Mannheim</span><span style="color: #56645A">–</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600"><span>Bretten 2</span><span style="color: #56645A">–</span></div>
+  </article>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">4 · Spielplan · alle Ergebnisse da</div>
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; text-transform: uppercase">Turnier beendet</h2>
+    <a href="Finalrunde.dc.html" style="min-height: 40px; display: inline-flex; align-items: center; padding: 0 12px; font-weight: 600">Endstand ansehen</a>
+  </div>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">5 · Tabelle · vor dem ersten Ergebnis</div>
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 16px; text-align: center; font-size: 14px; color: #56645A">Noch keine Ergebnisse. Die Tabelle füllt sich mit dem ersten Spiel.</div>
+  <div style="background: #FFFFFF; border-radius: 16px; overflow: hidden">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 14px 16px 8px">
+      <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; text-transform: uppercase">Gruppe A</h2>
+      <span style="font-size: 13px; color: #56645A">0 von 10 Spielen</span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 16px">
+      <thead>
+        <tr style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: #56645A">
+          <th scope="col" style="text-align: left; padding: 6px 0 6px 16px; width: 28px; font-weight: 700">#</th>
+          <th scope="col" style="text-align: left; padding: 6px 8px; font-weight: 700">Team</th>
+          <th scope="col" style="text-align: right; padding: 6px 8px; font-weight: 700">S–N</th>
+          <th scope="col" style="text-align: right; padding: 6px 16px 6px 8px; font-weight: 700">Diff</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-top: 1px solid #E6ECE5">
+          <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #56645A">–</td>
+          <td style="padding: 12px 8px; font-weight: 600">Darmstadt 2</td>
+          <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">0–0</td>
+          <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums">0</td>
+        </tr>
+        <tr style="border-top: 1px solid #E6ECE5">
+          <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #56645A">–</td>
+          <td style="padding: 12px 8px; font-weight: 600">Mannheim</td>
+          <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">0–0</td>
+          <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums">0</td>
+        </tr>
+        <tr style="border-top: 1px solid #E6ECE5">
+          <td style="padding: 12px 0 12px 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #56645A">–</td>
+          <td style="padding: 12px 8px; font-weight: 600">Nagold</td>
+          <td style="padding: 12px 8px; text-align: right; font-variant-numeric: tabular-nums">0–0</td>
+          <td style="padding: 12px 16px 12px 8px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding: 10px 16px 14px; font-size: 13px; color: #56645A">Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs.</div>
+  </div>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">6 · Finalrunde · vor dem ersten Ergebnis</div>
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 16px; text-align: center; font-size: 14px; color: #56645A">Die Finalrunde beginnt um 17:00.</div>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">7 · Finalrunde · Endstand steht fest (über dem Bracket)</div>
+  <section aria-label="Endstand" style="display: flex; flex-direction: column; gap: 10px">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #56645A">Endstand</h2>
+    <ol style="margin: 0; padding: 0; list-style: none; background: #FFFFFF; border-radius: 16px; overflow: hidden">
+      <li style="display: flex; align-items: center; gap: 12px; padding: 10px 16px"><span style="width: 28px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">1</span><span style="flex: 1; font-weight: 600">Mannheim</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid #E6ECE5"><span style="width: 28px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">2</span><span style="flex: 1; font-weight: 600">Herrenberg</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid #E6ECE5"><span style="width: 28px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">3</span><span style="flex: 1; font-weight: 600">Nagold</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid #E6ECE5"><span style="width: 28px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">4</span><span style="flex: 1; font-weight: 600">Bretten 1</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid #E6ECE5; background: #FFF1D6; box-shadow: inset 4px 0 0 {{green}}"><span style="width: 28px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px">9</span><span style="flex: 1; font-weight: 600">Bretten 2 <span style="font-size: 12px; font-weight: 700; color: #5C3800; background: #FFDFA3; padding: 2px 6px; border-radius: 6px; margin-left: 4px">Mein Team</span></span></li>
+    </ol>
+  </section>
+
+  <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #56645A; margin-top: 8px">8 · Finalrunde · Klasse ohne Finalrunde</div>
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 16px; text-align: center; font-size: 14px; color: #56645A">Für diese Klasse gibt es keine Finalrunde.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"green":{"editor":"color","default":"#1B5E34","options":["#1B5E34","#15803D","#0F3D21"]},"$preview":{"width":390,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { green: this.props.green ?? '#1B5E34' };
+  }
+}
+</script>
+</body>
+</html>
