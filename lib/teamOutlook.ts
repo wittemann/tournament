@@ -65,7 +65,7 @@ export function scoresIn(game: OutlookGame, team: TeamRef): boolean {
   );
 }
 
-function hasResult(game: RunningCandidate): boolean {
+function hasAnyScore(game: RunningCandidate): boolean {
   return game.homescore != null || game.awayscore != null;
 }
 
@@ -104,7 +104,7 @@ export function getTeamOutlook<G extends OutlookGame>(
   now: string,
 ): TeamOutlook<G> {
   const nowMin = toMinutes(now);
-  const upcoming = (g: G) => !hasResult(g) && toMinutes(g.time) > nowMin;
+  const upcoming = (g: G) => !hasAnyScore(g) && toMinutes(g.time) > nowMin;
 
   const own = games.filter((g) => playsIn(g, sides.get(g.id), team));
   const current = own.find((g) => isRunning(g, now)) ?? null;

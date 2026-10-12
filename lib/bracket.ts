@@ -23,6 +23,7 @@
  */
 import { findFinal, roundName } from './cutOff';
 import {
+  hasResult,
   parseRef,
   placementRanking,
   slotKey,
@@ -78,8 +79,6 @@ export interface Finalrunde<G> {
 
 const refsOf = (g: GameLike) =>
   [g.home_ref, g.away_ref].filter((r): r is string => !!r);
-
-const hasResult = (g: GameLike) => g.homescore !== null && g.awayscore !== null;
 
 /** Seed shown next to a team in the bracket: "1" for seed:1, "A1" for group:A:1. */
 export function seedTag(ref: string | null): string | null {
