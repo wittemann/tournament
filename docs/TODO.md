@@ -88,7 +88,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 - [x] **Desktop / `lg`:** no separate layout (decided 2026-10-10). Keep the phone column, centred at about 480 px wide, on every screen size. That also removes the separate desktop table in `GamesTable`.
 - [x] **Info tiles** ("Ende", "Turnierleitung"): taken from the data (decided 2026-10-11). Section 9 rules out hard-coding "Ende". FAQ rows get optional `tile_title` / `tile_value` / `tile_detail` columns; a row with a `tile_title` also shows as a tile. The link buttons come from FAQ rows with `link_url` / `link_label`.
 - [x] **Verkauf:** one row per item (decided 2026-10-11). Merging "Cola · Fanta · Mezzo Mix" would lose the per-item sold-out flag, and grouping by price in code would also merge unrelated drinks (Glühwein, Mineralwasser are 2,50 € too). The canvas gets updated in the Finish step.
-- [ ] **Higher-res kangaroo:** [`public/kangaroo.png`](../public/kangaroo.png) is cut from the logo and only 90 px wide, so it looks soft on phones. Ask the club for a larger original or an SVG. · **(owner)**
+- [x] **Higher-res kangaroo:** cut from a larger screenshot of the club site the owner supplied (2026-10-12); [`public/kangaroo.png`](../public/kangaroo.png) is now 280 × 160 px with a transparent background, enough for 4× at the 40 px header height. An SVG from the club would still be nicer. · **(owner)**
 
 **Foundation**
 

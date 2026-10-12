@@ -12,7 +12,7 @@ export default function Header() {
       <img
         src="/kangaroo.png"
         alt=""
-        width={71}
+        width={70}
         height={40}
         className="h-10 w-auto"
         fetchPriority="high"
