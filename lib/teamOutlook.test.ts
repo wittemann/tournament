@@ -209,14 +209,25 @@ describe('teamSchedule scorer classes', () => {
 describe('teamRecord / formatRecord', () => {
   const games = games2025 as GameLike[];
 
-  it('counts group games only (2025: Bretten 2)', () => {
+  it('counts group and placement games (2025: Bretten 2)', () => {
     const r = teamRecord(games, teams2025, 'Bretten 2');
-    expect(formatRecord(r)).toBe('0 S · 4 N');
+    expect(formatRecord(r)).toBe('0 S · 6 N');
   });
 
-  it('matches the group table row', () => {
+  it('matches the card Bilanz (teamSummaries) for Stuttgart 1 T-Ball', () => {
+    const sel = { name: 'Stuttgart 1', cls: 'T-Ball' as const };
+    const [summary] = teamSummaries(games, teams2025, sel);
+    const r = teamRecord(games, teams2025, sel);
+    expect(r).toEqual(summary.record);
+    expect(formatBilanz(r)).toBe('2–2');
+    expect(formatRecord(r)).toBe('2 S · 2 N');
+  });
+
+  it('includes placement games with a result', () => {
+    // Mannheim's group table row is 4–0; its placement games with a result
+    // add one win and one loss, as on the card.
     const r = teamRecord(games, teams2025, 'Mannheim');
-    expect(r).toEqual({ wins: 4, losses: 0, ties: 0 });
+    expect(r).toEqual({ wins: 5, losses: 1, ties: 0 });
   });
 
   it('counts only the given class', () => {
@@ -225,7 +236,7 @@ describe('teamRecord / formatRecord', () => {
       losses: 0,
       ties: 0,
     });
-    expect(teamRecord(games, teams2025, 'Mannheim', 'Schüler').wins).toBe(4);
+    expect(teamRecord(games, teams2025, 'Mannheim', 'Schüler').wins).toBe(5);
   });
 
   it('adds ties only when there are any', () => {

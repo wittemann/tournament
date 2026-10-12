@@ -21,7 +21,6 @@ import {
   type GameClass,
   type GameLike,
   type TeamLike,
-  groupTables,
   placementRanking,
   resolveGame,
   standingsContext,
@@ -181,9 +180,9 @@ export interface TeamRecord {
 }
 
 /**
- * Win/loss/tie record from the computed group tables (group stage only, like
- * the Tabelle; placement games don't count). Summed over every class in which
- * a team of that name has a group row, or only over `cls` when given.
+ * Win/loss/tie record of the team's played games, group and placement (results
+ * only), i.e. the card's Bilanz (teamSummaries). Summed over every class in
+ * which the team has a group row, or only over `cls` when given.
  */
 export function teamRecord(
   games: GameLike[],
@@ -191,24 +190,12 @@ export function teamRecord(
   team: TeamRef,
   cls?: GameClass,
 ): TeamRecord {
-  const sel = asSelection(team);
   const record = { wins: 0, losses: 0, ties: 0 };
-  const classes = new Set(
-    teams
-      .filter(
-        (t) => matchesTeam(sel, t.name, t.class) && (!cls || t.class === cls),
-      )
-      .map((t) => t.class),
-  );
-  for (const cls of classes) {
-    for (const table of groupTables(games, teams, cls)) {
-      for (const row of table.rows) {
-        if (row.team !== sel.name) continue;
-        record.wins += row.wins;
-        record.losses += row.losses;
-        record.ties += row.ties;
-      }
-    }
+  for (const summary of teamSummaries(games, teams, team)) {
+    if (cls && summary.cls !== cls) continue;
+    record.wins += summary.record.wins;
+    record.losses += summary.record.losses;
+    record.ties += summary.record.ties;
   }
   return record;
 }
@@ -251,7 +238,7 @@ export function awaitsPlacement(
 
 export interface TeamSummary {
   cls: GameClass;
-  /** Group and placement games with a result (not the heading record). */
+  /** Group and placement games with a result (summed for the heading record). */
   record: TeamRecord;
   /** Run difference over the same games. */
   diff: number;
@@ -267,8 +254,8 @@ export interface TeamSummary {
  * Per class in which a team of that name has a group row (a name used in
  * several classes gets one summary per class, in the order of `teams`).
  * Record and difference count every played game of the team in the class,
- * group and placement (results only), unlike `teamRecord`, which follows the
- * Tabelle; the final place comes from placementRanking, falling back
+ * group and placement (results only); `teamRecord` sums these records for the
+ * heading. The final place comes from placementRanking, falling back
  * to the group place when no placement game decides it (no placement games,
  * not played yet, or a place no game decides).
  */
