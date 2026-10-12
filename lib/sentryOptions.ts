@@ -1,7 +1,8 @@
 import type { BrowserOptions } from '@sentry/nextjs';
 
-// Shared by the client, server and edge Sentry.init calls. Without a DSN
-// Sentry stays disabled. No PII, no session replay.
+// Shared by the client, server and edge Sentry.init calls. Without a DSN, or
+// under `next dev`, Sentry stays disabled, so local sessions don't land in the
+// production issues. No PII, no session replay.
 //
 // IPs: `dataCollection.userInfo: false` is what keeps them out (client
 // infers no IP, server request data excludes it). Header deny terms match as
@@ -10,7 +11,7 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN || undefined;
 
 export const sentryOptions = {
   dsn,
-  enabled: !!dsn,
+  enabled: !!dsn && process.env.NODE_ENV === 'production',
   dataCollection: {
     userInfo: false,
     httpHeaders: {

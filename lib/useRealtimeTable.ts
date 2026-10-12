@@ -20,7 +20,9 @@ type Order = { column: string; ascending?: boolean };
 // `error` is true when the last fetch failed (cleared by the next successful
 // one), when Supabase is not configured, or when the channel has been down for
 // CHANNEL_DOWN_DELAY_MS (shorter drops, e.g. a wake-up reconnect, stay quiet).
-// The rows stay as they were, so pages can show them under a banner.
+// The rows stay as they were, so pages can show them under a banner. Sentry
+// hears about a channel only at that point too: supabase-js rejoins by itself,
+// and a drop that heals within the delay is not worth an event.
 const CHANNEL_DOWN_DELAY_MS = 5000;
 
 // supabase.channel(topic) returns the channel already registered under that
@@ -58,8 +60,6 @@ export function useRealtimeTable<T>(
     const orderBy: Order[] = JSON.parse(orderKey);
     const gate = createResponseGate();
     let cancelled = false;
-    // A failing channel retries and errors again; report once until it recovers.
-    let reported = false;
     let downTimer: ReturnType<typeof setTimeout> | undefined;
 
     const fetchRows = async () => {
@@ -106,24 +106,22 @@ export function useRealtimeTable<T>(
           if (shouldRefetchOnStatus(previous, status)) fetchRows();
           previous = status;
           if (status === 'SUBSCRIBED') {
-            reported = false;
             clearTimeout(downTimer);
             downTimer = undefined;
             setChannelDown(false);
           } else if (status === 'CLOSED') {
             closed = true;
           } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            downTimer ??= setTimeout(
-              () => setChannelDown(true),
-              CHANNEL_DOWN_DELAY_MS,
-            );
-            if (reported) return;
-            reported = true;
-            console.error(`Realtime ${status} (${table}):`, err);
-            Sentry.captureException(
-              err ?? new Error(`Realtime channel ${status} (${table})`),
-              { tags: { table, source: 'realtime', status } },
-            );
+            // A failing channel retries and errors again; the timer is armed
+            // once per outage, so it reports once until SUBSCRIBED clears it.
+            downTimer ??= setTimeout(() => {
+              setChannelDown(true);
+              console.error(`Realtime ${status} (${table}):`, err);
+              Sentry.captureException(
+                err ?? new Error(`Realtime channel ${status} (${table})`),
+                { tags: { table, source: 'realtime', status } },
+              );
+            }, CHANNEL_DOWN_DELAY_MS);
           }
         });
     };
