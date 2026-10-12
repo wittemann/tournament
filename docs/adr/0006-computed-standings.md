@@ -78,3 +78,12 @@ The table shows wins, losses, ties and run difference.
 **Ties.** Group games can end tied. Placement games always have a winner, so the admin entry / validation rejects equal scores there.
 
 **Overall ranking** comes from the placement games: the winner of each final or pair takes the better place. A mini round robin (e.g. the last three) is ranked with the same rules as a group table.
+
+## Edge cases (as built in `lib/standings.ts`, accepted 2026-10-12)
+
+- A team that hasn't played yet sorts last in its group.
+- **Head-to-head** compares win rate only in the games among the teams still level. If that splits them only partly, it is applied again to each smaller level subset. It is skipped unless every pair in the level set has played each other; runs scored decide then.
+- A tie left after runs scored is ordered by name and flagged (`tiedWithNext`). The organizers settle it; the UI can warn. Placeholders still resolve through such a tie, so the bracket never stalls.
+- **Seed ties** (same group place, win rate and difference) go by group letter.
+- `group:G:n` resolves as soon as that group is complete; `seed:n` waits until every group with games is complete.
+- Places that no game decides (e.g. no 3rd-place game) are left out of the overall ranking.

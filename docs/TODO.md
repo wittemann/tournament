@@ -144,7 +144,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 **Finish**
 
 - [x] Check every page at 360–430 px phone width; touch targets ≥ 40 px; text contrast ≥ 4.5:1 (the class tags and muted greys are close to the limit, so measure them). · `sonnet`
-- [ ] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use). · **(owner)**
+- [ ] Test on a real phone in the hall (sunlight / bright hall lighting, one-handed use). Also check: the loading spinner animates (it didn't in the browser pane), and the "Mein Team" placeholder "Team wählen – nächstes Spiel sehen" isn't cut off. · **(owner)**
 - [ ] Where the build has to differ from the canvas, update the canvas and [docs/design](design/README.md) so they stay the source of truth. · `sonnet` for docs/design, **(owner)** for the canvas (docs/design done 2026-10-11; the canvas changes are listed in review-later)
 
 ## 7. Content for 2026 (data, not code)
@@ -159,11 +159,21 @@ The "Mein Team" card and the bracket are built in the redesign's style (section 
 
 - [x] ["Mein Team" card](specs/next-game-card.md): next game and scorer duty. Small, and doesn't depend on anything above. · built in section 6
 - [x] [Playoff bracket](specs/playoff-bracket.md): needs section 3. · built in sections 3 and 6
-- [ ] [Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags (optional, ADR still Proposed): Supabase Auth, RLS write policies, rejects tied placement scores. · later, not in this run
+- [ ] [Admin page](adr/0007-admin-results-entry.md) for scores and sold-out flags (optional, ADR still Proposed): Supabase Auth, RLS write policies, rejects tied placement scores. Careful: an UPDATE policy on `teams`/`halls` also rewrites `games` through the `on update cascade` FKs, and cascades skip RLS. · later, not in this run
 
 ## 9. 2026 schedule (last)
 
 The app has to be ready before this point: teams register first, and the schedule built from the registrations sets the start and end time, the number of halls, groups and teams per class, and the placement structure. Until then, nothing in the app may hard-code any of these. Halls, classes, groups, times and the "Ende" info tile all come from the data, and the app is tested against the 2025 data plus made-up variants (more halls, a Jugend class, a quarterfinal bracket).
 
-- [ ] Load the 2026 teams, groups, halls and schedule (with placeholders for placement games). · **(owner)**
+- [ ] Set `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts` (now 30) to the 2026 slot length once the schedule is built (2025 games took about 25 min; depends on team and hall count). · **(owner)** with `haiku`
+- [ ] Load the 2026 teams, groups, halls and schedule (with placeholders for placement games). Give every placement game a unique label ("Halbfinale 1", "Platz 5/6"; two 5–8 games as "Platz 5–8 (1)"/"(2)"): the placeholders "Sieger …"/"Verlierer …" are built from the referenced game's label, and the unlabelled fallback "Sieger Spiel N" names a number nobody sees. Name the event room "Foyer" (not "Essensraum", which overflows the 58 px time column), and write "Siegerehrung" without the 🏆 emoji. Use one ref style per class (all `seed:` or all `group:`): mixing them can make the app pick the wrong game as the final. Keep placement labels short ("Platz 5/6", not "Spiel um Platz 5 und 6"); long ones wrap to three lines in the Platzierungsspiele list. **Edge case:** every class needs a 3rd-place game; without one, the Endstand gives the semifinal losers no place and shows the Platz 5/6 winner as 3rd. If a class has none, fix `placementRanking` first (both semifinal losers "3.", then continue at 5). · **(owner)**
+- [ ] Bump Next to the latest 16.4.x patch (and re-run `npm audit`) before the smoke test. · `haiku`
 - [ ] Smoke test with the real schedule: every page at phone width, standings and bracket resolve correctly. · `sonnet`
+
+## 10. From the review-later walkthrough
+
+- [ ] Add `"engines": { "node": ">=22.22.2" }` to `package.json` (isomorphic-dompurify 4 needs it; Vercel runs 24.x). · `haiku`
+- [ ] **Class-aware "Mein Team" selection** (section 2 decision, not built yet): the select labels names used in more than one class with the class ("Stuttgart 1 (T-Ball)"), and `selectedTeam` stores name + class. Spielplan list, Mein-Team card (`lib/teamOutlook.ts`), Tabelle and Finalrunde highlights follow the class. An old stored value (name only) keeps matching every class with that name. Tests for both. · `sonnet`
+- [ ] Team-view heading record (`teamRecord` in `lib/teamOutlook.ts`, shown in `app/GamesTable.tsx`) counts group **and** placement games, so it agrees with the card's Bilanz at the end of the day. · `haiku`
+- [ ] **Class order T-Ball, Schüler, Jugend** everywhere (Spielplan class switch, Tabelle, Finalrunde). Today `lib/classesInUse.ts` and `lib/filterOptions.ts` take the enum order (Schüler, T-Ball, Jugend). One shared order constant in code; classes it doesn't know are appended at the end instead of dropped. The Tabelle/Finalrunde default (first class) becomes T-Ball. Tests. · `haiku`
+- [ ] Align "has a result": rename `hasResult` in `lib/teamOutlook.ts` (either score entered) to `hasAnyScore`, and let `lib/bracket.ts` use the exported `hasResult` from `lib/standings.ts` instead of its private copy. No behavior change. · `haiku`
