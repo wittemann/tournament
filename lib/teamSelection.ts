@@ -1,4 +1,5 @@
 import { Constants } from '@/lib/database.types';
+import { classRank } from '@/lib/classOrder';
 import type { GameClass } from '@/lib/standings';
 
 /**
@@ -96,13 +97,13 @@ export interface TeamOption {
 /**
  * Select options for teams (name + class). A name used in several classes is
  * labelled with its class ("Stuttgart 1 (T-Ball)"); unique names are not.
- * Sorted by name, then class order of the schema.
+ * Sorted by name, then CLASS_ORDER (T-Ball, Schüler, Jugend).
  */
 export function teamOptions(teams: readonly TeamSelection[]): TeamOption[] {
   const classCount = new Map<string, number>();
   for (const t of teams)
     classCount.set(t.name, (classCount.get(t.name) ?? 0) + 1);
-  const rank = (cls: GameClass | null) => (cls ? CLASSES.indexOf(cls) : -1);
+  const rank = (cls: GameClass | null) => (cls ? classRank(cls) : -1);
   return [...teams]
     .sort(
       (a, b) => a.name.localeCompare(b.name, 'de') || rank(a.cls) - rank(b.cls),

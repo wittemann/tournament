@@ -1,10 +1,7 @@
-import { Constants } from '@/lib/database.types';
+import { sortClasses } from '@/lib/classOrder';
 import type { GameClass } from '@/lib/standings';
 
-// Stable display order: the enum order of the schema, not alphabetical.
-const CLASS_ORDER: readonly GameClass[] = Constants.public.Enums.class;
-
-/** Classes that have at least one team or game, in schema order. */
+/** Classes that have at least one team or game, in CLASS_ORDER. */
 export function classesInUse(
   games: readonly { class: GameClass }[],
   teams: readonly { class: GameClass }[],
@@ -13,5 +10,5 @@ export function classesInUse(
     ...teams.map((t) => t.class),
     ...games.map((g) => g.class),
   ]);
-  return CLASS_ORDER.filter((cls) => present.has(cls));
+  return sortClasses([...present]);
 }

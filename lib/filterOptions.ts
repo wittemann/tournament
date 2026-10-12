@@ -1,4 +1,4 @@
-import { Constants } from '@/lib/database.types';
+import { sortClasses } from '@/lib/classOrder';
 
 export interface FilterOption {
   value: string;
@@ -15,16 +15,13 @@ interface FilterGame {
   eventname: string | null;
 }
 
-const ALL_CLASSES = Constants.public.Enums.class as readonly string[];
-
-/** Class options for the real games: enum order first, unknown ones appended. */
+/** Class options for the real games: CLASS_ORDER first, unknown ones appended. */
 export function classOptions(games: readonly FilterGame[]): FilterOption[] {
   const present = new Set(
     games.filter((g) => !g.eventname).map((g) => g.class),
   );
-  const known = ALL_CLASSES.filter((c) => present.has(c));
-  const unknown = [...present].filter((c) => !ALL_CLASSES.includes(c)).sort();
-  return [...known, ...unknown].map((c) => ({ value: c, label: c }));
+  // Unknown classes are appended alphabetically (stable sort keeps that order).
+  return sortClasses([...present].sort()).map((c) => ({ value: c, label: c }));
 }
 
 /**

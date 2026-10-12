@@ -88,8 +88,8 @@ describe('teamOptions', () => {
     ]);
     expect(options).toEqual([
       { value: 'T-Ball|Bretten', label: 'Bretten' },
-      { value: 'Schüler|Stuttgart 1', label: 'Stuttgart 1 (Schüler)' },
       { value: 'T-Ball|Stuttgart 1', label: 'Stuttgart 1 (T-Ball)' },
+      { value: 'Schüler|Stuttgart 1', label: 'Stuttgart 1 (Schüler)' },
     ]);
   });
 });

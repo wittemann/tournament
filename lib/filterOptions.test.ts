@@ -12,13 +12,13 @@ const game = (
 });
 
 describe('classOptions', () => {
-  it('follows the enum order, not the data order', () => {
+  it('follows the class order (T-Ball, Schüler, Jugend), not the data order', () => {
     const opts = classOptions([
       game('Jugend', 'Halle 1'),
       game('Schüler', 'Halle 1'),
       game('T-Ball', 'Halle 1'),
     ]);
-    expect(opts.map((o) => o.value)).toEqual(['Schüler', 'T-Ball', 'Jugend']);
+    expect(opts.map((o) => o.value)).toEqual(['T-Ball', 'Schüler', 'Jugend']);
   });
 
   it('appends unknown classes and skips absent ones', () => {
