@@ -167,7 +167,7 @@ The app has to be ready before this point: teams register first, and the schedul
 
 - [ ] Set `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts` (now 30) to the 2026 slot length once the schedule is built (2025 games took about 25 min; depends on team and hall count). · **(owner)** with `haiku`
 - [ ] Load the 2026 teams, groups, halls and schedule (with placeholders for placement games). Give every placement game a unique label ("Halbfinale 1", "Platz 5/6"; two 5–8 games as "Platz 5–8 (1)"/"(2)"): the placeholders "Sieger …"/"Verlierer …" are built from the referenced game's label, and the unlabelled fallback "Sieger Spiel N" names a number nobody sees. Name the event room "Foyer" (not "Essensraum", which overflows the 58 px time column), and write "Siegerehrung" without the 🏆 emoji. Use one ref style per class (all `seed:` or all `group:`): mixing them can make the app pick the wrong game as the final. Keep placement labels short ("Platz 5/6", not "Spiel um Platz 5 und 6"); long ones wrap to three lines in the Platzierungsspiele list. **Edge case:** every class needs a 3rd-place game; without one, the Endstand gives the semifinal losers no place and shows the Platz 5/6 winner as 3rd. If a class has none, fix `placementRanking` first (both semifinal losers "3.", then continue at 5). · **(owner)**
-- [ ] Bump Next to the latest 16.4.x patch (and re-run `npm audit`) before the smoke test. · `haiku`
+- [x] Bump Next to the latest 16.4.x patch (and re-run `npm audit`) before the smoke test. · `haiku` Bumped to 16.4.1 on 2026-10-14.
 - [ ] Smoke test with the real schedule: every page at phone width, standings and bracket resolve correctly. · `sonnet`
 
 ## 10. From the review-later walkthrough
