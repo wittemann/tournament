@@ -6,6 +6,13 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 
 - TypeScript 7: stays on 5.9 until typescript-eslint (via `eslint-config-next`) supports it; lint crashes under TS 7.
 - ESLint 10 runs with plugins whose peer range is ≤ 9: revert to `^9` if an install ever hard-fails.
+- Schedule loader: `npm run schedule:sql` runs TypeScript with plain `node` plus `scripts/register-ts.mjs`, a 30-line resolve hook for the `@/` alias and extensionless imports. The alternative was a dependency (tsx) or editing app imports. The hook is why `lib/scheduleCheck.ts` can import `lib/cutOff.ts` unchanged.
+- Schedule loader: refs to earlier games are written by label only (`winner:Halbfinale 1`); numeric `winner:12` is rejected because numbers are assigned by the script. Events need a `class` (the Spielplan class filter hides events of other classes), so a Siegerehrung for all classes is one row per class.
+- Schedule loader: "same time slot" means identical start time; the checker can't know slot lengths. Events don't clash with each other (two classes can have the same Mittagspause in the Foyer) but clash with games in that hall. Placement-game participants are unknown before the group stage, so only their scorers are checked for double booking.
+- Schedule loader: duplicate labels are only warned about when they are not a round robin (three or more games linked through shared refs) and nothing references them. Referenced duplicates are errors.
+- Schedule loader: hall `sort` is the position in the file's `halls` array (1..n), not 99 for the event room as in the 2025 migration.
+- Schedule loader: the 2025 data had scorers on two games in one slot (T-Ball "Bretten", repeatedly) and one scorer playing in another hall (Schüler "Bretten 2", 14:00). The first only warns (probably a club covering two halls, nothing breaks); a team scoring while playing, or in its own game, is an error. `lib/fixtures/schedule2025.ts` drops only the "Bretten 2" scorer.
+- Schedule loader: the SQL deletes and re-inserts games, so game ids continue from the identity sequence instead of restarting; nothing in the app relies on ids.
 
 ## Deferred review findings
 

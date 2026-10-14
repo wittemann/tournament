@@ -1,0 +1,446 @@
+{
+  "halls": ["Halle 1", "Halle 2", "Halle 3", "Essensraum"],
+  "teams": {
+    "Schüler": {
+      "A": ["Bretten 2", "Darmstadt 2", "Mannheim", "Nagold", "Remchingen"],
+      "B": ["Bretten 1", "Heidelberg", "Herrenberg", "Stuttgart 2"],
+      "C": ["Darmstadt 1", "Karlsruhe", "Schriesheim", "Stuttgart 1"]
+    },
+    "T-Ball": {
+      "A": ["Bretten", "Nagold", "Schriesheim", "Stuttgart 2"],
+      "B": ["Karlsruhe", "Remchingen", "Stuttgart 1"]
+    }
+  },
+  "games": [
+    {
+      "class": "Schüler",
+      "time": "12:30",
+      "hall": "Essensraum",
+      "event": "📋 Technische Konferenz"
+    },
+    {
+      "class": "Schüler",
+      "time": "13:00",
+      "hall": "Halle 2",
+      "home": "Bretten 2",
+      "away": "Darmstadt 2",
+      "scorer": "Mannheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "13:30",
+      "hall": "Halle 1",
+      "home": "Bretten 1",
+      "away": "Stuttgart 2",
+      "scorer": "Heidelberg"
+    },
+    {
+      "class": "Schüler",
+      "time": "13:30",
+      "hall": "Halle 2",
+      "home": "Schriesheim",
+      "away": "Karlsruhe",
+      "scorer": "Darmstadt 1"
+    },
+    {
+      "class": "Schüler",
+      "time": "13:30",
+      "hall": "Halle 3",
+      "home": "Mannheim",
+      "away": "Remchingen",
+      "scorer": "Nagold"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:00",
+      "hall": "Halle 1",
+      "home": "Heidelberg",
+      "away": "Herrenberg",
+      "scorer": "Bretten 1"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:00",
+      "hall": "Halle 2",
+      "home": "Darmstadt 2",
+      "away": "Mannheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:00",
+      "hall": "Halle 3",
+      "home": "Nagold",
+      "away": "Bretten 2",
+      "scorer": "Remchingen"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:30",
+      "hall": "Halle 1",
+      "home": "Remchingen",
+      "away": "Nagold",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:30",
+      "hall": "Halle 2",
+      "home": "Darmstadt 1",
+      "away": "Stuttgart 1",
+      "scorer": "Schriesheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "14:30",
+      "hall": "Halle 3",
+      "home": "Mannheim",
+      "away": "Bretten 2",
+      "scorer": "Darmstadt 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:00",
+      "hall": "Halle 1",
+      "home": "Stuttgart 2",
+      "away": "Heidelberg",
+      "scorer": "Herrenberg"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:00",
+      "hall": "Halle 2",
+      "home": "Karlsruhe",
+      "away": "Darmstadt 1",
+      "scorer": "Stuttgart 1"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:00",
+      "hall": "Halle 3",
+      "home": "Remchingen",
+      "away": "Darmstadt 2",
+      "scorer": "Bretten 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:30",
+      "hall": "Halle 1",
+      "home": "Herrenberg",
+      "away": "Bretten 1",
+      "scorer": "Stuttgart 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:30",
+      "hall": "Halle 2",
+      "home": "Stuttgart 1",
+      "away": "Schriesheim",
+      "scorer": "Karlsruhe"
+    },
+    {
+      "class": "Schüler",
+      "time": "15:30",
+      "hall": "Halle 3",
+      "home": "Nagold",
+      "away": "Mannheim",
+      "scorer": "Remchingen"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:00",
+      "hall": "Halle 1",
+      "home": "Herrenberg",
+      "away": "Stuttgart 2",
+      "scorer": "Bretten 1"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:00",
+      "hall": "Halle 2",
+      "home": "Stuttgart 1",
+      "away": "Karlsruhe",
+      "scorer": "Schriesheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:00",
+      "hall": "Halle 3",
+      "home": "Bretten 2",
+      "away": "Remchingen",
+      "scorer": "Nagold"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:30",
+      "hall": "Halle 1",
+      "home": "Bretten 1",
+      "away": "Heidelberg",
+      "scorer": "Stuttgart 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:30",
+      "hall": "Halle 2",
+      "home": "Schriesheim",
+      "away": "Darmstadt 1",
+      "scorer": "Karlsruhe"
+    },
+    {
+      "class": "Schüler",
+      "time": "16:30",
+      "hall": "Halle 3",
+      "home": "Darmstadt 2",
+      "away": "Nagold",
+      "scorer": "Mannheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "17:00",
+      "hall": "Halle 1",
+      "label": "Platz 5/6",
+      "home": "seed:5",
+      "away": "seed:6",
+      "scorer": "Remchingen"
+    },
+    {
+      "class": "Schüler",
+      "time": "17:00",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 11–13",
+      "home": "seed:11",
+      "away": "seed:12",
+      "scorer": "Bretten 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "17:30",
+      "hall": "Halle 1",
+      "label": "Platz 7/8",
+      "home": "seed:7",
+      "away": "seed:8",
+      "scorer": "Schriesheim"
+    },
+    {
+      "class": "Schüler",
+      "time": "17:30",
+      "hall": "Halle 2",
+      "label": "Platz 9/10",
+      "home": "seed:9",
+      "away": "seed:10",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "17:30",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 11–13",
+      "home": "seed:12",
+      "away": "seed:13",
+      "scorer": "Karlsruhe"
+    },
+    {
+      "class": "Schüler",
+      "time": "18:00",
+      "hall": "Halle 1",
+      "label": "Halbfinale 1",
+      "home": "seed:1",
+      "away": "seed:4",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "18:00",
+      "hall": "Halle 2",
+      "label": "Halbfinale 2",
+      "home": "seed:3",
+      "away": "seed:2",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "18:00",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 11–13",
+      "home": "seed:13",
+      "away": "seed:11",
+      "scorer": "Stuttgart 2"
+    },
+    {
+      "class": "Schüler",
+      "time": "18:30",
+      "hall": "Halle 1",
+      "label": "Finale",
+      "home": "winner:Halbfinale 1",
+      "away": "winner:Halbfinale 2",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "18:30",
+      "hall": "Halle 2",
+      "label": "Spiel um Platz 3",
+      "home": "loser:Halbfinale 1",
+      "away": "loser:Halbfinale 2",
+      "scorer": "Bretten",
+      "scorerClass": "T-Ball"
+    },
+    {
+      "class": "Schüler",
+      "time": "19:00",
+      "hall": "Essensraum",
+      "event": "🏆 Siegerehrung"
+    },
+    {
+      "class": "T-Ball",
+      "time": "09:00",
+      "hall": "Essensraum",
+      "event": "📋 Technische Konferenz"
+    },
+    {
+      "class": "T-Ball",
+      "time": "09:30",
+      "hall": "Halle 1",
+      "home": "Bretten",
+      "away": "Stuttgart 2",
+      "scorer": "Karlsruhe"
+    },
+    {
+      "class": "T-Ball",
+      "time": "09:30",
+      "hall": "Halle 2",
+      "home": "Nagold",
+      "away": "Schriesheim",
+      "scorer": "Remchingen"
+    },
+    {
+      "class": "T-Ball",
+      "time": "10:00",
+      "hall": "Halle 1",
+      "home": "Stuttgart 1",
+      "away": "Karlsruhe",
+      "scorer": "Nagold"
+    },
+    {
+      "class": "T-Ball",
+      "time": "10:00",
+      "hall": "Halle 2",
+      "home": "Schriesheim",
+      "away": "Bretten",
+      "scorer": "Stuttgart 2"
+    },
+    {
+      "class": "T-Ball",
+      "time": "10:30",
+      "hall": "Halle 1",
+      "home": "Stuttgart 2",
+      "away": "Nagold",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "10:30",
+      "hall": "Halle 2",
+      "home": "Karlsruhe",
+      "away": "Remchingen",
+      "scorer": "Schriesheim"
+    },
+    {
+      "class": "T-Ball",
+      "time": "11:00",
+      "hall": "Halle 1",
+      "home": "Remchingen",
+      "away": "Stuttgart 1",
+      "scorer": "Karlsruhe"
+    },
+    {
+      "class": "T-Ball",
+      "time": "11:00",
+      "hall": "Halle 2",
+      "home": "Bretten",
+      "away": "Nagold",
+      "scorer": "Schriesheim"
+    },
+    {
+      "class": "T-Ball",
+      "time": "11:30",
+      "hall": "Halle 1",
+      "home": "Stuttgart 2",
+      "away": "Schriesheim",
+      "scorer": "Stuttgart 1"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:00",
+      "hall": "Halle 1",
+      "label": "Halbfinale 1",
+      "home": "seed:1",
+      "away": "seed:4",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:00",
+      "hall": "Halle 2",
+      "label": "Halbfinale 2",
+      "home": "seed:2",
+      "away": "seed:3",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:00",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 5–7",
+      "home": "seed:5",
+      "away": "seed:6",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:30",
+      "hall": "Halle 1",
+      "label": "Finale",
+      "home": "winner:Halbfinale 1",
+      "away": "winner:Halbfinale 2",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:30",
+      "hall": "Halle 2",
+      "label": "Spiel um Platz 3",
+      "home": "loser:Halbfinale 1",
+      "away": "loser:Halbfinale 2",
+      "scorer": "Bretten"
+    },
+    {
+      "class": "T-Ball",
+      "time": "12:30",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 5–7",
+      "home": "seed:6",
+      "away": "seed:7",
+      "scorer": "Stuttgart 2"
+    },
+    {
+      "class": "T-Ball",
+      "time": "13:00",
+      "hall": "Halle 3",
+      "label": "Platzierungsrunde 5–7",
+      "home": "seed:7",
+      "away": "seed:5",
+      "scorer": "Stuttgart 1"
+    },
+    {
+      "class": "T-Ball",
+      "time": "13:30",
+      "hall": "Essensraum",
+      "event": "🏆 Siegerehrung"
+    }
+  ]
+}
