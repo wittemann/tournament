@@ -4,7 +4,7 @@ How to get the teams, groups, halls and schedule of an edition into the live Sup
 
 ## 1. Fill the file
 
-Start from a copy of [schedule-example-2025.json](schedule-example-2025.json) (the 2025 edition in this format, without scores; it differs from the real 2025 data in one scorer: Schüler "Bretten 2" kept score at 14:00 while playing in another hall, which the checker rejects, so that scorer is left out). Keep your copy outside the repo or in a git-ignored place if you don't want it committed.
+Start from a copy of [schedule-example-2025.json](schedule-example-2025.json) (the 2025 edition in this format, without scores; it differs from the real 2025 data in its double-booked scorers, which the checker rejects and are left out: Schüler "Bretten 2" kept score at 14:00 while playing in another hall, and T-Ball "Bretten" scored two or three games at once in four slots, of which only the first duty per slot is kept). Keep your copy outside the repo or in a git-ignored place if you don't want it committed.
 
 ```json
 {
@@ -42,9 +42,9 @@ npm run schedule:sql -- path/to/schedule.json [out.sql]
 
 The output file defaults to the input name with `.sql`. Every finding names the game by its position in the `games` array ("game 3" is the third object, counting from 1) and its details. Exit code 1 means errors; no SQL is written then.
 
-**Errors** (fix them): unknown hall, class or team; a team not in the game's class; group games between teams of different groups; a hall or team booked twice at the same start time (a team playing and keeping score at once, or scoring its own game, counts; events don't clash with each other); refs that don't parse or don't resolve; `winner:`/`loser:` pointing at a game that isn't played earlier; a label that is referenced but used by several games; `seed:` and `group:` mixed in a class; a `seed:`/`group:` beyond the number of teams or group size; a final fed by two semifinals but no 3rd-place game between their losers; unknown fields and malformed times.
+**Errors** (fix them): unknown hall, class or team; a team not in the game's class; group games between teams of different groups; a hall or team booked twice at the same start time (a team playing and keeping score at once, keeping score for two games at once, or scoring its own game, counts; events don't clash with each other); refs that don't parse or don't resolve; `winner:`/`loser:` pointing at a game that isn't played earlier; a label that is referenced but used by several games; `seed:` and `group:` mixed in a class; a `seed:`/`group:` beyond the number of teams or group size; a final fed by two semifinals but no 3rd-place game between their losers; unknown fields and malformed times.
 
-**Warnings** (read them, usually fix): event room not `Foyer`; emoji in an event name; placement label longer than 16 characters; several placement games with the same label that nothing references and that aren't a round robin; a team without any group game; a team keeping score for two games at the same start time (maybe a club covering two halls).
+**Warnings** (read them, usually fix): event room not `Foyer`; emoji in an event name; placement label longer than 16 characters; several placement games with the same label that nothing references and that aren't a round robin; a team without any group game.
 
 What the checker can't know: slot overlap between different start times (a 12:15 game in a hall with a 12:00 game), and who plays a placement game before the group stage is done.
 

@@ -10,13 +10,12 @@ const labelOf = (cls: string, n: string) =>
   games2025.find((g) => g.class === cls && g.number === Number(n))?.label;
 
 /**
- * `dropScorersWhilePlaying` (default) removes the one scorer the 2025 data
- * double-booked against a game: Schüler "Bretten 2" kept score at 14:00
- * while playing in another hall. That is an error in the checker. The T-Ball
- * team "Bretten" also scored two games in the same slot several times; that
- * only warns, so those scorers stay.
+ * `dropDoubleBookedScorers` (default) removes the scorer duties the 2025 data
+ * double-booked, which the checker rejects: Schüler "Bretten 2" kept score at
+ * 14:00 while playing in another hall, and T-Ball "Bretten" scored two games
+ * in the same slot several times (the first duty of each slot stays).
  */
-export function schedule2025(dropScorersWhilePlaying = true): ScheduleInput {
+export function schedule2025(dropDoubleBookedScorers = true): ScheduleInput {
   const teams: ScheduleInput['teams'] = {};
   for (const t of teams2025) {
     const groups = (teams[t.class] ??= {});
@@ -54,7 +53,7 @@ export function schedule2025(dropScorersWhilePlaying = true): ScheduleInput {
           ...scorer,
         };
   });
-  if (dropScorersWhilePlaying) dropScorersWhilePlayingIn(games);
+  if (dropDoubleBookedScorers) dropDoubleBookedScorersIn(games);
   return {
     halls: ['Halle 1', 'Halle 2', 'Halle 3', 'Essensraum'],
     teams,
@@ -62,19 +61,19 @@ export function schedule2025(dropScorersWhilePlaying = true): ScheduleInput {
   };
 }
 
-function dropScorersWhilePlayingIn(games: ScheduleEntry[]) {
-  const playing = new Set<string>();
+function dropDoubleBookedScorersIn(games: ScheduleEntry[]) {
+  const busy = new Set<string>();
   for (const g of games)
     if (g.event === undefined && g.label === undefined)
-      playing
+      busy
         .add(`${g.time}|${g.class}|${g.home}`)
         .add(`${g.time}|${g.class}|${g.away}`);
-  for (const g of games)
-    if (
-      g.scorer &&
-      playing.has(`${g.time}|${g.scorerClass ?? g.class}|${g.scorer}`)
-    ) {
+  for (const g of games) {
+    if (!g.scorer) continue;
+    const key = `${g.time}|${g.scorerClass ?? g.class}|${g.scorer}`;
+    if (busy.has(key)) {
       delete g.scorer;
       delete g.scorerClass;
-    }
+    } else busy.add(key);
+  }
 }

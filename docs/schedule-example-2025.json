@@ -256,9 +256,7 @@
       "hall": "Halle 2",
       "label": "Halbfinale 2",
       "home": "seed:3",
-      "away": "seed:2",
-      "scorer": "Bretten",
-      "scorerClass": "T-Ball"
+      "away": "seed:2"
     },
     {
       "class": "Schüler",
@@ -285,9 +283,7 @@
       "hall": "Halle 2",
       "label": "Spiel um Platz 3",
       "home": "loser:Halbfinale 1",
-      "away": "loser:Halbfinale 2",
-      "scorer": "Bretten",
-      "scorerClass": "T-Ball"
+      "away": "loser:Halbfinale 2"
     },
     {
       "class": "Schüler",
@@ -388,8 +384,7 @@
       "hall": "Halle 2",
       "label": "Halbfinale 2",
       "home": "seed:2",
-      "away": "seed:3",
-      "scorer": "Bretten"
+      "away": "seed:3"
     },
     {
       "class": "T-Ball",
@@ -397,8 +392,7 @@
       "hall": "Halle 3",
       "label": "Platzierungsrunde 5–7",
       "home": "seed:5",
-      "away": "seed:6",
-      "scorer": "Bretten"
+      "away": "seed:6"
     },
     {
       "class": "T-Ball",
@@ -415,8 +409,7 @@
       "hall": "Halle 2",
       "label": "Spiel um Platz 3",
       "home": "loser:Halbfinale 1",
-      "away": "loser:Halbfinale 2",
-      "scorer": "Bretten"
+      "away": "loser:Halbfinale 2"
     },
     {
       "class": "T-Ball",

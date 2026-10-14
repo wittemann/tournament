@@ -128,18 +128,17 @@ describe('the 2025 data', () => {
     expect(warnings.some((m) => m.includes('share the label'))).toBe(false);
   });
 
-  it('finds the scorer who played in another hall', () => {
+  it('finds the double-booked 2025 scorers', () => {
     const errors = errorsOf(schedule2025(false));
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toContain('Team "Bretten 2" (Schüler)');
-  });
-
-  it('only warns about a scorer covering two games at once', () => {
-    const w = warningsOf(schedule2025()).filter((m) =>
-      m.includes('needed twice'),
-    );
-    expect(w.length).toBeGreaterThan(0);
-    expect(w.every((m) => m.includes('Team "Bretten" (T-Ball)'))).toBe(true);
+    expect(errors).toHaveLength(7);
+    // Kept score at 14:00 while playing in another hall.
+    expect(
+      errors.filter((m) => m.includes('Team "Bretten 2" (Schüler)')),
+    ).toHaveLength(1);
+    // Scored two or three games in one slot.
+    expect(
+      errors.filter((m) => m.includes('Team "Bretten" (T-Ball)')),
+    ).toHaveLength(6);
   });
 
   it('numbers the games exactly as the migration did', () => {
@@ -285,6 +284,11 @@ describe('errors', () => {
       (s) => (s.games[1].scorer = 'Ada'),
       'Team "Ada" (T-Ball) is needed twice at 09:00',
     ));
+  it('scorer covering two games in one slot', () =>
+    expectError(
+      (s) => (s.games[0].scorer = 'Cy'), // Cy already scores game 2 at 09:00
+      'Team "Cy" (T-Ball) is needed twice at 09:00',
+    ));
   it('scorer playing in the game they score', () =>
     expectError(
       (s) => (s.games[0].scorer = 'Ada'),
@@ -408,14 +412,6 @@ describe('warnings', () => {
       );
     });
     expect(w).toContain('share the label "Platz 5"');
-  });
-  it('scorer covering two games in one slot', () => {
-    const s = clone(small());
-    s.games[0].scorer = 'Cy'; // Cy already scores game 2 at 09:00
-    expect(errorsOf(s)).toEqual([]);
-    expect(warningsOf(s).join()).toContain(
-      'Team "Cy" (T-Ball) is needed twice',
-    );
   });
   it('team that never plays', () =>
     expect(warned((s) => s.teams['T-Ball'].B.push('Gus'))).toContain(

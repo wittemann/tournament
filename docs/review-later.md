@@ -11,7 +11,7 @@ What the autonomous run decided, assumed, skipped or deferred, for the owner to 
 - Schedule loader: "same time slot" means identical start time; the checker can't know slot lengths. Events don't clash with each other (two classes can have the same Mittagspause in the Foyer) but clash with games in that hall. Placement-game participants are unknown before the group stage, so only their scorers are checked for double booking.
 - Schedule loader: duplicate labels are only warned about when they are not a round robin (three or more games linked through shared refs) and nothing references them. Referenced duplicates are errors.
 - Schedule loader: hall `sort` is the position in the file's `halls` array (1..n), not 99 for the event room as in the 2025 migration.
-- Schedule loader: the 2025 data had scorers on two games in one slot (T-Ball "Bretten", repeatedly) and one scorer playing in another hall (Schüler "Bretten 2", 14:00). The first only warns (probably a club covering two halls, nothing breaks); a team scoring while playing, or in its own game, is an error. `lib/fixtures/schedule2025.ts` drops only the "Bretten 2" scorer.
+- Schedule loader: the 2025 data had scorers on two games in one slot (T-Ball "Bretten", repeatedly) and one scorer playing in another hall (Schüler "Bretten 2", 14:00). All three are errors (owner decision 2026-10-14: a team scores one game at a time). `lib/fixtures/schedule2025.ts` drops the conflicting duties, keeping the first per slot.
 - Schedule loader: the SQL deletes and re-inserts games, so game ids continue from the identity sequence instead of restarting; nothing in the app relies on ids.
 
 ## Deferred review findings

@@ -297,9 +297,9 @@ export function numberGames(input: ScheduleInput): NumberedGame[] {
 
 /**
  * All findings for a parsed input file, errors first. Errors would make the
- * database or the app misbehave (a scorer covering two games at once only
- * warns: it may be a club covering two halls); warnings are things the TODO rules ask to
- * avoid but that load fine.
+ * database or the app misbehave, or leave a game without its scorer (a team
+ * playing or keeping score twice at one start time); warnings are things the
+ * TODO rules ask to avoid but that load fine.
  */
 export function checkSchedule(raw: unknown): Finding[] {
   const shape = checkShape(raw);
@@ -571,10 +571,10 @@ export function checkSchedule(raw: unknown): Finding[] {
         seen.add(k);
         const [kc, kn] = k.split('|');
         for (const prev of teamUse.get(k) ?? []) {
-          const msg = `Team "${kn}" (${kc}) is needed twice at ${time}: ${describe(prev.row)} (${prev.role}) and ${describe(r)} (${role}).`;
-          if (prev.role === 'keeps score' && role === 'keeps score')
-            warn(msg + ' Fine if the same club covers two halls.');
-          else error(msg, r.cls);
+          error(
+            `Team "${kn}" (${kc}) is needed twice at ${time}: ${describe(prev.row)} (${prev.role}) and ${describe(r)} (${role}).`,
+            r.cls,
+          );
         }
         teamUse.set(k, [...(teamUse.get(k) ?? []), { row: r, role }]);
       }
