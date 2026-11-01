@@ -32,6 +32,7 @@ Start from a copy of [schedule-example-2025.json](schedule-example-2025.json) (t
     - Use one style per class, `seed:` or `group:`, not both.
   - **event**: `class`, `time`, `hall`, `event` ("Siegerehrung", "Mittagspause"). The class is needed because the class filter would hide the event otherwise. Name the room `Foyer`, no emoji.
   - **scorer** (optional, on any game): the team keeping score. `scorerClass` is only needed when that team is in another class.
+  - **scorerRef** (optional, on placement games, instead of `scorer`): the scorer by role, because the teams aren't known yet, e.g. `"scorerRef": "loser:Spiel um Platz 3"` on the Finale. The same ref forms as `home`/`away` (`seed:5`, `group:A:3`, `winner:Halbfinale 1`, `loser:Platz 5/6`); it always means a team of the game's class. The app shows the placeholder ("Verlierer Spiel um Platz 3") until the team is known, then the team, and the duty appears in that team's "Mein Team".
 - Scores are not part of the file; they are entered live.
 
 ## 2. Check and convert
@@ -44,13 +45,16 @@ The output file defaults to the input name with `.sql`. Every finding names the 
 
 **Errors** (fix them): unknown hall, class or team; a team not in the game's class; group games between teams of different groups; a hall or team booked twice at the same start time (a team playing and keeping score at once, keeping score for two games at once, or scoring its own game, counts; events don't clash with each other); refs that don't parse or don't resolve; `winner:`/`loser:` pointing at a game that isn't played earlier; a label that is referenced but used by several games; `seed:` and `group:` mixed in a class; a `seed:`/`group:` beyond the number of teams or group size; a final fed by two semifinals but no 3rd-place game between their losers; unknown fields and malformed times.
 
+For `scorerRef` also: `scorer` or `scorerClass` on the same game; a `scorerRef` on an event or a group game. The ref rules above apply to it too (parsing, played strictly earlier, beyond the teams or the group, one style per class, ambiguous label). Then the **clash check**: across every possible result combination of the placement games, the role's team must not, at the same start time, also play or score another game (role or fixed `scorer`; a fixed scorer of that class can be any seed, or any place of its own group). The error names the results it takes. A role in a slot with group games of its class is an error outright, since the role could be any team of the class.
+
 **Warnings** (read them, usually fix): event room not `Foyer`; emoji in an event name; placement label longer than 16 characters; several placement games with the same label that nothing references and that aren't a round robin; a team without any group game.
 
-What the checker can't know: slot overlap between different start times (a 12:15 game in a hall with a 12:00 game), and who plays a placement game before the group stage is done.
+What the checker can't know: slot overlap between different start times (a 12:15 game in a hall with a 12:00 game), and who plays a placement game before the group stage is done, except for the clashes of a `scorerRef` above (a fixed `scorer` next to a placement game without roles isn't checked).
 
 ## 3. Back up, apply, check
 
-1. Back up what is live: the 2025 data is already in `supabase/seed.sql`; for anything newer, export the `halls`, `teams` and `games` tables first (Supabase MCP `execute_sql`, `select json_agg(t) from public.games t`, same for the other two; save the output).
-2. Load before the doors open: the load wipes all scores and fires one realtime event per row, so open pages flicker and refetch. Apply the SQL file via the Supabase MCP (`execute_sql` with the file's contents; it is one transaction, so a failure changes nothing). It replaces `games`, `teams` and `halls`; `items` and `faq` are untouched. A row-count check at the end aborts the transaction if something is off.
-3. Set `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts` to the slot length ([TODO §9](TODO.md)).
-4. Smoke test: Spielplan, Tabelle and Finalrunde at phone width for every class; the placeholders ("Sieger Halbfinale 1", "1. Gruppe A") should read well and the bracket should draw.
+1. Apply the migration `20261101205356_games_scorer_ref.sql` first if the project doesn't have it yet: the generated SQL always writes `scorer_ref`, so the load fails without the column.
+2. Back up what is live: the 2025 data is already in `supabase/seed.sql`; for anything newer, export the `halls`, `teams` and `games` tables first (Supabase MCP `execute_sql`, `select json_agg(t) from public.games t`, same for the other two; save the output).
+3. Load before the doors open: the load wipes all scores and fires one realtime event per row, so open pages flicker and refetch. Apply the SQL file via the Supabase MCP (`execute_sql` with the file's contents; it is one transaction, so a failure changes nothing). It replaces `games`, `teams` and `halls`; `items` and `faq` are untouched. A row-count check at the end aborts the transaction if something is off.
+4. Set `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts` to the slot length ([TODO §9](TODO.md)).
+5. Smoke test: Spielplan, Tabelle and Finalrunde at phone width for every class; the placeholders ("Sieger Halbfinale 1", "1. Gruppe A") should read well and the bracket should draw.

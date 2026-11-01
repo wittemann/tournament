@@ -33,6 +33,8 @@ export interface ScheduleEntry {
   scorer?: string;
   /** Defaults to the game's class. */
   scorerClass?: string;
+  /** Scorer by role on a placement game: a ref like `home`, of the game's class. */
+  scorerRef?: string;
 }
 
 export interface ScheduleInput {
@@ -60,6 +62,7 @@ export interface NumberedGame {
   away_ref: string | null;
   scorer: string | null;
   scorer_class: string | null;
+  scorer_ref: string | null;
   /** HH:MM:SS */
   time: string;
   location: string;
@@ -84,7 +87,11 @@ const ENTRY_KEYS = [
   'away',
   'scorer',
   'scorerClass',
+  'scorerRef',
 ];
+
+/** Beyond this many ways a ref can come out, the clash check gives up. */
+const MAX_REF_PATHS = 256;
 
 export const hasErrors = (findings: Finding[]) =>
   findings.some((f) => f.severity === 'error');
@@ -199,14 +206,30 @@ function checkShape(input: unknown): Finding[] {
           err(
             `${at}: an event needs a "class" (the class filter hides it otherwise).`,
           );
-        for (const key of ['label', 'home', 'away', 'scorer', 'scorerClass'])
+        for (const key of [
+          'label',
+          'home',
+          'away',
+          'scorer',
+          'scorerClass',
+          'scorerRef',
+        ])
           if (e[key] !== undefined) err(`${at}: an event can't have "${key}".`);
       } else {
         if (e.class === undefined) err(`${at} needs a "class".`);
         if (e.home === undefined || e.away === undefined)
           err(`${at} needs "home" and "away".`);
+        if (e.scorerRef !== undefined && e.label === undefined)
+          err(
+            `${at}: "scorerRef" is only for placement games (with a "label"); a group game names its "scorer".`,
+          );
       }
-      if (e.scorerClass !== undefined && e.scorer === undefined)
+      if (e.scorerRef !== undefined) {
+        if (e.scorer !== undefined || e.scorerClass !== undefined)
+          err(
+            `${at}: "scorerRef" can't be combined with "scorer" or "scorerClass" (a role always means a team of the game's class).`,
+          );
+      } else if (e.scorerClass !== undefined && e.scorer === undefined)
         err(`${at}: "scorerClass" without "scorer".`);
     });
   return out;
@@ -274,6 +297,7 @@ export function numberGames(input: ScheduleInput): NumberedGame[] {
         away_ref: null,
         scorer: null,
         scorer_class: null,
+        scorer_ref: null,
         eventname: e.event as string,
       };
     const placement = r.kind === 'placement';
@@ -288,6 +312,7 @@ export function numberGames(input: ScheduleInput): NumberedGame[] {
       away_ref: placement ? rewrite(e.away, r.cls) : null,
       scorer: e.scorer ?? null,
       scorer_class: e.scorer ? (e.scorerClass ?? r.cls) : null,
+      scorer_ref: placement ? rewrite(e.scorerRef, r.cls) : null,
       eventname: null,
     };
   });
@@ -437,10 +462,12 @@ export function checkSchedule(raw: unknown): Finding[] {
     const e = r.entry;
     const leaf = leafStyles.get(r.cls) ?? new Set<string>();
     leafStyles.set(r.cls, leaf);
-    for (const [side, ref] of [
+    const refs = [
       ['home', e.home as string],
       ['away', e.away as string],
-    ]) {
+    ];
+    if (e.scorerRef !== undefined) refs.push(['scorer', e.scorerRef]);
+    for (const [side, ref] of refs) {
       const feeder = FEEDER.exec(ref);
       if (feeder) {
         const key = `${r.cls}|${feeder[2]}`;
@@ -522,6 +549,12 @@ export function checkSchedule(raw: unknown): Finding[] {
       `${cls}: ${group.length} placement games share the label "${label}" (games ${group.map((g) => g.line).join(', ')}) and nothing references it. Unique labels read better ("${label} (1)", "${label} (2)"); a round robin sharing teams is fine.`,
     );
   }
+
+  // Scorer roles, per class whose refs are sound (the paths rely on that).
+  for (const cls of new Set(placement.map((r) => r.cls)))
+    if (!badClasses.has(cls))
+      for (const message of roleScorerClashes(cls, rows, byLabel, groupOf))
+        error(message, cls);
 
   // Double booking by slot (identical start time).
   const slots = new Map<string, Row[]>();
@@ -636,6 +669,172 @@ export function checkSchedule(raw: unknown): Finding[] {
   }
 
   return [...errors, ...warnings];
+}
+
+// --- Scorer roles ------------------------------------------------------------------
+
+/**
+ * One way a ref can come out: the seed: or group: place it ends at, and the
+ * results on the way there (game -> the side that wins it).
+ */
+interface RefPath {
+  leaf: string;
+  results: Map<Row, 'home' | 'away'>;
+}
+
+/**
+ * All paths of a ref, or null when there are more than MAX_REF_PATHS. Refs
+ * only point at earlier games, so this ends and a path meets a game only once.
+ */
+function refPaths(
+  ref: string,
+  cls: string,
+  byLabel: Map<string, Row[]>,
+  memo: Map<string, RefPath[] | null>,
+): RefPath[] | null {
+  const known = memo.get(ref);
+  if (known !== undefined) return known;
+  const feeder = FEEDER.exec(ref);
+  let paths: RefPath[] | null = [];
+  if (!feeder) paths.push({ leaf: ref, results: new Map() });
+  else {
+    const game = byLabel.get(`${cls}|${feeder[2]}`)![0];
+    for (const side of ['home', 'away'] as const) {
+      const feeding = refPaths(game.entry[side]!, cls, byLabel, memo);
+      if (!feeding || !paths) {
+        paths = null;
+        break;
+      }
+      // The team comes from `side`: that side wins for winner:, loses for loser:.
+      const wins =
+        (feeder[1] === 'winner') === (side === 'home') ? 'home' : 'away';
+      for (const p of feeding)
+        paths.push({
+          leaf: p.leaf,
+          results: new Map(p.results).set(game, wins),
+        });
+    }
+    if (paths && paths.length > MAX_REF_PATHS) paths = null;
+  }
+  memo.set(ref, paths);
+  return paths;
+}
+
+/** The results both paths need, or null when they contradict each other. */
+function jointResults(a: RefPath, b: RefPath): RefPath['results'] | null {
+  for (const [game, wins] of a.results) {
+    const other = b.results.get(game);
+    if (other && other !== wins) return null;
+  }
+  return new Map([...a.results, ...b.results]);
+}
+
+const whenResults = (results: RefPath['results']) =>
+  results.size === 0
+    ? ''
+    : ` (when ${[...results]
+        .map(([game, wins]) => `${wins} wins "${game.entry.label}"`)
+        .join(' and ')})`;
+
+/**
+ * Errors for the scorer roles of one class: a role-named team must not, at the
+ * same start time, also play or score another game, in any result combination.
+ *
+ * Instead of enumerating all combinations, this compares each pair of team
+ * uses in a slot: a clash in some combination is a clash of some pair, and
+ * only the games on those two refs' paths matter for it. A ref has one path
+ * per seed: or group: place below it (16 for a final of a 16-team bracket),
+ * not 2^games. Two refs can be one team exactly when a path of each ends at
+ * the same place and the two don't need one game to end both ways, so this is
+ * exact. Pathological chains are stopped by MAX_REF_PATHS and reported rather
+ * than checked.
+ *
+ * A place stands for one team, and distinct places for distinct teams. A fixed
+ * scorer can be any seed, or any place of its own group. Group games in the
+ * slot are an error outright: the role could be any team of the class.
+ */
+function roleScorerClashes(
+  cls: string,
+  rows: Row[],
+  byLabel: Map<string, Row[]>,
+  groupOf: Map<string, string>,
+): string[] {
+  const out: string[] = [];
+  const memo = new Map<string, RefPath[] | null>();
+  const pathsOf = (ref: string) => refPaths(ref, cls, byLabel, memo);
+  const canBe = (leaf: string, team: string) => {
+    const p = parseRef(leaf);
+    return p?.kind !== 'group' || groupOf.get(teamKey(cls, team)) === p.group;
+  };
+
+  const times = new Set(
+    rows
+      .filter((r) => r.cls === cls && r.entry.scorerRef !== undefined)
+      .map((r) => r.entry.time),
+  );
+  for (const time of times) {
+    const slot = rows.filter((r) => r.entry.time === time);
+    const own = slot.filter((r) => r.cls === cls && r.kind === 'placement');
+    const roles = own.filter((r) => r.entry.scorerRef !== undefined);
+    const groupGame = slot.find((r) => r.cls === cls && r.kind === 'group');
+    const fixed = slot.filter(
+      (r) =>
+        r.entry.scorer !== undefined && (r.entry.scorerClass ?? r.cls) === cls,
+    );
+    const players = own.flatMap((r) =>
+      (['home', 'away'] as const).map((side) => ({
+        ref: r.entry[side]!,
+        what: `plays in ${describe(r)}`,
+      })),
+    );
+
+    roles.forEach((r, i) => {
+      const role = r.entry.scorerRef!;
+      const head = `${describe(r)}: scorer role "${role}"`;
+      if (groupGame)
+        out.push(
+          `${head} is in one slot with the group game ${describe(groupGame)}; the role could be any ${cls} team.`,
+        );
+      const paths = pathsOf(role);
+      const others = [
+        ...roles.slice(i + 1).map((o) => ({
+          ref: o.entry.scorerRef!,
+          what: `keeps score for ${describe(o)}`,
+        })),
+        ...players,
+      ];
+      const tooMany = (ref: string) =>
+        `${head}: "${ref}" has too many possible outcomes to check for clashes (more than ${MAX_REF_PATHS}).`;
+      if (!paths) {
+        out.push(tooMany(role));
+        return;
+      }
+      for (const { ref, what } of others) {
+        const theirs = pathsOf(ref);
+        if (!theirs) {
+          out.push(tooMany(ref));
+          continue;
+        }
+        let results: RefPath['results'] | null = null;
+        for (const a of paths)
+          for (const b of theirs)
+            if (!results && a.leaf === b.leaf) results = jointResults(a, b);
+        if (results)
+          out.push(
+            `${head} can be the team that also ("${ref}") ${what}${whenResults(results)}.`,
+          );
+      }
+      for (const f of fixed) {
+        const team = f.entry.scorer!;
+        const path = paths.find((p) => canBe(p.leaf, team));
+        if (path)
+          out.push(
+            `${head} can be "${team}", which also keeps score for ${describe(f)}${whenResults(path.results)}.`,
+          );
+      }
+    });
+  }
+  return out;
 }
 
 /** Games that share labels and are linked through shared refs (mini round robin). */

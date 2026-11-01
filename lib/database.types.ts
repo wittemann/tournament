@@ -67,6 +67,7 @@ export type Database = {
           number: number | null
           scorer: string | null
           scorer_class: Database["public"]["Enums"]["class"] | null
+          scorer_ref: string | null
           stage: string | null
           time: string
         }
@@ -85,6 +86,7 @@ export type Database = {
           number?: number | null
           scorer?: string | null
           scorer_class?: Database["public"]["Enums"]["class"] | null
+          scorer_ref?: string | null
           stage?: string | null
           time: string
         }
@@ -103,6 +105,7 @@ export type Database = {
           number?: number | null
           scorer?: string | null
           scorer_class?: Database["public"]["Enums"]["class"] | null
+          scorer_ref?: string | null
           stage?: string | null
           time?: string
         }

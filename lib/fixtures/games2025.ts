@@ -16,7 +16,8 @@
 import type { Game } from '@/app/types';
 import type { GameClass, TeamLike } from '@/lib/standings';
 
-export type Fixture2025Game = Omit<Game, 'id'>;
+/** 2025 had no scorer roles, so the rows don't carry `scorer_ref`. */
+export type Fixture2025Game = Omit<Game, 'id' | 'scorer_ref'>;
 
 /** The classes that played in 2025. */
 export type Class2025 = Extract<GameClass, 'Schüler' | 'T-Ball'>;

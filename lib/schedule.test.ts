@@ -95,6 +95,59 @@ describe('refLabel', () => {
 describe('gameSides', () => {
   const teams = [team('A', 'A'), team('B', 'A'), team('C', 'A')];
 
+  describe('scorer role', () => {
+    const groupStage = () => [
+      g('A', 5, 1, 'B'),
+      g('B', 5, 1, 'C'),
+      g('A', 5, 1, 'C'),
+    ];
+    const semi = (hs: number | null = null, as: number | null = null) => ({
+      ...p(10, 'seed:1', 'seed:2', hs, as),
+      label: 'Spiel um Platz 3',
+    });
+    const final = { ...p(11, 'seed:2', 'seed:3'), scorer_ref: 'loser:10' };
+
+    it('shows the placeholder while unresolved', () => {
+      const sides = gameSides([...groupStage(), semi(), final], teams);
+      expect(sides.get(1011)?.scorer).toEqual({
+        team: null,
+        ref: 'Verlierer Spiel um Platz 3',
+      });
+    });
+
+    it('labels seed and group roles like the other placeholders', () => {
+      const running = [g('A', null, null, 'B')];
+      const of = (scorer_ref: string) =>
+        gameSides(
+          [...running, { ...p(12, 'seed:1', 'seed:2'), scorer_ref }],
+          teams,
+        ).get(1012)?.scorer;
+      expect(of('seed:5')).toEqual({ team: null, ref: 'Seed 5' });
+      expect(of('group:A:1')).toEqual({ team: null, ref: '1. Gruppe A' });
+    });
+
+    it('resolves through the ref machinery once the result is in', () => {
+      const sides = gameSides([...groupStage(), semi(3, 7), final], teams);
+      expect(sides.get(1011)?.scorer).toEqual({
+        team: 'A',
+        ref: 'Verlierer Spiel um Platz 3',
+      });
+    });
+
+    it('resolves a seed role once the groups are done', () => {
+      const games = [
+        ...groupStage(),
+        { ...p(12, 'seed:1', 'seed:2'), scorer_ref: 'seed:3' },
+      ];
+      expect(gameSides(games, teams).get(1012)?.scorer?.team).toBe('C');
+    });
+
+    it('leaves games without a role without a scorer side', () => {
+      const sides = gameSides([...groupStage(), semi()], teams);
+      expect(sides.get(1010)).not.toHaveProperty('scorer');
+    });
+  });
+
   it('keeps stored names for group games and has no ref hint', () => {
     const game = g('A', null, null, 'B');
     expect(gameSides([game], teams).get(game.id)).toEqual({
@@ -202,6 +255,19 @@ describe('playingTeams', () => {
       [game('Schüler', 'A', 'B', 'Club')],
     );
     expect(result.map((t) => t.name)).toEqual(['A', 'B']);
+  });
+
+  it('adds nobody for a scorer role (scorer stays null)', () => {
+    const teams = [team('A', 'A'), team('B', 'A')];
+    const placementWithRole = {
+      class: 'Schüler' as const,
+      hometeam: null,
+      awayteam: null,
+      scorer: null,
+      scorer_class: null,
+      scorer_ref: 'seed:2',
+    };
+    expect(playingTeams(teams, [placementWithRole])).toEqual([]);
   });
 
   it('counts a scorer of another class as playing in that class', () => {

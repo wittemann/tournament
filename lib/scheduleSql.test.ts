@@ -77,13 +77,23 @@ describe('scheduleToSql', () => {
     expect(rows).toBe(
       [
         'values',
-        "  (1, 'group', null, 'D''Arc', 'Eve', null, null, 'Zed', 'Schüler', 'T-Ball', '08:00:00', 'Halle 1', null),",
-        "  (2, 'placement', 'Halbfinale', null, null, 'seed:1', 'seed:3', null, null, 'T-Ball', '09:00:00', 'Halle 1', null),",
-        "  (3, 'placement', 'Finale', null, null, 'winner:2', 'seed:2', null, null, 'T-Ball', '10:00:00', 'Halle 1', null),",
-        "  (null, null, null, null, null, null, null, null, null, 'Schüler', '10:30:00', 'Foyer', 'Siegerehrung');",
+        "  (1, 'group', null, 'D''Arc', 'Eve', null, null, 'Zed', 'Schüler', null, 'T-Ball', '08:00:00', 'Halle 1', null),",
+        "  (2, 'placement', 'Halbfinale', null, null, 'seed:1', 'seed:3', null, null, null, 'T-Ball', '09:00:00', 'Halle 1', null),",
+        "  (3, 'placement', 'Finale', null, null, 'winner:2', 'seed:2', null, null, null, 'T-Ball', '10:00:00', 'Halle 1', null),",
+        "  (null, null, null, null, null, null, null, null, null, null, 'Schüler', '10:30:00', 'Foyer', 'Siegerehrung');",
         '',
         '',
       ].join('\n'),
+    );
+  });
+
+  it('writes the scorer role with feeder labels rewritten to numbers', () => {
+    const withRole = structuredClone(input);
+    withRole.games[0].scorerRef = 'loser:Halbfinale';
+    const out = scheduleToSql(withRole);
+    expect(out).toContain('scorer, scorer_class, scorer_ref, class,');
+    expect(out).toContain(
+      "'winner:2', 'seed:2', null, null, 'loser:2', 'T-Ball'",
     );
   });
 

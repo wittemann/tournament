@@ -170,6 +170,7 @@ The app has to be ready before this point: teams register first, and the schedul
 - [x] **Schedule loader and checker** (prep for the load above): a JSON input format for teams, groups, halls and games, a checker that enforces the rules above (unique placement labels, one ref style per class, a 3rd-place game per class, refs that resolve, halls and teams that exist, no team or hall double-booked in a slot, room "Foyer", no emoji in event names), and a script that turns a checked file into SQL to apply via the Supabase MCP. Tested against the 2025 data and broken variants. Plus a short how-to in `docs/`. · `sonnet` Built: [schedule-load](schedule-load.md), `npm run schedule:sql`.
 - [x] Bump Next to the latest 16.4.x patch (and re-run `npm audit`) before the smoke test. · `haiku` Bumped to 16.4.1 on 2026-10-14.
 - [x] Bump the patch versions (Next 16.4.3, React 19.3.1, Sentry, supabase-js, daisyUI, ESLint, Vitest, isomorphic-dompurify) and re-run `npm audit`. · `haiku` Done 2026-10-31; audit notes in [review-later](review-later.md).
+- [x] Placement scorers by role (`scorer_ref`, `scorerRef` in the schedule file). · `opus`
 - [ ] Dry-run smoke test before the real schedule: 2025 data plus made-up variants through the checker (a Jugend class, more halls, a quarterfinal bracket); every page at phone width, standings and bracket resolve. Fix what breaks. · `sonnet`
 - [ ] Smoke test with the real schedule: every page at phone width, standings and bracket resolve correctly. · `sonnet`
 

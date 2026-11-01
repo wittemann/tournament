@@ -21,8 +21,10 @@ import {
   type GameClass,
   type GameLike,
   type TeamLike,
+  hasResult,
   placementRanking,
   resolveGame,
+  resolveRef,
   standingsContext,
 } from './standings';
 
@@ -57,12 +59,21 @@ export function playsIn(
   );
 }
 
-/** True when the team is the game's scorer (exact name, see above). */
-export function scoresIn(game: OutlookGame, team: TeamRef): boolean {
-  return (
-    !game.eventname &&
-    matchesTeam(asSelection(team), game.scorer, game.scorer_class ?? game.class)
-  );
+/**
+ * True when the team is the game's scorer (exact name, see above): the fixed
+ * scorer, or the team a scorer role resolved to (a team of the game's class;
+ * an unresolved role matches nobody).
+ */
+export function scoresIn(
+  game: OutlookGame,
+  sides: GameSides | undefined,
+  team: TeamRef,
+): boolean {
+  if (game.eventname) return false;
+  const sel = asSelection(team);
+  return sides?.scorer
+    ? matchesTeam(sel, sides.scorer.team, game.class)
+    : matchesTeam(sel, game.scorer, game.scorer_class ?? game.class);
 }
 
 function hasAnyScore(game: RunningCandidate): boolean {
@@ -112,7 +123,9 @@ export function getTeamOutlook<G extends OutlookGame>(
   // Same rule as the team's games: a running duty first, else the next one.
   const duty =
     games.find(
-      (g) => scoresIn(g, team) && (isRunning(g, now) || upcoming(g)),
+      (g) =>
+        scoresIn(g, sides.get(g.id), team) &&
+        (isRunning(g, now) || upcoming(g)),
     ) ?? null;
 
   const dutyStart = duty ? toMinutes(duty.time) : 0;
@@ -150,7 +163,7 @@ export function teamSchedule<G extends OutlookGame>(
   const kindOf = (game: G): TeamEntry<G>['kind'] | null =>
     playsIn(game, sides.get(game.id), team)
       ? 'game'
-      : scoresIn(game, team)
+      : scoresIn(game, sides.get(game.id), team)
         ? 'scorer'
         : null;
   // Classes the team belongs to: a game's own class, or the scorer's class
@@ -209,14 +222,14 @@ export function formatRecord({ wins, losses, ties }: TeamRecord): string {
 
 /**
  * True when a class of the team still has a placement game with an unresolved
- * side (e.g. group A is done, group B is not, so seed refs wait). The team
- * may get a placement game then, so the card must not say "all played"
- * even when it has no game or duty left right now. A class where the team
- * already has its final place doesn't count (open semifinals don't concern
- * the team that played for 9th place).
+ * side or scorer role (e.g. group A is done, group B is not, so seed refs
+ * wait). The team may get a placement game or duty then, so the card must not
+ * say "all played" even when it has no game or duty left right now. A class
+ * where the team already has its final place doesn't count (open semifinals
+ * don't concern the team that played for 9th place).
  */
 export function awaitsPlacement(
-  games: GameLike[],
+  games: (GameLike & { scorer_ref?: string | null })[],
   teams: TeamLike[],
   team: TeamRef,
 ): boolean {
@@ -231,6 +244,11 @@ export function awaitsPlacement(
       if (g.stage !== 'placement') continue;
       const { home, away } = resolveGame(g, ctx);
       if (home === null || away === null) return true;
+    }
+    for (const g of games) {
+      if (g.class !== cls || g.stage !== 'placement' || !g.scorer_ref) continue;
+      // A played game has had its scorer, whoever stood in for the role.
+      if (!hasResult(g) && resolveRef(g.scorer_ref, ctx) === null) return true;
     }
   }
   return false;

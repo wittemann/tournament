@@ -99,7 +99,12 @@ export default function GameCard({
   const { phase, winner } = gameState(game, now);
   const running = phase === 'running';
   const played = phase === 'played';
-  const scorer = showScorer ? game.scorer : null;
+  // A scorer role shows its placeholder until the team is known.
+  const scorer = !showScorer
+    ? null
+    : sides?.scorer
+      ? (sides.scorer.team ?? sides.scorer.ref)
+      : game.scorer;
   const showMeta = !showTime || showClass || scorer;
 
   const outline = running

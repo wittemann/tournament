@@ -153,6 +153,7 @@ describe('the 2025 data', () => {
         awayteam: g.awayteam,
         home_ref: g.home_ref,
         away_ref: g.away_ref,
+        scorer_ref: null,
         time: g.time,
         location: g.location,
         eventname: g.eventname,
@@ -366,6 +367,305 @@ describe('errors', () => {
   it('rejects non-objects', () => {
     expect(errorsOf([])).toHaveLength(1);
     expect(errorsOf(null)).toHaveLength(1);
+  });
+});
+
+describe('scorer roles', () => {
+  /** small() with the final after the 3rd-place game, so its loser can score it. */
+  function roles(edit: (s: ScheduleInput) => void = () => {}): ScheduleInput {
+    const s = clone(small());
+    s.halls.splice(2, 0, 'Halle 3');
+    s.games[6].scorerRef = 'seed:5';
+    s.games[7].scorerRef = 'seed:6';
+    s.games[8].time = '11:30';
+    s.games[8].scorerRef = 'loser:Platz 3';
+    s.games[9].scorerRef = 'winner:Halbfinale 1';
+    s.games[9].away = 'loser:Halbfinale 2';
+    s.games[10].time = '12:00';
+    edit(s);
+    return s;
+  }
+  const entry = (
+    time: string,
+    hall: string,
+    label: string,
+    home: string,
+    away: string,
+  ) => ({
+    class: 'T-Ball',
+    time,
+    hall,
+    label,
+    home,
+    away,
+  });
+  const expectError = (edit: (s: ScheduleInput) => void, text: string) =>
+    expect(errorsOf(roles(edit)).join('\n')).toContain(text);
+
+  it('accepts a valid setup without findings', () => {
+    expect(checkSchedule(roles())).toEqual([]);
+  });
+
+  it('accepts winner and loser of one game in one slot: never the same team', () => {
+    const s = roles((x) => {
+      x.games[8].scorerRef = 'loser:Halbfinale 1';
+      x.games[9].scorerRef = 'seed:5';
+    });
+    expect(errorsOf(s)).toEqual([]);
+  });
+
+  it('rejects scorerRef together with scorer or scorerClass', () => {
+    expectError(
+      (s) => (s.games[6].scorer = 'Ada'),
+      '"scorerRef" can\'t be combined',
+    );
+    expectError(
+      (s) => (s.games[6].scorerClass = 'T-Ball'),
+      '"scorerRef" can\'t be combined',
+    );
+  });
+  it('rejects scorerRef on an event', () =>
+    expectError(
+      (s) => (s.games[10].scorerRef = 'seed:1'),
+      'an event can\'t have "scorerRef"',
+    ));
+  it('rejects scorerRef on a group game', () =>
+    expectError(
+      (s) => (s.games[0].scorerRef = 'seed:1'),
+      '"scorerRef" is only for placement games',
+    ));
+  it('rejects a ref that does not parse', () =>
+    expectError(
+      (s) => (s.games[6].scorerRef = 'seed:x'),
+      'scorer ref "seed:x" is not valid',
+    ));
+  it('rejects a numeric feeder ref', () =>
+    expectError(
+      (s) => (s.games[8].scorerRef = 'loser:9'),
+      'scorer ref "loser:9" points at no T-Ball placement game',
+    ));
+  it('rejects a feeder label that does not resolve', () =>
+    expectError(
+      (s) => (s.games[8].scorerRef = 'loser:Nope'),
+      'scorer ref "loser:Nope" points at no T-Ball placement game',
+    ));
+  it('rejects a feeder in the same slot', () =>
+    expectError(
+      (s) => (s.games[9].scorerRef = 'winner:Platz 3'),
+      'which is not played earlier',
+    ));
+  it('rejects a later feeder', () =>
+    expectError(
+      (s) => (s.games[9].scorerRef = 'winner:Finale'),
+      'which is not played earlier',
+    ));
+  it('rejects a seed beyond the number of teams', () =>
+    expectError(
+      (s) => (s.games[6].scorerRef = 'seed:7'),
+      'scorer ref "seed:7" is beyond the 6 T-Ball teams',
+    ));
+  it('rejects a group place beyond the group size', () =>
+    expectError((s) => {
+      for (const g of s.games.slice(6, 8)) {
+        g.home = 'group:A:1';
+        g.away = 'group:B:2';
+      }
+      s.games[7].home = 'group:B:1';
+      s.games[7].away = 'group:A:2';
+      s.games[6].scorerRef = 'group:A:4';
+      s.games[7].scorerRef = 'group:B:3';
+    }, 'scorer ref "group:A:4" is beyond group A (3 teams)'));
+  it('rejects a group: role in a class using seed: refs', () =>
+    expectError(
+      (s) => (s.games[6].scorerRef = 'group:A:3'),
+      'mix seed: and group: refs',
+    ));
+  it('rejects a seed: role in a class using group: refs', () =>
+    expectError((s) => {
+      s.games[6].home = 'group:A:1';
+      s.games[6].away = 'group:B:2';
+      s.games[7].home = 'group:B:1';
+      s.games[7].away = 'group:A:2';
+    }, 'mix seed: and group: refs'));
+  it('rejects a referenced label used by several games', () =>
+    expectError((s) => (s.games[7].label = 'Halbfinale 1'), 'is ambiguous'));
+
+  it('rejects a role that is a side of its own game', () =>
+    expectError(
+      (s) => (s.games[6].scorerRef = 'seed:1'),
+      'scorer role "seed:1" can be the team that also ("seed:1") plays in',
+    ));
+  it('rejects a role playing in another game of the slot', () =>
+    expectError(
+      (s) => (s.games[6].scorerRef = 'seed:2'),
+      'scorer role "seed:2" can be the team that also ("seed:2") plays in',
+    ));
+  it('rejects two roles that are the same team', () =>
+    expectError(
+      (s) => (s.games[7].scorerRef = 'seed:5'),
+      'can be the team that also ("seed:5") keeps score for',
+    ));
+  it('rejects a role and a fixed scorer of the class: any seed can be that team', () =>
+    expectError((s) => {
+      delete s.games[6].scorerRef;
+      s.games[6].scorer = 'Ada';
+    }, 'can be "Ada", which also keeps score for'));
+  it('catches a fixed scorer of the class on a game of another class', () =>
+    expectError((s) => {
+      s.teams['Schüler'] = { A: ['Zed', 'Yan'] };
+      s.games.push({
+        class: 'Schüler',
+        time: '10:30',
+        hall: 'Halle 3',
+        home: 'Zed',
+        away: 'Yan',
+        scorer: 'Ada',
+        scorerClass: 'T-Ball',
+      });
+    }, 'can be "Ada", which also keeps score for'));
+  it('accepts a fixed scorer of a group the group: role can not come from', () => {
+    const s = roles((x) => {
+      x.games[6].home = 'group:A:1';
+      x.games[6].away = 'group:B:2';
+      x.games[7].home = 'group:B:1';
+      x.games[7].away = 'group:A:2';
+      x.games[6].scorerRef = 'group:A:3';
+      delete x.games[7].scorerRef;
+      x.games[7].scorer = 'Flo'; // group B
+    });
+    expect(errorsOf(s)).toEqual([]);
+  });
+  it('rejects a role in a slot with a group game of its class', () =>
+    expectError(
+      (s) => (s.games[5].time = '10:30'),
+      'in one slot with the group game',
+    ));
+  it('allows a slot with a group game of another class', () => {
+    const s = roles((x) => {
+      x.teams['Schüler'] = { A: ['Zed', 'Yan'] };
+      x.games.push({
+        class: 'Schüler',
+        time: '10:30',
+        hall: 'Halle 3',
+        home: 'Zed',
+        away: 'Yan',
+      });
+    });
+    expect(errorsOf(s)).toEqual([]);
+  });
+
+  describe('a clash in only one result combination', () => {
+    // seed:4 is in Halbfinale 1 and in X. Both refs at 11:30 are seed:4 only
+    // if it wins both games.
+    const crossed = (scorerRef: string) =>
+      roles((s) => {
+        s.games.push(
+          entry('10:00', 'Halle 3', 'X', 'seed:4', 'seed:5'),
+          entry('12:30', 'Halle 1', 'Y', 'winner:X', 'seed:6'),
+          { ...entry('12:30', 'Halle 2', 'Z', 'seed:5', 'seed:6'), scorerRef },
+        );
+      });
+
+    it('is found, and the message names the results', () => {
+      const all = errorsOf(crossed('winner:Halbfinale 1')).join('\n');
+      expect(all).toContain(
+        'scorer role "winner:Halbfinale 1" can be the team that also ("winner:X") plays in',
+      );
+      expect(all).toContain('away wins "Halbfinale 1"');
+      expect(all).toContain('home wins "X"');
+    });
+
+    it('is not reported when the two refs never share a team', () => {
+      const all = errorsOf(crossed('winner:Halbfinale 2')).join('\n');
+      expect(all).not.toContain('can be the team');
+    });
+  });
+
+  it('stays exact when two refs need one game to end both ways', () => {
+    // winner:M and loser:M share every place, but never in one combination.
+    const s = roles((x) => {
+      x.games.push(entry('12:30', 'Halle 1', 'M', 'seed:5', 'seed:6'), {
+        ...entry('13:00', 'Halle 1', 'N', 'winner:M', 'seed:1'),
+        scorerRef: 'loser:M',
+      });
+    });
+    expect(errorsOf(s)).toEqual([]);
+  });
+
+  it('checks a large bracket quickly', () => {
+    // 64 teams, single elimination: the semifinal refs have 16 paths each.
+    const names = Array.from({ length: 64 }, (_, i) => `T${i + 1}`);
+    const s: ScheduleInput = {
+      halls: ['H'],
+      teams: { 'T-Ball': { A: names } },
+      games: [],
+    };
+    let round = names.map((_, i) => `seed:${i + 1}`);
+    let hour = 0;
+    while (round.length > 1) {
+      const next: string[] = [];
+      for (let i = 0; i < round.length; i += 2) {
+        const label = `R${round.length}-${i}`;
+        s.games.push({
+          class: 'T-Ball',
+          time: `0${Math.floor(hour / 6)}:${hour % 6}0`,
+          hall: `H${i}`,
+          label,
+          home: round[i],
+          away: round[i + 1],
+        });
+        next.push(`winner:${label}`);
+      }
+      s.halls = [...new Set([...s.halls, ...s.games.map((g) => g.hall)])];
+      round = next;
+      hour++;
+    }
+    const start = Date.now();
+    const all = errorsOf({
+      ...s,
+      games: s.games.map((g) =>
+        g.label === 'R2-0' ? { ...g, scorerRef: 'winner:R4-0' } : g,
+      ),
+    }).join('\n');
+    expect(Date.now() - start).toBeLessThan(1000);
+    expect(all).toContain(
+      'scorer role "winner:R4-0" can be the team that also ("winner:R4-0") plays in',
+    );
+  });
+
+  it('reports a ref with too many outcomes instead of hanging', () => {
+    // Each game is fed by the winner and the loser of the one before it.
+    const s = roles();
+    let prev = 'Platz 3';
+    for (let i = 0; i < 12; i++) {
+      const label = `C${i}`;
+      s.games.push({
+        ...entry(
+          `13:${String(i * 2).padStart(2, '0')}`,
+          'Halle 1',
+          label,
+          `winner:${prev}`,
+          `loser:${prev}`,
+        ),
+      });
+      prev = label;
+    }
+    s.games.at(-1)!.scorerRef = 'winner:C10';
+    expect(errorsOf(s).join('\n')).toContain('too many possible outcomes');
+  });
+
+  it('rewrites scorerRef labels to numbers and leaves other refs alone', () => {
+    const rows = numberGames(roles());
+    const third = rows.find((r) => r.label === 'Platz 3')!;
+    const final = rows.find((r) => r.label === 'Finale')!;
+    const semi = rows.find((r) => r.label === 'Halbfinale 1')!;
+    expect(final.scorer_ref).toBe(`loser:${third.number}`);
+    expect(third.scorer_ref).toBe(`winner:${semi.number}`);
+    expect(semi.scorer_ref).toBe('seed:5');
+    expect(final.scorer).toBeNull();
+    expect(final.scorer_class).toBeNull();
+    expect(rows.find((r) => r.eventname)?.scorer_ref).toBeNull();
+    expect(rows.find((r) => r.stage === 'group')?.scorer_ref).toBeNull();
   });
 });
 

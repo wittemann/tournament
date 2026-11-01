@@ -8,6 +8,7 @@ import {
   type TeamLike,
   parseRef,
   resolveGame,
+  resolveRef,
   standingsContext,
 } from './standings';
 
@@ -69,14 +70,19 @@ export interface Side {
 export interface GameSides {
   home: Side;
   away: Side;
+  /**
+   * Only on a game that names its scorer by role (`scorer_ref`), which means
+   * a team of the game's own class. A fixed `scorer` stays on the game.
+   */
+  scorer?: Side;
 }
 
-type ScheduleGame = GameLike & { id: number };
+type ScheduleGame = GameLike & { id: number; scorer_ref?: string | null };
 
 /**
  * Both sides of every game, keyed by game id. Placement games are resolved
- * per class through the standings context; other games keep their stored
- * team names.
+ * per class through the standings context, like a scorer role; other games
+ * keep their stored team names.
  */
 export function gameSides(
   games: ScheduleGame[],
@@ -108,6 +114,12 @@ export function gameSides(
         team: away ?? game.awayteam,
         ref: game.away_ref ? refLabel(game.away_ref, labelOf) : null,
       },
+      ...(game.scorer_ref && {
+        scorer: {
+          team: resolveRef(game.scorer_ref, ctx),
+          ref: refLabel(game.scorer_ref, labelOf),
+        },
+      }),
     });
   }
   return result;
@@ -120,9 +132,9 @@ type PlayingGame = Pick<GameLike, 'class' | 'hometeam' | 'awayteam'> & {
 
 /**
  * Teams (name and class) for the team filter: teams from the `teams` table
- * that appear in at least one game (as home, away or scorer). Teams without
- * any game (registered, not scheduled yet) are left out, as they would only
- * give an empty list. See lib/teamSelection.ts for the select options.
+ * that appear in at least one game (as home, away or fixed scorer; a scorer
+ * role names nobody until it resolves). Teams without any game (registered,
+ * not scheduled yet) are left out, as they would only give an empty list. See lib/teamSelection.ts for the select options.
  */
 export function playingTeams(
   teams: TeamLike[],

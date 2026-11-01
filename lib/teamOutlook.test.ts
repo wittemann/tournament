@@ -5,6 +5,7 @@ import {
   formatDiff,
   formatRecord,
   getTeamOutlook,
+  scoresIn,
   teamRecord,
   teamSchedule,
   teamSummaries,
@@ -181,6 +182,89 @@ describe('teamSchedule', () => {
       { kind: 'game', game },
       { kind: 'scorer', game: duty },
     ]);
+  });
+});
+
+describe('scorer roles', () => {
+  const placement = () =>
+    g('12:00', null, null, { class: 'T-Ball', scorer: null });
+  const home = { team: 'X', ref: 'Seed 1' };
+  const away = { team: 'Y', ref: 'Seed 2' };
+  const sidesFor = (game: OutlookGame, scorerTeam: string | null) =>
+    new Map<number, GameSides>([
+      [
+        game.id,
+        {
+          home,
+          away,
+          scorer: { team: scorerTeam, ref: 'Verlierer Platz 3' },
+        },
+      ],
+    ]);
+
+  it('a resolved role makes the team the scorer, in the game class only', () => {
+    const game = placement();
+    const s = sidesFor(game, 'Bretten').get(game.id);
+    expect(scoresIn(game, s, 'Bretten')).toBe(true);
+    expect(scoresIn(game, s, { name: 'Bretten', cls: 'T-Ball' })).toBe(true);
+    expect(scoresIn(game, s, { name: 'Bretten', cls: 'Schüler' })).toBe(false);
+    expect(scoresIn(game, s, 'Other')).toBe(false);
+  });
+
+  it('an unresolved role matches nobody', () => {
+    const game = placement();
+    const s = sidesFor(game, null).get(game.id);
+    expect(scoresIn(game, s, 'Bretten')).toBe(false);
+    expect(scoresIn(game, s, 'Verlierer Platz 3')).toBe(false);
+  });
+
+  it('a fixed scorer works as before, with or without sides', () => {
+    const game = g('12:00', 'X', 'Y', { scorer: 'Bretten' });
+    expect(scoresIn(game, undefined, 'Bretten')).toBe(true);
+    expect(
+      scoresIn(
+        game,
+        { home: { team: 'X', ref: null }, away: { team: 'Y', ref: null } },
+        'Bretten',
+      ),
+    ).toBe(true);
+  });
+
+  it('teamSchedule lists a resolved duty and leaves out an unresolved one', () => {
+    const game = placement();
+    const event = g('13:00', null, null, {
+      class: 'T-Ball',
+      eventname: 'Siegerehrung',
+    });
+    expect(
+      teamSchedule([game, event], sidesFor(game, 'Bretten'), 'Bretten'),
+    ).toEqual([
+      { kind: 'scorer', game },
+      { kind: 'event', game: event },
+    ]);
+    expect(
+      teamSchedule([game, event], sidesFor(game, null), 'Bretten'),
+    ).toEqual([]);
+  });
+
+  it('teamOutlook shows a resolved duty and is done without an unresolved one', () => {
+    const game = placement();
+    const resolved = getTeamOutlook(
+      [game],
+      sidesFor(game, 'Bretten'),
+      'Bretten',
+      '11:50',
+    );
+    expect(resolved.scorerDuty).toBe(game);
+    expect(resolved.done).toBe(false);
+    const open = getTeamOutlook(
+      [game],
+      sidesFor(game, null),
+      'Bretten',
+      '11:50',
+    );
+    expect(open.scorerDuty).toBeNull();
+    expect(open.done).toBe(true);
   });
 });
 
@@ -420,6 +504,81 @@ describe('awaitsPlacement', () => {
 
   it('is false for an unknown team', () => {
     expect(awaitsPlacement(games, teams2025, 'Nobody')).toBe(false);
+  });
+
+  describe('with an unresolved scorer role', () => {
+    const base = {
+      class: 'T-Ball' as const,
+      label: null,
+      home_ref: null,
+      away_ref: null,
+    };
+    const group = (
+      number: number,
+      hometeam: string,
+      awayteam: string,
+      homescore: number | null = 5,
+      awayscore: number | null = 1,
+    ) => ({
+      ...base,
+      stage: 'group',
+      number,
+      hometeam,
+      awayteam,
+      homescore,
+      awayscore,
+    });
+    const teams = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'C3'].map((name) => ({
+      name,
+      class: 'T-Ball' as const,
+      group_name: name[0],
+    }));
+    const finale = (
+      homescore: number | null = null,
+      awayscore = homescore,
+    ) => ({
+      ...base,
+      stage: 'placement',
+      number: 6,
+      label: 'Finale',
+      hometeam: null,
+      awayteam: null,
+      home_ref: 'group:A:1',
+      away_ref: 'group:B:1',
+      homescore,
+      awayscore,
+      scorer_ref: 'group:C:3',
+    });
+    // Groups A and B are done, so both sides of the Finale are known; C1 has
+    // played all its games, but group C is still open.
+    const played = [
+      group(1, 'A1', 'A2'),
+      group(2, 'B1', 'B2'),
+      group(3, 'C1', 'C2'),
+      group(4, 'C1', 'C3'),
+    ];
+    const open = group(5, 'C2', 'C3', null, null);
+
+    it('is true for a team that could still get the duty', () => {
+      expect(awaitsPlacement([...played, open, finale()], teams, 'C1')).toBe(
+        true,
+      );
+    });
+
+    it('is false once the role is resolved', () => {
+      const games = [...played, group(5, 'C2', 'C3'), finale()];
+      expect(awaitsPlacement(games, teams, 'C1')).toBe(false);
+    });
+
+    it('is false for a team that already has its final place', () => {
+      const games = [...played, open, finale(5, 1)];
+      expect(awaitsPlacement(games, teams, 'A1')).toBe(false);
+    });
+
+    it('is false for everyone once the game was played with the role still open', () => {
+      const games = [...played, open, finale(5, 1)];
+      expect(awaitsPlacement(games, teams, 'C1')).toBe(false);
+    });
   });
 
   it('is false once the team has its final place, even with open semifinals', () => {
