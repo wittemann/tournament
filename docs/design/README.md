@@ -60,7 +60,7 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 - **Team select:** native `<select>`, 48 px, labelled "Mein Team". It is the main control on the Spielplan.
 - **Game card:** time and hall in a fixed left column, the two teams with scores on the right, winner bold. Unplayed games show "–". Played games are muted. The next game of the selected team has a green outline, running games a red one.
 - **Scorer duty:** dashed amber card in the team's game list, amber strip at the bottom of the "Mein Team" card.
-- **Event card** (Siegerehrung, Mittagspause): dark card, title in condensed uppercase.
+- **Event card** (Siegerehrung, Mittagspause): dark card, title in condensed uppercase. In the all-teams list a class tag sits next to the room, since each class has its own events. A hall filter hides events; the team view keeps them.
 - **Bracket:** two columns (one per half), semifinals joined to the final by simple CSS borders. With quarterfinals, each column groups its two quarterfinals in a grey box above its semifinal. Seeds shown as "A1", "B4" etc.
 
 ## Decisions made in the design

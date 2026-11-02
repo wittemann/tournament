@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { classOptions, hallOptions } from '@/lib/filterOptions';
+import { classOptions, hallOptions, matchesFilters } from '@/lib/filterOptions';
 
 const game = (
   cls: string,
@@ -68,5 +68,38 @@ describe('hallOptions', () => {
       value: 'Sporthalle Nord',
       label: 'Sporthalle Nord',
     });
+  });
+});
+
+describe('matchesFilters', () => {
+  const played = game('Jugend', 'Halle 5');
+  const event = game('T-Ball', 'Foyer', 'Technische Konferenz');
+
+  it('shows everything without a filter', () => {
+    expect(matchesFilters(played, 'all', 'all')).toBe(true);
+    expect(matchesFilters(event, 'all', 'all')).toBe(true);
+  });
+
+  it('keeps only the games of the selected hall', () => {
+    expect(matchesFilters(played, 'all', 'Halle 5')).toBe(true);
+    expect(matchesFilters(played, 'all', 'Halle 1')).toBe(false);
+  });
+
+  it('hides events in other rooms under a hall filter', () => {
+    expect(matchesFilters(event, 'all', 'Halle 5')).toBe(false);
+  });
+
+  it('keeps events under a hall filter with keepEvents', () => {
+    expect(matchesFilters(event, 'all', 'Halle 5', { keepEvents: true })).toBe(
+      true,
+    );
+  });
+
+  it('applies the class filter to events, even with keepEvents', () => {
+    expect(matchesFilters(event, 'T-Ball', 'all')).toBe(true);
+    expect(matchesFilters(event, 'Jugend', 'all')).toBe(false);
+    expect(
+      matchesFilters(event, 'Jugend', 'Halle 5', { keepEvents: true }),
+    ).toBe(false);
   });
 });

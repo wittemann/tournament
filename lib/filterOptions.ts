@@ -42,3 +42,22 @@ export function hallOptions(games: readonly FilterGame[]): FilterOption[] {
         : { value: hall, label: hall };
     });
 }
+
+/**
+ * Class and hall filters of the Spielplan ('all' means no filter). A hall shows
+ * only what happens in it, so events in other rooms drop out, unless keepEvents
+ * is set (a team's own list keeps its events).
+ */
+export function matchesFilters(
+  game: FilterGame,
+  cls: string,
+  hall: string,
+  { keepEvents = false }: { keepEvents?: boolean } = {},
+): boolean {
+  const inClass = cls === 'all' || game.class === cls;
+  const inHall =
+    hall === 'all' ||
+    game.location === hall ||
+    (keepEvents && !!game.eventname);
+  return inClass && inHall;
+}

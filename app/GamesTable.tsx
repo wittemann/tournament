@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import Spinner from './Spinner';
 import StatusCard from './StatusCard';
@@ -16,7 +16,7 @@ import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { useNow } from '@/lib/useNow';
 import { toMinutes } from '@/lib/gameStatus';
-import { classOptions, hallOptions } from '@/lib/filterOptions';
+import { classOptions, hallOptions, matchesFilters } from '@/lib/filterOptions';
 import { playingTeams, type GameSides } from '@/lib/schedule';
 import {
   NO_TEAM,
@@ -92,31 +92,24 @@ export default function GamesTable({
     ? selectedHall
     : 'all';
 
-  // Class and hall filters. Events (Siegerehrung) happen outside the game
-  // halls; keep them visible.
-  const matchesFilters = useCallback(
-    (game: Game) =>
-      (activeHall === 'all' ||
-        !!game.eventname ||
-        game.location === activeHall) &&
-      (activeClass === 'all' || game.class === activeClass),
-    [activeHall, activeClass],
-  );
   const filteredGames = useMemo(
-    () => games.filter(matchesFilters),
-    [games, matchesFilters],
+    () => games.filter((g) => matchesFilters(g, activeClass, activeHall)),
+    [games, activeClass, activeHall],
   );
 
   // Team view: the team's games, scorer duties and events, under the class
-  // and hall filters. The "Mein Team" card ignores the filters.
+  // and hall filters; a hall filter keeps the team's own events. The "Mein
+  // Team" card ignores the filters.
   const teamEntries = useMemo(
     () =>
       !activeSelection
         ? []
         : teamSchedule(games, sides, activeSelection).filter((e) =>
-            matchesFilters(e.game),
+            matchesFilters(e.game, activeClass, activeHall, {
+              keepEvents: true,
+            }),
           ),
-    [games, sides, activeSelection, matchesFilters],
+    [games, sides, activeSelection, activeClass, activeHall],
   );
   const outlook = useMemo(
     () =>

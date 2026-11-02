@@ -1,13 +1,15 @@
+import ClassTag from './ClassTag';
 import type { Game } from './types';
 
 /**
  * An event row (eventname, e.g. Siegerehrung, Mittagspause) in the schedule
  * (docs/design/README.md "Event card"): dark card, title in condensed
- * uppercase. Events have no teams, scores or class.
+ * uppercase. Events have no teams or scores.
  *
  * - showTime (default): time and hall in a fixed left column, like GameCard.
  *   Off for lists grouped by time slot: the slot heading shows the time, the
- *   hall moves into a top row above the title.
+ *   hall and class tag move into a top row above the title (each class has
+ *   its own Technische Konferenz and Siegerehrung).
  */
 export default function EventCard({
   game,
@@ -29,9 +31,12 @@ export default function EventCard({
         </div>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        {!showTime && game.location && (
-          <div className="text-[13px] font-semibold opacity-80">
-            {game.location}
+        {!showTime && (
+          <div className="flex flex-wrap items-center gap-2 text-[13px]">
+            {game.location && (
+              <span className="font-semibold opacity-80">{game.location}</span>
+            )}
+            <ClassTag cls={game.class} />
           </div>
         )}
         <div className="font-display text-[22px] leading-tight font-bold tracking-[0.4px] uppercase">
