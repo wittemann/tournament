@@ -171,8 +171,8 @@ The app has to be ready before this point: teams register first, and the schedul
 - [x] Bump Next to the latest 16.4.x patch (and re-run `npm audit`) before the smoke test. · `haiku` Bumped to 16.4.1 on 2026-10-14.
 - [x] Bump the patch versions (Next 16.4.3, React 19.3.1, Sentry, supabase-js, daisyUI, ESLint, Vitest, isomorphic-dompurify) and re-run `npm audit`. · `haiku` Done 2026-10-31; audit notes in [review-later](review-later.md).
 - [x] Placement scorers by role (`scorer_ref`, `scorerRef` in the schedule file). · `opus`
-- [ ] Dry-run smoke test before the real schedule: 2025 data plus made-up variants through the checker (a Jugend class, more halls, a quarterfinal bracket); every page at phone width, standings and bracket resolve. Fix what breaks. · `sonnet`
-- [ ] Smoke test with the real schedule: every page at phone width, standings and bracket resolve correctly. · `sonnet`
+- [x] ~~Dry-run smoke test before the real schedule~~: dropped 2026-11-02, the full-day test below replaces it.
+- [ ] Full-day test with the real schedule, as soon as it is loaded: play through the whole day, entering scores slot by slot, including ties and the brackets; every page at phone width, standings and bracket resolve correctly. Fix what breaks, and reset the scores afterwards. · `sonnet`
 
 ## 10. From the review-later walkthrough
 
@@ -181,3 +181,9 @@ The app has to be ready before this point: teams register first, and the schedul
 - [x] Team-view heading record (`teamRecord` in `lib/teamOutlook.ts`, shown in `app/GamesTable.tsx`) counts group **and** placement games, so it agrees with the card's Bilanz at the end of the day. · `haiku`
 - [x] **Class order T-Ball, Schüler, Jugend** everywhere (Spielplan class switch, Tabelle, Finalrunde). Today `lib/classesInUse.ts` and `lib/filterOptions.ts` take the enum order (Schüler, T-Ball, Jugend). One shared order constant in code; classes it doesn't know are appended at the end instead of dropped. The Tabelle/Finalrunde default (first class) becomes T-Ball. Tests. · `haiku`
 - [x] Align "has a result": rename `hasResult` in `lib/teamOutlook.ts` (either score entered) to `hasAnyScore`, and let `lib/bracket.ts` use the exported `hasResult` from `lib/standings.ts` instead of its private copy. No behavior change. · `haiku`
+
+## 11. Tournament-day polish
+
+- [ ] **Jump to the current game:** the Spielplan always opens at the first slot, and the "Jetzt" line can be far down the list. Bring it into view on load during the event, without fighting the user's own scrolling or the filters. · `sonnet`
+- [ ] **Event date:** `lib/gameStatus.ts` and the "Jetzt" line only compare clock times, so a game shows as "läuft" at the same time on any day. Store the date in the data, not in the code (see section 9), and show the running state and the "Jetzt" line on the event day only. Tests for the days before and after. · `sonnet`
+- [ ] **Add to home screen and sharing:** web app manifest, Apple touch icon, theme colour and a link preview (Open Graph title, description, image), and a description that covers more than the Spielplan. · `haiku`
