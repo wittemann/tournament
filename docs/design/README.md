@@ -54,7 +54,7 @@ Class colours differ in lightness as well as hue, so they stay distinguishable f
 
 ## Components
 
-- **Header:** rounded green card with the kangaroo ([`public/kangaroo.png`](../../public/kangaroo.png), cut from the logo without the lettering), "XMAS-BALL", "Bretten Kangaroos" and the current time as a pill. The cut-out is only 90 px wide; ask the club for a larger original or an SVG.
+- **Header:** rounded green card with the kangaroo ([`public/kangaroo.svg`](../../public/kangaroo.svg), the kangaroo and bat extracted from the club's crest SVG), "XMAS-BALL", "Bretten Kangaroos" and the current time as a pill.
 - **Main navigation:** five pill tabs below the header, each as wide as its text with the leftover space shared equally. The current page is a dark pill. No horizontal scrolling.
 - **Segmented switch** (grey track, white selected option): used for every filter: class and hall on the Spielplan (with a small uppercase label in front so both rows line up), class on Tabelle and Finalrunde. Hall options are short ("Alle · 1 · 2 · 3 · 4 · 5") so five or more halls fit. Not used for jump links.
 - **Team select:** native `<select>`, 48 px, labelled "Mein Team". It is the main control on the Spielplan.

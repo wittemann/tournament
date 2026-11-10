@@ -10,7 +10,7 @@ export default function Header() {
       {/* Decorative: the title next to it already names the club. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/kangaroo.png"
+        src="/kangaroo.svg"
         alt=""
         width={70}
         height={40}
