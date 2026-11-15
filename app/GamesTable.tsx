@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Spinner from './Spinner';
 import StatusCard from './StatusCard';
@@ -9,6 +9,7 @@ import EventCard from './EventCard';
 import GameCard from './GameCard';
 import SegmentedControl from './SegmentedControl';
 import MeinTeamCard from './MeinTeamCard';
+import JumpToNow from './JumpToNow';
 import NowLine from './NowLine';
 import ScorerCard from './ScorerCard';
 import SlotHeading from './SlotHeading';
@@ -65,6 +66,8 @@ export default function GamesTable({
     'all',
   );
   const { live: now, outlook: outlookNow } = useLiveNow();
+  // The rendered "Jetzt" line (null when absent); drives the jump button.
+  const [nowLine, setNowLine] = useState<HTMLDivElement | null>(null);
 
   // Teams (name + class) from the teams table that appear in some game
   const teamList = useMemo(() => playingTeams(teams, games), [teams, games]);
@@ -277,11 +280,13 @@ export default function GamesTable({
         /* Games by time slot (design: SpielplanAlle) */
         <section
           aria-label="Spiele nach Uhrzeit"
-          className="flex flex-col gap-[18px]"
+          className={`flex flex-col gap-[18px] ${now ? 'pb-20' : ''}`}
         >
           {slots.map((slot, index) => (
             <div key={slot.time} className="flex flex-col gap-2">
-              {index === nowSlotIndex && now && <NowLine now={now} />}
+              {index === nowSlotIndex && now && (
+                <NowLine now={now} ref={setNowLine} />
+              )}
               <SlotHeading
                 time={slot.time.slice(0, 5)}
                 status={slotStatus(slot, now)}
@@ -308,7 +313,7 @@ export default function GamesTable({
         /* The team's games and scorer duties (design: Main) */
         <section
           aria-label={`Spiele von ${activeTeam}`}
-          className="flex flex-col gap-2.5 pt-5"
+          className={`flex flex-col gap-2.5 pt-5 ${now ? 'pb-20' : ''}`}
         >
           {teamEntries.length > 0 && (
             <div className="flex items-baseline justify-between gap-3">
@@ -320,7 +325,9 @@ export default function GamesTable({
           )}
           {teamEntries.map(({ kind, game }, index) => (
             <div key={game.id}>
-              {index === nowIndex && now && <NowLine now={now} />}
+              {index === nowIndex && now && (
+                <NowLine now={now} ref={setNowLine} />
+              )}
               {kind === 'event' ? (
                 <EventCard game={game} />
               ) : kind === 'scorer' ? (
@@ -337,6 +344,7 @@ export default function GamesTable({
           ))}
         </section>
       )}
+      <JumpToNow target={nowLine} />
     </>
   );
 }

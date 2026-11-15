@@ -184,6 +184,6 @@ The app has to be ready before this point: teams register first, and the schedul
 
 ## 11. Tournament-day polish
 
-- [ ] **Jump to the current game:** the Spielplan always opens at the first slot, and the "Jetzt" line can be far down the list. Bring it into view on load during the event, without fighting the user's own scrolling or the filters. · `sonnet`
+- [x] **Jump to the current game:** the Spielplan always opens at the first slot, and the "Jetzt" line can be far down the list. A small "Jetzt" button, shown only while the line is out of view, scrolls to it. No automatic scroll on load (owner decision 2026-11-15: it takes away too much). · `sonnet` Built: `app/JumpToNow.tsx`.
 - [x] **Event date:** `lib/gameStatus.ts` and the "Jetzt" line only compare clock times, so a game shows as "läuft" at the same time on any day. Store the date in the data, not in the code (see section 9), and show the running state and the "Jetzt" line on the event day only. Tests for the days before and after. · `sonnet` Built: `public.event` table, `lib/eventDay.ts`, optional `date` in the schedule file.
 - [ ] **Add to home screen and sharing:** web app manifest, Apple touch icon, theme colour and a link preview (Open Graph title, description, image), and a description that covers more than the Spielplan. · `haiku`
