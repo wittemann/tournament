@@ -59,6 +59,23 @@ describe('getTeamOutlook', () => {
     expect(o.done).toBe(false);
   });
 
+  it('at 00:00 (day before the event): first game is next, nothing runs, earlier duty shows', () => {
+    const duty0900 = g('09:00', 'B', 'C', { scorer: 'A' });
+    const first = g('10:30', 'A', 'D');
+    const o = getTeamOutlook([duty0900, first], noSides, 'A', '00:00');
+    expect(o.current).toBeNull();
+    expect(o.next).toBe(first);
+    expect(o.scorerDuty).toBe(duty0900);
+    expect(o.beforeFirst).toBe(true);
+    expect(o.done).toBe(false);
+  });
+
+  it('at 23:59 (day after the event) the team is done', () => {
+    expect(getTeamOutlook([played, g1030], noSides, 'A', '23:59').done).toBe(
+      true,
+    );
+  });
+
   it('shows the duty when it starts within 60 minutes', () => {
     const o = getTeamOutlook(games, noSides, 'A', '10:15');
     expect(o.next).toBe(g1030);

@@ -14,7 +14,7 @@ import ScorerCard from './ScorerCard';
 import SlotHeading from './SlotHeading';
 import { Game, Team } from './types';
 import { usePersistedState } from '@/lib/usePersistedState';
-import { useNow } from '@/lib/useNow';
+import { useLiveNow } from '@/lib/useNow';
 import { toMinutes } from '@/lib/gameStatus';
 import { classOptions, hallOptions, matchesFilters } from '@/lib/filterOptions';
 import { playingTeams, type GameSides } from '@/lib/schedule';
@@ -64,7 +64,7 @@ export default function GamesTable({
     'selectedClass',
     'all',
   );
-  const now = useNow();
+  const { live: now, outlook: outlookNow } = useLiveNow();
 
   // Teams (name + class) from the teams table that appear in some game
   const teamList = useMemo(() => playingTeams(teams, games), [teams, games]);
@@ -113,10 +113,10 @@ export default function GamesTable({
   );
   const outlook = useMemo(
     () =>
-      activeSelection && now
-        ? getTeamOutlook(games, sides, activeSelection, now)
+      activeSelection && outlookNow
+        ? getTeamOutlook(games, sides, activeSelection, outlookNow)
         : null,
-    [games, sides, activeSelection, now],
+    [games, sides, activeSelection, outlookNow],
   );
   const record = useMemo(
     () =>
@@ -250,7 +250,7 @@ export default function GamesTable({
       {activeTeam === 'all' && <div className="divider"></div>}
       {activeTeam !== 'all' &&
         outlook &&
-        now &&
+        outlookNow &&
         !loading &&
         games.length > 0 && (
           <div className="mt-5">
@@ -260,7 +260,7 @@ export default function GamesTable({
               sides={sides}
               summaries={summaries}
               waiting={waiting}
-              now={now}
+              now={outlookNow}
             />
           </div>
         )}

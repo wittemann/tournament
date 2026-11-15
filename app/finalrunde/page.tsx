@@ -10,7 +10,7 @@ import { Game, Team } from '../types';
 import { useRealtimeTable } from '@/lib/useRealtimeTable';
 import { usePersistedState } from '@/lib/usePersistedState';
 import { teamNameInClass } from '@/lib/teamSelection';
-import { useNow } from '@/lib/useNow';
+import { useLiveNow } from '@/lib/useNow';
 import { classesInUse } from '@/lib/classesInUse';
 import { buildFinalrunde } from '@/lib/bracket';
 import { gameSides } from '@/lib/schedule';
@@ -35,7 +35,7 @@ export default function Page() {
   const [storedClass, setStoredClass] = usePersistedState('tableClass', '');
   // Same key as the Spielplan's team select (see lib/teamSelection.ts).
   const [selectedTeam] = usePersistedState('selectedTeam', 'all');
-  const now = useNow();
+  const { live: now } = useLiveNow();
   const sides = useMemo(() => gameSides(games, teams), [games, teams]);
 
   const active = classes.find((c) => c === storedClass) ?? classes[0];

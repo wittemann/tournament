@@ -214,6 +214,30 @@ describe('a sound small schedule', () => {
   });
 });
 
+describe('the event date', () => {
+  const withDate = (date: unknown) =>
+    errorsOf({ ...small(), date } as unknown as ScheduleInput);
+
+  it('is optional and accepts a real date', () => {
+    expect(errorsOf(small())).toEqual([]);
+    expect(withDate('2026-12-12')).toEqual([]);
+    expect(withDate('2024-02-29')).toEqual([]);
+  });
+
+  it('rejects malformed and impossible dates', () => {
+    for (const bad of [
+      '12.12.2026',
+      '2026-1-5',
+      '2026-02-30',
+      '2026-13-01',
+      20261212,
+      '',
+    ]) {
+      expect(withDate(bad).join('\n')).toContain('"date" must be a real date');
+    }
+  });
+});
+
 describe('errors', () => {
   const broken = (edit: (s: ScheduleInput) => void) => {
     const s = clone(small());

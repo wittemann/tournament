@@ -14,7 +14,8 @@ const num = (n: number | null) => (n === null ? 'null' : String(n));
 /**
  * Replaces halls, teams and games (items and faq stay) in one transaction,
  * children first for the foreign keys, parents first on insert. Games are
- * inserted in schedule order so ids ascend with the schedule. The closing
+ * inserted in schedule order so ids ascend with the schedule. When the file
+ * has a date, it is upserted into the `event` table. The closing
  * `do` block aborts the transaction if the row counts are off.
  */
 export function scheduleToSql(input: ScheduleInput): string {
@@ -80,6 +81,13 @@ export function scheduleToSql(input: ScheduleInput): string {
     '  end if;',
     'end $$;',
     '',
+    ...(input.date
+      ? [
+          `insert into public.event (id, date) values (1, ${sqlString(input.date)})`,
+          '  on conflict (id) do update set date = excluded.date;',
+          '',
+        ]
+      : []),
     'commit;',
     '',
   ].join('\n');

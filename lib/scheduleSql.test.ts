@@ -97,6 +97,16 @@ describe('scheduleToSql', () => {
     );
   });
 
+  it('upserts the event date inside the transaction when the file has one', () => {
+    expect(sql).not.toContain('public.event');
+    const out = scheduleToSql({ ...input, date: '2026-12-12' });
+    const upsert =
+      "insert into public.event (id, date) values (1, '2026-12-12')\n  on conflict (id) do update set date = excluded.date;";
+    expect(out).toContain(upsert);
+    expect(out.indexOf(upsert)).toBeGreaterThan(out.indexOf('end $$;'));
+    expect(out.indexOf(upsert)).toBeLessThan(out.indexOf('commit;'));
+  });
+
   it('ends with a row-count guard for 2 halls, 5 teams, 4 games', () => {
     expect(sql).toContain('count(*) from public.halls) <> 2');
     expect(sql).toContain('count(*) from public.teams) <> 5');

@@ -8,6 +8,7 @@ Start from a copy of [schedule-example-2025.json](schedule-example-2025.json) (t
 
 ```json
 {
+  "date": "2026-12-12",
   "halls": ["Halle 1", "Halle 2", "Foyer"],
   "teams": {
     "T-Ball": { "A": ["Nagold", "Bretten"], "B": ["Karlsruhe", "Remchingen"] }
@@ -21,6 +22,7 @@ Start from a copy of [schedule-example-2025.json](schedule-example-2025.json) (t
 }
 ```
 
+- **date** (optional): the event day, `YYYY-MM-DD`. The app shows "läuft" and the "Jetzt" line on that day only (the device's local date); the load writes it to the `event` table. Without it the load leaves the `event` row as it is, and with no row at all every day counts as the event day. The checker rejects a malformed or impossible date.
 - **halls**: in display order (the position becomes the hall's sort order). Include the event room, last.
 - **teams**: class, then group letter (one capital letter), then team names. A team is name + class; the same name can be in two classes. Classes: `T-Ball`, `Schüler`, `Jugend` (anything else needs a migration first).
 - **games**: one object per row, in any order. The kind follows from the fields:
@@ -53,7 +55,7 @@ What the checker can't know: slot overlap between different start times (a 12:15
 
 ## 3. Back up, apply, check
 
-1. Apply the migration `20261101205356_games_scorer_ref.sql` first if the project doesn't have it yet: the generated SQL always writes `scorer_ref`, so the load fails without the column.
+1. Apply the migration `20261101205356_games_scorer_ref.sql` first if the project doesn't have it yet: the generated SQL always writes `scorer_ref`, so the load fails without the column. Likewise apply `20261115060151_event_date.sql` (the `event` table) before deploying this code: the app reads it whether or not the file has a `date`.
 2. Back up what is live: the 2025 data is already in `supabase/seed.sql`; for anything newer, export the `halls`, `teams` and `games` tables first (Supabase MCP `execute_sql`, `select json_agg(t) from public.games t`, same for the other two; save the output).
 3. Load before the doors open: the load wipes all scores and fires one realtime event per row, so open pages flicker and refetch. Apply the SQL file via the Supabase MCP (`execute_sql` with the file's contents; it is one transaction, so a failure changes nothing). It replaces `games`, `teams` and `halls`; `items` and `faq` are untouched. A row-count check at the end aborts the transaction if something is off.
 4. Set `RUNNING_WINDOW_MINUTES` in `lib/gameStatus.ts` to the slot length ([TODO §9](TODO.md)).

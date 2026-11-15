@@ -15,6 +15,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      event: {
+        Row: {
+          date: string
+          id: number
+        }
+        Insert: {
+          date: string
+          id?: number
+        }
+        Update: {
+          date?: string
+          id?: number
+        }
+        Relationships: []
+      }
       faq: {
         Row: {
           answer: string

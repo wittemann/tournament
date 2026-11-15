@@ -38,6 +38,8 @@ export interface ScheduleEntry {
 }
 
 export interface ScheduleInput {
+  /** Event day "YYYY-MM-DD"; optional. */
+  date?: string;
   /** In display order. */
   halls: string[];
   /** class -> group letter -> team names */
@@ -142,6 +144,13 @@ function textProblem(s: unknown): string | null {
   return null;
 }
 
+/** "YYYY-MM-DD" that exists in the calendar (no 2025-02-30). */
+function isRealDate(s: unknown): boolean {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = new Date(`${s}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+}
+
 /** Structural problems; the semantic checks only run when there are none. */
 function checkShape(input: unknown): Finding[] {
   const out: Finding[] = [];
@@ -151,8 +160,13 @@ function checkShape(input: unknown): Finding[] {
       { severity: 'error', message: 'The file must contain a JSON object.' },
     ];
   for (const key of Object.keys(input))
-    if (!['halls', 'teams', 'games'].includes(key))
-      err(`Unknown top-level field "${key}" (expected halls, teams, games).`);
+    if (!['date', 'halls', 'teams', 'games'].includes(key))
+      err(
+        `Unknown top-level field "${key}" (expected date, halls, teams, games).`,
+      );
+
+  if (input.date !== undefined && !isRealDate(input.date))
+    err('"date" must be a real date as YYYY-MM-DD.');
 
   if (!Array.isArray(input.halls))
     err('"halls" must be an array of hall names.');

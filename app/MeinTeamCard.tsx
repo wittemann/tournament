@@ -72,7 +72,7 @@ export default function MeinTeamCard({
   summaries: TeamSummary[];
   /** Nothing left for now, but placement games are still to be drawn. */
   waiting: boolean;
-  /** "HH:MM" from useNow. */
+  /** "HH:MM" outlook time from useLiveNow: "00:00" before the event day, "23:59" after. */
   now: string;
 }) {
   const { current, next, scorerDuty, done, beforeFirst } = outlook;

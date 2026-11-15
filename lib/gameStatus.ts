@@ -41,8 +41,9 @@ export interface RunningCandidate {
  *   already has a result being entered, so it is not running.
  * - Start and now are compared at minute precision; seconds in `time` are
  *   dropped.
- * - Times are same-day clock times, no midnight wrap (the app runs on the
- *   event day only).
+ * - Times are same-day clock times, no midnight wrap. The callers pass `now`
+ *   on the event day only (useLiveNow, lib/eventDay.ts); other days pass null
+ *   and nothing runs.
  */
 export function isRunning(game: RunningCandidate, now: string): boolean {
   if (game.eventname) return false;
