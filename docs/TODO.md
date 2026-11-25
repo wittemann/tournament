@@ -149,7 +149,7 @@ Everything needed to build the [design](design/README.md) (canvas, colours, comp
 
 ## 7. Content for 2026 (data, not code)
 
-- [ ] FAQ: links point to the 2025 PDFs (`…/2025/12/Regeln-X-Mas-Ball-2025.pdf`, `Anfahrt_Parken.pdf`). Update them for 2026. · **(owner)** (2026 PDF links)
+- [x] FAQ: links point to the 2025 PDFs (`…/2025/12/Regeln-X-Mas-Ball-2025.pdf`, `Anfahrt_Parken.pdf`). Update them for 2026. · **(owner)** Done 2026-11-25: the PDFs now live in `public/` and faq rows 3 and 5 link to them with absolute URLs (`faq_link_url_check` only allows `https://`).
 - [x] FAQ typos: "Her findest du" → "Hier", "Sporthall" → "Sporthalle", "Medallien" → "Medaillen". · `haiku` "Hier" and "Sporthalle" were already fixed; "Medaillen" fixed in the live data 2026-10-12.
 - [x] Item names: remove the trailing space in "Süßigkeiten / Chips / Erdnüsse ". Reset the sold-out flags. · `haiku` Done in the live data 2026-10-12 (item 18 trimmed, items 12–14 reset).
 
