@@ -444,7 +444,8 @@ export function slotKey(
  * 5/6, …) and take consecutive places: 2 per game, one per team in a round
  * robin. Nothing about team counts is hard-coded. Places that no game
  * decides (e.g. 3/4 when there is no 3rd-place game) are absent from the
- * result, so places can have gaps.
+ * result, so places can have gaps. A single team without any game (odd team
+ * count) is appended as the last place, decided as soon as the seeds are known.
  */
 export function placementRanking(ctx: StandingsContext): PlacementEntry[] {
   const placement = ctx.games.filter((g) => g.stage === 'placement');
@@ -512,6 +513,49 @@ export function placementRanking(ctx: StandingsContext): PlacementEntry[] {
         team: row.team,
         tiedWithNext: row.tiedWithNext,
       });
+    }
+  }
+
+  // A bye: the one team no placement game references (e.g. seed 15 of 15
+  // teams: an odd team count leaves one seed without an opponent) still gets
+  // its place. It is appended only when it is structurally the worst slot
+  // (worse than every referenced one) and every other place is accounted for
+  // (result.length === seeds - 1); several unreferenced seeds or a bye in the
+  // middle mean the schedule is partial (places stay absent, see above). The
+  // team is known as soon as the group stage is complete (ctx.seeds) and no
+  // game can change its place, so unlike the game-decided entries it needs no
+  // wait; without seeds nothing is added. Refs count by their structure, not
+  // by what they resolve to; scorer refs are not looked at.
+  if (ctx.seeds && placement.length > 0) {
+    const seedRefs = new Set<number>();
+    const groupRefs = new Set<string>();
+    let worstKey = -Infinity;
+    for (const g of placement) {
+      for (const r of [g.home_ref, g.away_ref]) {
+        const p = r ? parseRef(r) : null;
+        if (p?.kind === 'seed') seedRefs.add(p.n);
+        if (p?.kind === 'group') groupRefs.add(`${p.group}:${p.n}`);
+        if (r) {
+          const k = slotKey(r, ctx, new Set());
+          if (Number.isFinite(k)) worstKey = Math.max(worstKey, k);
+        }
+      }
+    }
+    const bye = ctx.seeds.filter(
+      (s) => !seedRefs.has(s.seed) && !groupRefs.has(`${s.group}:${s.place}`),
+    );
+    if (bye.length === 1 && result.length === ctx.seeds.length - 1) {
+      const key = groupRefs.size
+        ? bye[0].place * 1000 + bye[0].group.charCodeAt(0)
+        : bye[0].seed;
+      if (key > worstKey) {
+        result.push({
+          place: result.length + 1,
+          team: bye[0].team,
+          // Last place: no "next" entry to be tied with.
+          tiedWithNext: false,
+        });
+      }
     }
   }
   return result;

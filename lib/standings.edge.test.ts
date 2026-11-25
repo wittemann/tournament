@@ -316,3 +316,88 @@ describe('complete brackets through placementRanking', () => {
     ]);
   });
 });
+
+describe('seeds that no placement game references', () => {
+  // 5 groups of 3 teams = 15 seeds, every group strict.
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  const teams15 = letters.flatMap((l) =>
+    [1, 2, 3].map((n) => team(`${l}${n}`, l)),
+  );
+  const groups15 = letters.flatMap((l) =>
+    strictGroup([1, 2, 3].map((n) => `${l}${n}`)),
+  );
+  const pairs = (n: number): GameLike[] =>
+    Array.from({ length: n / 2 }, (_, i) =>
+      p(930 + i, `seed:${2 * i + 1}`, `seed:${2 * i + 2}`, 2, 1),
+    );
+
+  it('appends the one seed without a game after the placed teams', () => {
+    const games = [...groups15, ...pairs(14)];
+    const ctx = standingsContext(games, teams15, CLS);
+    const ranking = placementRanking(ctx);
+    expect(ranking).toHaveLength(15);
+    expect(ranking.map((r) => r.place)).toEqual(
+      Array.from({ length: 15 }, (_, i) => i + 1),
+    );
+    expect(ranking[14].team).toBe(ctx.seeds![14].team);
+    expect(ranking.slice(0, 14).every((r) => r.team !== null)).toBe(true);
+  });
+
+  it('adds nothing while the seeds are unknown', () => {
+    const open = [...groups15.slice(0, -1), g('E2', null, null, 'E3')];
+    const ranking = placementRanking(
+      standingsContext([...open, ...pairs(14)], teams15, CLS),
+    );
+    expect(ranking).toHaveLength(14);
+    expect(ranking.every((r) => r.team === null)).toBe(true);
+  });
+
+  it('leaves a class where every seed is referenced unchanged', () => {
+    const games = [...groups15.slice(0, 12), ...pairs(12)];
+    const ranking = placementRanking(
+      standingsContext(games, teams15.slice(0, 12), CLS),
+    );
+    expect(ranking).toHaveLength(12);
+  });
+
+  it('adds nothing for two unreferenced seeds (partial schedule)', () => {
+    const games = [...groups15, ...pairs(12)]; // seeds 13-15 unreferenced
+    const ranking = placementRanking(standingsContext(games, teams15, CLS));
+    expect(ranking).toHaveLength(12);
+  });
+
+  it('adds nothing for a single unreferenced seed that is not last', () => {
+    // Seed 5 has no game: it is not the worst slot, so it is no bye.
+    const games = [
+      ...groups15,
+      p(930, 'seed:1', 'seed:2', 2, 1),
+      p(931, 'seed:3', 'seed:4', 2, 1),
+      ...Array.from({ length: 5 }, (_, i) =>
+        p(940 + i, `seed:${2 * i + 6}`, `seed:${2 * i + 7}`, 2, 1),
+      ),
+    ];
+    const ranking = placementRanking(standingsContext(games, teams15, CLS));
+    expect(ranking).toHaveLength(14);
+  });
+
+  it('works for group refs: the group place no game references', () => {
+    const five = [
+      ...['A1', 'A2', 'A3'].map((n) => team(n, 'A')),
+      ...['B1', 'B2'].map((n) => team(n, 'B')),
+    ];
+    const games = [
+      ...strictGroup(['A1', 'A2', 'A3']),
+      ...strictGroup(['B1', 'B2']),
+      p(940, 'group:A:1', 'group:B:1', 2, 1), // A1 wins
+      p(941, 'group:A:2', 'group:B:2', 1, 2), // B2 wins
+    ];
+    const ranking = placementRanking(standingsContext(games, five, CLS));
+    expect(ranking.map((r) => [r.place, r.team])).toEqual([
+      [1, 'A1'],
+      [2, 'B1'],
+      [3, 'B2'],
+      [4, 'A2'],
+      [5, 'A3'],
+    ]);
+  });
+});

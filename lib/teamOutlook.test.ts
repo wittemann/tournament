@@ -681,3 +681,51 @@ describe('class-aware selection', () => {
     expect(teamSummaries(gs, [...teams], 'Stuttgart 1')).toHaveLength(2);
   });
 });
+
+describe('a team with a bye in the placement games', () => {
+  const base = { class: 'Schüler' as const, label: null, scorer_ref: null };
+  const grp = (number: number, hometeam: string, awayteam: string) => ({
+    ...base,
+    stage: 'group',
+    number,
+    hometeam,
+    awayteam,
+    homescore: 5,
+    awayscore: 1,
+    home_ref: null,
+    away_ref: null,
+  });
+  const ko = (number: number, home_ref: string, away_ref: string) => ({
+    ...base,
+    stage: 'placement',
+    number,
+    hometeam: null,
+    awayteam: null,
+    homescore: null as number | null,
+    awayscore: null as number | null,
+    home_ref,
+    away_ref,
+  });
+  const teams = ['A1', 'A2', 'A3', 'B1', 'B2'].map((name) => ({
+    name,
+    class: 'Schüler' as const,
+    group_name: name[0],
+  }));
+  const groups = [
+    grp(1, 'A1', 'A2'),
+    grp(2, 'A1', 'A3'),
+    grp(3, 'A2', 'A3'),
+    grp(4, 'B1', 'B2'),
+  ];
+  const games = [
+    ...groups,
+    ko(5, 'seed:1', 'seed:2'),
+    ko(6, 'seed:3', 'seed:4'),
+  ];
+
+  it('does not await a placement once the seeds are known and has the last place', () => {
+    expect(awaitsPlacement(games, teams, 'A3')).toBe(false);
+    const s = teamSummaries(games as GameLike[], teams, 'A3')[0];
+    expect(s.place).toEqual({ value: 5, kind: 'final' });
+  });
+});
