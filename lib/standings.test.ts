@@ -7,8 +7,10 @@ import {
   rankTeams,
   resolveGame,
   resolveRef,
+  joinNames,
   seeds,
   standingsContext,
+  tieBlocks,
 } from '@/lib/standings';
 
 const CLS = 'Schüler' as const;
@@ -444,5 +446,46 @@ describe('placementRanking', () => {
       [3, 'A2'],
       [4, 'C1'],
     ]);
+  });
+});
+
+describe('tieBlocks', () => {
+  const row = (team: string, tiedWithNext: boolean) => ({ team, tiedWithNext });
+
+  it('groups consecutive level teams, pairs and larger blocks', () => {
+    const rows = [
+      row('A', false),
+      row('B', true),
+      row('C', true),
+      row('D', false),
+      row('E', true),
+      row('F', false),
+    ] as Parameters<typeof tieBlocks>[0]['rows'];
+    expect(tieBlocks({ rows, complete: true })).toEqual([
+      ['B', 'C', 'D'],
+      ['E', 'F'],
+    ]);
+  });
+
+  it('is empty for an unfinished group or without ties', () => {
+    const rows = [row('A', true), row('B', false)] as Parameters<
+      typeof tieBlocks
+    >[0]['rows'];
+    expect(tieBlocks({ rows, complete: false })).toEqual([]);
+    expect(tieBlocks({ rows: [], complete: true })).toEqual([]);
+  });
+
+  it('finds a real full tie from a finished group', () => {
+    const games = [g('X', 2, 2, 'Y')];
+    const [t] = groupTables(games, [team('X', 'A'), team('Y', 'A')], CLS);
+    expect(tieBlocks(t)).toEqual([['X', 'Y']]);
+  });
+});
+
+describe('joinNames', () => {
+  it('joins in German', () => {
+    expect(joinNames(['A'])).toBe('A');
+    expect(joinNames(['A', 'B'])).toBe('A und B');
+    expect(joinNames(['A', 'B', 'C'])).toBe('A, B und C');
   });
 });

@@ -174,7 +174,7 @@ The app has to be ready before this point: teams register first, and the schedul
 - [x] ~~Dry-run smoke test before the real schedule~~: dropped 2026-11-02, the full-day test below replaces it.
 - [x] Full-day test with the real schedule, as soon as it is loaded: play through the whole day, entering scores slot by slot, including ties and the brackets; every page at phone width, standings and bracket resolve correctly. Fix what breaks, and reset the scores afterwards. · `sonnet`
 - [x] **Endstand shows the seed without a placement game:** with 15 Schüler teams, seed 15 plays no placement game and is missing from the Endstand (the list stops at 14). Add the seeds that no placement game covers, after the placed teams (`placementRanking` in `lib/standings.ts`). Found in the full-day test (2026-11-25). · `sonnet`
-- [ ] **Show unresolved ties in the group table:** when teams are level on every criterion, the Tabelle orders them by name without saying so, and that order feeds the seeds and scorer roles. Show `tiedWithNext` (already computed in `lib/standings.ts`) as a hint such as "Gleichstand – Turnierleitung entscheidet", and adjust the footnote. Found in the full-day test (2026-11-25). · `sonnet`
+- [x] **Show unresolved ties in the group table:** when teams are level on every criterion, the Tabelle orders them by name without saying so, and that order feeds the seeds and scorer roles. Show `tiedWithNext` (already computed in `lib/standings.ts`) as a hint such as "Gleichstand – Turnierleitung entscheidet", and adjust the footnote. Found in the full-day test (2026-11-25). · `sonnet`
 
 ## 10. From the review-later walkthrough
 

@@ -4,14 +4,16 @@ import { cutOffLegend, type CutOff } from '@/lib/cutOff';
 import {
   formatDiff,
   groupStatusLabel,
+  joinNames,
   recordLabels,
+  tieBlocks,
   type GroupTable,
   type TableRow,
 } from '@/lib/standings';
 
 // Order of the group ranking, worded after ADR-0006.
 const TIEBREAK_NOTE =
-  'Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs.';
+  'Reihenfolge: Siegquote (Unentschieden zählt als halber Sieg), dann Differenz, dann direkter Vergleich, dann erzielte Runs. Bei vollem Gleichstand entscheidet die Turnierleitung.';
 
 function GroupTableView({
   table,
@@ -27,6 +29,9 @@ function GroupTableView({
   const { withTies, labels: records } = recordLabels(table.rows);
   const headingId = useId();
   const status = groupStatusLabel(table);
+  // Only a finished group can have a final tie; open games still move teams.
+  const ties = tieBlocks(table);
+  const tiedTeams = new Set(ties.flat());
   return (
     <div className="rounded-card bg-base-100 overflow-hidden">
       <div className="flex items-baseline justify-between px-4 pt-3.5 pb-2">
@@ -95,7 +100,7 @@ function GroupTableView({
                 }`}
               >
                 <td
-                  className={`py-3 pl-4 font-display text-lg font-bold ${mine ? `${MINE_BG} ${MINE_STRIP}` : ''}`}
+                  className={`whitespace-nowrap py-3 pl-4 font-display text-lg font-bold ${mine ? `${MINE_BG} ${MINE_STRIP}` : ''}`}
                 >
                   {table.played === 0 ? (
                     <>
@@ -104,6 +109,14 @@ function GroupTableView({
                     </>
                   ) : (
                     row.place
+                  )}
+                  {tiedTeams.has(row.team) && (
+                    <>
+                      <span aria-hidden="true" className="text-sm text-muted">
+                        {' ='}
+                      </span>
+                      <span className="sr-only"> (Gleichstand)</span>
+                    </>
                   )}
                 </td>
                 <td
@@ -144,6 +157,12 @@ function GroupTableView({
             {legend}
           </p>
         )}
+        {ties.map((block) => (
+          <p key={block.join('|')} className="text-base-content">
+            Gleichstand: {joinNames(block)} sind in allen Kriterien gleich. Über
+            die Reihenfolge entscheidet die Turnierleitung.
+          </p>
+        ))}
         <p>{TIEBREAK_NOTE}</p>
       </div>
     </div>

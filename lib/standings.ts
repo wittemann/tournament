@@ -593,6 +593,37 @@ export function groupStatusLabel(
   return `${table.played} von ${table.total} ${table.total === 1 ? 'Spiel' : 'Spielen'}`;
 }
 
+/**
+ * Blocks of consecutive teams that no rule could separate (their order only
+ * comes from the name fallback), in table order. Empty until the group is
+ * complete: while games are open, level teams are normal and still move.
+ */
+export function tieBlocks(
+  table: Pick<GroupTable, 'rows' | 'complete'>,
+): string[][] {
+  if (!table.complete) return [];
+  const blocks: string[][] = [];
+  let open: string[] | null = null;
+  for (const row of table.rows) {
+    if (open) open.push(row.team);
+    if (row.tiedWithNext) {
+      if (!open) {
+        open = [row.team];
+        blocks.push(open);
+      }
+    } else {
+      open = null;
+    }
+  }
+  return blocks;
+}
+
+/** German list of names: "A", "A und B", "A, B und C". */
+export function joinNames(names: string[]): string {
+  if (names.length < 2) return names.join('');
+  return `${names.slice(0, -1).join(', ')} und ${names[names.length - 1]}`;
+}
+
 /** Signed run difference with a real minus sign: "+71", "−33", "0". */
 export function formatDiff(diff: number): string {
   if (diff > 0) return `+${diff}`;
