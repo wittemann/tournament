@@ -80,14 +80,14 @@ describe('teamNameInClass', () => {
 });
 
 describe('teamOptions', () => {
-  it('labels names used in several classes with the class', () => {
+  it('labels every team with its class', () => {
     const options = teamOptions([
       { name: 'Stuttgart 1', cls: 'Schüler' },
       { name: 'Bretten', cls: 'T-Ball' },
       { name: 'Stuttgart 1', cls: 'T-Ball' },
     ]);
     expect(options).toEqual([
-      { value: 'T-Ball|Bretten', label: 'Bretten' },
+      { value: 'T-Ball|Bretten', label: 'Bretten (T-Ball)' },
       { value: 'T-Ball|Stuttgart 1', label: 'Stuttgart 1 (T-Ball)' },
       { value: 'Schüler|Stuttgart 1', label: 'Stuttgart 1 (Schüler)' },
     ]);

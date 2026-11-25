@@ -95,14 +95,12 @@ export interface TeamOption {
 }
 
 /**
- * Select options for teams (name + class). A name used in several classes is
- * labelled with its class ("Stuttgart 1 (T-Ball)"); unique names are not.
- * Sorted by name, then CLASS_ORDER (T-Ball, Schüler, Jugend).
+ * Select options for teams (name + class). Every option names its class
+ * ("Bretten (T-Ball)"), so it is always clear which class a team is in, not
+ * only when a name repeats. Sorted by name, then CLASS_ORDER (T-Ball,
+ * Schüler, Jugend).
  */
 export function teamOptions(teams: readonly TeamSelection[]): TeamOption[] {
-  const classCount = new Map<string, number>();
-  for (const t of teams)
-    classCount.set(t.name, (classCount.get(t.name) ?? 0) + 1);
   const rank = (cls: GameClass | null) => (cls ? classRank(cls) : -1);
   return [...teams]
     .sort(
@@ -110,7 +108,6 @@ export function teamOptions(teams: readonly TeamSelection[]): TeamOption[] {
     )
     .map((t) => ({
       value: serializeTeam(t),
-      label:
-        (classCount.get(t.name) ?? 0) > 1 ? `${t.name} (${t.cls})` : t.name,
+      label: t.cls ? `${t.name} (${t.cls})` : t.name,
     }));
 }
