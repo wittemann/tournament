@@ -40,3 +40,17 @@ export function createResponseGate() {
     },
   };
 }
+
+// One drop usually hits every channel on the page at once (the socket is
+// shared), so without this each table would report the same outage. Lets one
+// report through per `intervalMs`, across all tables.
+export function createReportThrottle(intervalMs: number) {
+  let last = -Infinity;
+  return {
+    tryReport(now: number): boolean {
+      if (now - last < intervalMs) return false;
+      last = now;
+      return true;
+    },
+  };
+}

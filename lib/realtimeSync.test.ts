@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createResponseGate, shouldRefetchOnStatus } from '@/lib/realtimeSync';
+import {
+  createReportThrottle,
+  createResponseGate,
+  shouldRefetchOnStatus,
+} from '@/lib/realtimeSync';
 
 describe('shouldRefetchOnStatus', () => {
   it('refetches on the first join', () => {
@@ -83,5 +87,25 @@ describe('createResponseGate', () => {
     const t = gate.begin();
     expect(gate.accept(t)).toBe(true);
     expect(gate.accept(t)).toBe(false);
+  });
+});
+
+describe('createReportThrottle', () => {
+  it('lets the first report through', () => {
+    expect(createReportThrottle(1000).tryReport(0)).toBe(true);
+  });
+
+  it('drops reports within the interval', () => {
+    const throttle = createReportThrottle(1000);
+    expect(throttle.tryReport(0)).toBe(true);
+    expect(throttle.tryReport(1)).toBe(false);
+    expect(throttle.tryReport(999)).toBe(false);
+  });
+
+  it('lets a report through once the interval has passed', () => {
+    const throttle = createReportThrottle(1000);
+    expect(throttle.tryReport(0)).toBe(true);
+    expect(throttle.tryReport(1000)).toBe(true);
+    expect(throttle.tryReport(1500)).toBe(false);
   });
 });

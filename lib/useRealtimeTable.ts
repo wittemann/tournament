@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { getSupabase } from './supabase';
-import { createResponseGate, shouldRefetchOnStatus } from './realtimeSync';
+import {
+  createReportThrottle,
+  createResponseGate,
+  shouldRefetchOnStatus,
+} from './realtimeSync';
 
 type Order = { column: string; ascending?: boolean };
 
@@ -19,11 +23,19 @@ type Order = { column: string; ascending?: boolean };
 //
 // `error` is true when the last fetch failed (cleared by the next successful
 // one), when Supabase is not configured, or when the channel has been down for
-// CHANNEL_DOWN_DELAY_MS (shorter drops, e.g. a wake-up reconnect, stay quiet).
-// The rows stay as they were, so pages can show them under a banner. Sentry
-// hears about a channel only at that point too: supabase-js rejoins by itself,
-// and a drop that heals within the delay is not worth an event.
-const CHANNEL_DOWN_DELAY_MS = 5000;
+// CHANNEL_DOWN_DELAY_MS. The rows stay as they were, so pages can show them
+// under a banner. A phone waking up refetches at once but can take several
+// seconds to rejoin, so shorter drops stay quiet.
+//
+// Sentry hears about an outage only once it has lasted CHANNEL_REPORT_DELAY_MS
+// while the page is visible and the browser online: supabase-js rejoins by
+// itself, and mobile networks drop sockets all the time (live, Nov 2026: every
+// event was a phone reconnecting). One report per REPORT_INTERVAL_MS covers all
+// tables, since a drop hits every channel on the shared socket at once.
+const CHANNEL_DOWN_DELAY_MS = 15_000;
+const CHANNEL_REPORT_DELAY_MS = 60_000;
+const REPORT_INTERVAL_MS = 10 * 60_000;
+const reportThrottle = createReportThrottle(REPORT_INTERVAL_MS);
 
 // supabase.channel(topic) returns the channel already registered under that
 // topic, and removeChannel() is async. Two hooks on one table, or a StrictMode
@@ -61,6 +73,7 @@ export function useRealtimeTable<T>(
     const gate = createResponseGate();
     let cancelled = false;
     let downTimer: ReturnType<typeof setTimeout> | undefined;
+    let reportTimer: ReturnType<typeof setTimeout> | undefined;
 
     const fetchRows = async () => {
       const ticket = gate.begin();
@@ -106,24 +119,47 @@ export function useRealtimeTable<T>(
           if (shouldRefetchOnStatus(previous, status)) fetchRows();
           previous = status;
           if (status === 'SUBSCRIBED') {
-            clearTimeout(downTimer);
-            downTimer = undefined;
+            outage = undefined;
+            clearOutageTimers();
             setChannelDown(false);
           } else if (status === 'CLOSED') {
             closed = true;
           } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            // A failing channel retries and errors again; the timer is armed
-            // once per outage, so it reports once until SUBSCRIBED clears it.
-            downTimer ??= setTimeout(() => {
-              setChannelDown(true);
-              console.error(`Realtime ${status} (${table}):`, err);
-              Sentry.captureException(
-                err ?? new Error(`Realtime channel ${status} (${table})`),
-                { tags: { table, source: 'realtime', status } },
-              );
-            }, CHANNEL_DOWN_DELAY_MS);
+            outage = { status, err };
+            armOutageTimers();
           }
         });
+    };
+
+    // Set while the channel is down (until SUBSCRIBED), for the timers below.
+    let outage: { status: string; err: unknown } | undefined;
+    // A failing channel retries and errors again; each timer is armed once and
+    // kept until it fires or SUBSCRIBED clears it.
+    const armOutageTimers = () => {
+      downTimer ??= setTimeout(() => {
+        setChannelDown(true);
+        console.error(`Realtime ${outage?.status} (${table}):`, outage?.err);
+      }, CHANNEL_DOWN_DELAY_MS);
+      reportTimer ??= setTimeout(() => {
+        // Cleared first, so a report skipped here is retried on the next
+        // failing status instead of never.
+        reportTimer = undefined;
+        if (!outage) return;
+        if (document.visibilityState !== 'visible') return;
+        if (!navigator.onLine) return;
+        if (!reportThrottle.tryReport(Date.now())) return;
+        const { status, err } = outage;
+        Sentry.captureException(
+          err ?? new Error(`Realtime channel ${status} (${table})`),
+          { tags: { table, source: 'realtime', status } },
+        );
+      }, CHANNEL_REPORT_DELAY_MS);
+    };
+    const clearOutageTimers = () => {
+      clearTimeout(downTimer);
+      clearTimeout(reportTimer);
+      downTimer = undefined;
+      reportTimer = undefined;
     };
 
     fetchRows();
@@ -133,6 +169,13 @@ export function useRealtimeTable<T>(
       // Offline: the `online` event will call this again.
       if (!navigator.onLine) return;
       fetchRows();
+      // Timers run on wall-clock time, so a sleeping phone's overdue timers
+      // would fire right after resume, before the rejoin. Restart them so the
+      // outage is timed from the wake-up. The banner already shown stays.
+      if (outage) {
+        clearOutageTimers();
+        armOutageTimers();
+      }
       if (closed) {
         closed = false;
         channel = subscribe();
@@ -150,7 +193,7 @@ export function useRealtimeTable<T>(
 
     return () => {
       cancelled = true;
-      clearTimeout(downTimer);
+      clearOutageTimers();
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('online', wake);
       window.removeEventListener('pageshow', onPageShow);
