@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createReportThrottle,
   createResponseGate,
+  isNetworkFailure,
   shouldRefetchOnStatus,
 } from '@/lib/realtimeSync';
 
@@ -107,5 +108,17 @@ describe('createReportThrottle', () => {
     expect(throttle.tryReport(0)).toBe(true);
     expect(throttle.tryReport(1000)).toBe(true);
     expect(throttle.tryReport(1500)).toBe(false);
+  });
+});
+
+describe('isNetworkFailure', () => {
+  it('is true for a fetch that got no response', () => {
+    expect(isNetworkFailure(0)).toBe(true);
+  });
+
+  it('is false for HTTP errors and successes', () => {
+    for (const status of [200, 400, 401, 404, 500, 503]) {
+      expect(isNetworkFailure(status)).toBe(false);
+    }
   });
 });

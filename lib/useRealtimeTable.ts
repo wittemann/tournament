@@ -7,6 +7,7 @@ import { getSupabase } from './supabase';
 import {
   createReportThrottle,
   createResponseGate,
+  isNetworkFailure,
   shouldRefetchOnStatus,
 } from './realtimeSync';
 
@@ -32,7 +33,14 @@ type Order = { column: string; ascending?: boolean };
 // itself, and mobile networks drop sockets all the time (live, Nov 2026: every
 // event was a phone reconnecting). One report per REPORT_INTERVAL_MS covers all
 // tables, since a drop hits every channel on the shared socket at once.
+//
+// A fetch that got no response at all (status 0: offline, a flaky mobile
+// network, or a reload cancelling the requests in flight; live, Nov 2026) is
+// reported only after NETWORK_FAILURE_REPORT_COUNT in a row while visible and
+// online, through the same throttle. The banner shows it either way. Fetches
+// that got an HTTP error still report at once.
 const CHANNEL_DOWN_DELAY_MS = 15_000;
+const NETWORK_FAILURE_REPORT_COUNT = 3;
 const CHANNEL_REPORT_DELAY_MS = 60_000;
 const REPORT_INTERVAL_MS = 10 * 60_000;
 const reportThrottle = createReportThrottle(REPORT_INTERVAL_MS);
@@ -75,25 +83,39 @@ export function useRealtimeTable<T>(
     let downTimer: ReturnType<typeof setTimeout> | undefined;
     let reportTimer: ReturnType<typeof setTimeout> | undefined;
 
+    // Status-0 fetches in a row, reset by any response.
+    let networkFailures = 0;
+
     const fetchRows = async () => {
       const ticket = gate.begin();
       let query = supabase.from(table).select();
       for (const { column, ascending = true } of orderBy) {
         query = query.order(column, { ascending });
       }
-      const { data, error } = await query;
+      const { data, error, status } = await query;
       if (cancelled) return;
       if (gate.settle(ticket)) setFetchFailed(!!error);
       if (error) {
         console.error(`Supabase error (${table}):`, error);
-        Sentry.captureException(
-          new Error(`Supabase fetch failed (${table}): ${error.message}`, {
-            cause: error,
-          }),
-          { tags: { table, source: 'fetch' } },
-        );
-      } else if (data && gate.accept(ticket)) {
-        setRows(data as T[]);
+        const network = isNetworkFailure(status);
+        networkFailures = network ? networkFailures + 1 : 0;
+        if (
+          !network ||
+          (networkFailures >= NETWORK_FAILURE_REPORT_COUNT &&
+            document.visibilityState === 'visible' &&
+            navigator.onLine &&
+            reportThrottle.tryReport(Date.now()))
+        ) {
+          Sentry.captureException(
+            new Error(`Supabase fetch failed (${table}): ${error.message}`, {
+              cause: error,
+            }),
+            { tags: { table, source: 'fetch' } },
+          );
+        }
+      } else {
+        networkFailures = 0;
+        if (data && gate.accept(ticket)) setRows(data as T[]);
       }
       setLoading(false);
     };

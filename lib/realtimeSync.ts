@@ -54,3 +54,10 @@ export function createReportThrottle(intervalMs: number) {
     },
   };
 }
+
+// postgrest-js resolves a fetch that threw (no response at all: offline, DNS,
+// a request cancelled by a reload) with status 0. Any HTTP error has a real
+// status.
+export function isNetworkFailure(status: number): boolean {
+  return status === 0;
+}
